@@ -11,7 +11,6 @@ import {
 } from "../../components/shared/Surface";
 import { useAppState } from "../../state/AppState";
 import { BottomCTA } from "../../components/shared/BottomCTA";
-import { safeHaptic } from "../../lib/haptics";
 import { ResultStatCard } from "./components/ResultStatCard";
 
 export function ResultRoute() {
@@ -25,11 +24,6 @@ export function ResultRoute() {
   function goHome() {
     resetDraft();
     navigate("/home");
-  }
-
-  function playAgain() {
-    void safeHaptic("softMedium");
-    navigate("/play");
   }
 
   const angerDeltaPercent = Math.round(
@@ -132,25 +126,7 @@ export function ResultRoute() {
         </BodyStack>
       </ScreenPanel>
 
-      <BottomCTA
-        bottomAccessory={
-          <button
-            type="button"
-            onClick={playAgain}
-            css={{
-              border: 0,
-              background: "transparent",
-              color: colors.grey700,
-              fontSize: 15,
-              fontWeight: 600,
-              padding: 0,
-            }}
-          >
-            한 판 더
-          </button>
-        }
-        onClick={goHome}
-      >
+      <BottomCTA onClick={goHome}>
         홈으로
       </BottomCTA>
     </AppShell>

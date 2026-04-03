@@ -31,7 +31,9 @@ export function GameRoute() {
     stopTauntRotation,
   } = useGameSession({ angerBefore: draft.angerBefore });
   const [minLoadingDone, setMinLoadingDone] = useState(false);
+  const [showEndingOverlay, setShowEndingOverlay] = useState(false);
   const hasFinishedRef = useRef(false);
+  const endingTimeoutRef = useRef<number | null>(null);
 
   const loadingMessage = useMemo(() => {
     const seed = sessionKey
@@ -46,6 +48,14 @@ export function GameRoute() {
     }, 1000);
 
     return () => window.clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (endingTimeoutRef.current !== null) {
+        window.clearTimeout(endingTimeoutRef.current);
+      }
+    };
   }, []);
 
   if (!draft.nickname.trim()) {
@@ -68,9 +78,21 @@ export function GameRoute() {
     navigate("/result");
   }
 
+  function finishGameWithOverlay() {
+    if (hasFinishedRef.current || showEndingOverlay) {
+      return;
+    }
+
+    setShowEndingOverlay(true);
+    void safeHaptic("success");
+    endingTimeoutRef.current = window.setTimeout(() => {
+      finishGame();
+    }, 2800);
+  }
+
   useEffect(() => {
     if (hits > 0 && currentAnger <= 0) {
-      finishGame();
+      finishGameWithOverlay();
     }
   }, [currentAnger, hits]);
 
@@ -251,6 +273,58 @@ export function GameRoute() {
             </div>
           </div>
         )}
+
+        {showEndingOverlay ? (
+          <div
+            onClick={finishGame}
+            css={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 4,
+              display: "grid",
+              placeItems: "center",
+              background: "rgba(25, 17, 46, 0.72)",
+              backdropFilter: "blur(10px)",
+              borderRadius: 28,
+              padding: 24,
+              textAlign: "center",
+            }}
+          >
+            <div
+              css={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <img
+                alt=""
+                src={`${import.meta.env.BASE_URL}happyface.png`}
+                css={{
+                  width: 92,
+                  height: 92,
+                  objectFit: "contain",
+                  display: "block",
+                }}
+              />
+              <Text
+                typography="t3"
+                fontWeight="bold"
+                css={{ color: colors.background }}
+              >
+                배출 완료!
+              </Text>
+              <Text
+                typography="t6"
+                fontWeight="medium"
+                css={{ color: colors.grey100 }}
+              >
+                건강하게 끝까지 해소해낸 당신, 정말 멋져요.
+              </Text>
+            </div>
+          </div>
+        ) : null}
 
         <GameActions
           muted={muted}
