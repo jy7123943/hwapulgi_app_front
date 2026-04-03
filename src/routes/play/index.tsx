@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import { colors } from "@toss/tds-colors";
-import { Text } from "@toss/tds-mobile";
+import { Asset, Text } from "@toss/tds-mobile";
 import { Navigate, useNavigate } from "react-router-dom";
 import { LOADING_MESSAGES } from "../../constants";
 import { useAppState } from "../../state/AppState";
@@ -276,7 +276,6 @@ export function GameRoute() {
 
         {showEndingOverlay ? (
           <div
-            onClick={finishGame}
             css={{
               position: "absolute",
               inset: 0,
@@ -290,6 +289,32 @@ export function GameRoute() {
               textAlign: "center",
             }}
           >
+            <button
+              type="button"
+              aria-label="결과 보기"
+              onClick={finishGame}
+              css={{
+                position: "absolute",
+                top: 18,
+                right: 18,
+                width: 40,
+                height: 40,
+                borderRadius: "50%",
+                border: "1px solid rgba(255,255,255,0.16)",
+                background: "rgba(255,255,255,0.12)",
+                color: colors.background,
+                display: "grid",
+                placeItems: "center",
+                backdropFilter: "blur(8px)",
+              }}
+            >
+              <Asset.Icon
+                aria-hidden={true}
+                color={colors.background}
+                frameShape={Asset.frameShape.CleanWFull}
+                name="icon-close-mono"
+              />
+            </button>
             <div
               css={{
                 display: "flex",
