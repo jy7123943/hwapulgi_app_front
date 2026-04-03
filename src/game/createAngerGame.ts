@@ -1,6 +1,30 @@
 import Phaser from 'phaser';
 
 const avatarAssetUrl = `${import.meta.env.BASE_URL}avatar.png`;
+const HIT_REACTION_LINES = [
+  '죄송합니다.',
+  '제가 잘못했어요.',
+  '한 번만 봐주세요.',
+  '다시는 안 그럴게요.',
+  '진짜 반성 중이에요.',
+  '제가 실수했어요.',
+  '제발 한 번만 용서해 주세요.',
+  '제가 너무 경솔했어요.',
+  '정말 크게 반성하고 있어요.',
+  '말씀하신 게 맞아요.',
+  '이번엔 제가 선 넘었어요.',
+  '변명 안 할게요.',
+  '정말 죄송한 마음뿐이에요.',
+  '제가 생각이 짧았어요.',
+  '다 제 잘못입니다.',
+  '진심으로 사과드려요.',
+  '제가 먼저 잘못했어요.',
+  '다시 생각해 보니 제 탓이에요.',
+  '한 번만 기회 주세요.',
+  '이건 제가 잘못 본 거예요.',
+  '제가 너무 무례했어요.',
+  '제가 괜히 그랬어요.',
+];
 
 interface Callbacks {
   onHit: (remaining: number, hits: number, impactStrength: number) => void;
@@ -26,7 +50,12 @@ export function createAngerGame(
   let flash: Phaser.GameObjects.Ellipse | null = null;
   let nameplate: Phaser.GameObjects.Container | null = null;
   let nameplateBg: Phaser.GameObjects.Graphics | null = null;
-  let nameplateText: Phaser.GameObjects.Text | null = null;
+  let nameplateText: Phaser.GameObjects.Image | null = null;
+  let nameplateTextureKey: string | null = null;
+  let speechBubble: Phaser.GameObjects.Container | null = null;
+  let speechBubbleBg: Phaser.GameObjects.Graphics | null = null;
+  let speechBubbleText: Phaser.GameObjects.Image | null = null;
+  let speechBubbleTextureKey: string | null = null;
   let heatAura: Phaser.GameObjects.Ellipse | null = null;
   let emberAura: Phaser.GameObjects.Ellipse | null = null;
   let avatarBaseScaleX = 1;
@@ -47,6 +76,117 @@ export function createAngerGame(
   let lastHitAt = 0;
   let comboMomentum = 0.5;
   let auraEnergy = 0;
+
+  function createTextTexture(
+    scene: Phaser.Scene,
+    key: string,
+    label: string,
+    color: string,
+    fontSize: number,
+    fontWeight: number,
+  ) {
+    if (scene.textures.exists(key)) {
+      scene.textures.remove(key);
+    }
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    if (!context) {
+      return null;
+    }
+
+    const pixelRatio =
+      typeof window !== 'undefined' && window.devicePixelRatio > 1
+        ? window.devicePixelRatio
+        : 1;
+
+    context.font = `${fontWeight} ${fontSize}px sans-serif`;
+    const metrics = context.measureText(label);
+    const width = Math.max(Math.ceil(metrics.width + 8), 16);
+    const height = Math.max(Math.ceil(fontSize * 1.5), 18);
+
+    canvas.width = Math.ceil(width * pixelRatio);
+    canvas.height = Math.ceil(height * pixelRatio);
+
+    context.scale(pixelRatio, pixelRatio);
+    context.clearRect(0, 0, width, height);
+    context.font = `${fontWeight} ${fontSize}px sans-serif`;
+    context.fillStyle = color;
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(label, width / 2, height / 2);
+
+    scene.textures.addCanvas(key, canvas);
+
+    return {
+      height,
+      key,
+      width,
+    };
+  }
+
+  function drawSpeechBubble(labelWidth: number, labelHeight: number) {
+    if (!speechBubbleBg) {
+      return;
+    }
+
+    const bubbleWidth = Math.max(126, labelWidth + 28);
+    const bubbleHeight = Math.max(44, labelHeight + 18);
+    const tailBaseX = bubbleWidth / 2 - 28;
+    const tailBaseY = bubbleHeight / 2;
+
+    speechBubbleBg.clear();
+    speechBubbleBg.fillStyle(0xffffff, 0.97);
+    speechBubbleBg.fillRoundedRect(
+      -bubbleWidth / 2,
+      -bubbleHeight / 2,
+      bubbleWidth,
+      bubbleHeight,
+      18,
+    );
+    speechBubbleBg.fillTriangle(
+      tailBaseX - 12,
+      tailBaseY,
+      tailBaseX + 4,
+      tailBaseY,
+      tailBaseX - 10,
+      tailBaseY + 18,
+    );
+  }
+
+  function updateSpeechBubbleLabel(label: string) {
+    if (!sceneRef || !speechBubble) {
+      return;
+    }
+
+    if (speechBubbleText) {
+      speechBubble.remove(speechBubbleText, true);
+      speechBubbleText = null;
+    }
+
+    if (speechBubbleTextureKey && sceneRef.textures.exists(speechBubbleTextureKey)) {
+      sceneRef.textures.remove(speechBubbleTextureKey);
+    }
+
+    speechBubbleTextureKey = `speech-bubble-${crypto.randomUUID()}`;
+    const texture = createTextTexture(
+      sceneRef,
+      speechBubbleTextureKey,
+      label,
+      '#202632',
+      14,
+      700,
+    );
+
+    if (!texture) {
+      return;
+    }
+
+    speechBubbleText = sceneRef.add.image(0, 0, texture.key).setOrigin(0.5);
+    speechBubble.add(speechBubbleText);
+    drawSpeechBubble(texture.width, texture.height);
+  }
 
   function currentWidth() {
     return Math.max(element.clientWidth || 0, 320);
@@ -84,7 +224,8 @@ export function createAngerGame(
     avatar?.setPosition(centerX(), centerY());
     shadow?.setPosition(centerX(), currentHeight() - 82);
     flash?.setPosition(centerX(), centerY());
-    nameplate?.setPosition(centerX(), centerY() - 146);
+    nameplate?.setPosition(centerX(), centerY() - 126);
+    speechBubble?.setPosition(centerX() + 44, centerY() - 126);
     heatAura?.setPosition(centerX(), centerY() - 16);
     emberAura?.setPosition(centerX(), centerY() - 40);
     updateStarsPosition();
@@ -132,6 +273,33 @@ export function createAngerGame(
     shakeSquashSpeed = Phaser.Math.FloatBetween(22, 32) + cadenceStrength * 6;
 
     callbacks.onHit(anger, hits, impactStrength);
+
+    if (speechBubble && speechBubbleBg) {
+      updateSpeechBubbleLabel(Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES));
+      sceneRef.tweens.killTweensOf(speechBubble);
+      speechBubble.setAlpha(0);
+      speechBubble.setScale(0.92);
+      speechBubble.setPosition(avatar.x + 44, avatar.y - 126);
+      sceneRef.tweens.add({
+        targets: speechBubble,
+        alpha: 1,
+        scaleX: 1,
+        scaleY: 1,
+        y: avatar.y - 134,
+        duration: 140,
+        ease: 'Back.easeOut',
+      });
+      sceneRef.tweens.add({
+        targets: speechBubble,
+        alpha: 0,
+        scaleX: 0.97,
+        scaleY: 0.97,
+        y: avatar.y - 144,
+        delay: 680,
+        duration: 180,
+        ease: 'Quad.easeIn',
+      });
+    }
 
     if (flash) {
       sceneRef.tweens.killTweensOf(flash);
@@ -182,11 +350,9 @@ export function createAngerGame(
       const width = currentWidth();
       const height = currentHeight();
 
-      this.cameras.main.setBackgroundColor('#081427');
+      this.cameras.main.setBackgroundColor('#102448');
 
-      this.add.circle(width * 0.28, height * 0.18, width * 0.26, 0x173257, 0.35);
-      this.add.circle(width * 0.8, height * 0.78, width * 0.22, 0x0f1d35, 0.42);
-
+      this.add.rectangle(width / 2, height / 2, width, height, 0x102448, 1);
       shadow = this.add.ellipse(centerX(), height - 82, 196, 34, 0x000000, 0.26);
       heatAura = this.add.ellipse(centerX(), centerY() - 16, 220, 250, 0xff4d4f, 0);
       emberAura = this.add.ellipse(centerX(), centerY() - 40, 150, 170, 0xffa24a, 0);
@@ -197,13 +363,20 @@ export function createAngerGame(
       avatarBaseScaleX = avatar.scaleX;
       avatarBaseScaleY = avatar.scaleY;
       nameplateBg = this.add.graphics();
-      nameplateText = this.add.text(0, 0, nickname, {
-        color: '#ffffff',
-        fontFamily: 'sans-serif',
-        fontSize: '15px',
-        fontStyle: '700',
-      }).setOrigin(0.5);
-      const nameplateWidth = Math.max(92, nameplateText.width + 28);
+      nameplateTextureKey = `nameplate-${crypto.randomUUID()}`;
+      const nameplateTexture = createTextTexture(
+        this,
+        nameplateTextureKey,
+        nickname,
+        '#ffffff',
+        15,
+        700,
+      );
+      if (!nameplateTexture) {
+        return;
+      }
+      nameplateText = this.add.image(0, 0, nameplateTexture.key).setOrigin(0.5);
+      const nameplateWidth = Math.max(92, nameplateTexture.width + 28);
       const nameplateHeight = 34;
       nameplateBg.fillStyle(0x10182a, 0.92);
       nameplateBg.fillRoundedRect(
@@ -225,6 +398,12 @@ export function createAngerGame(
         nameplateBg,
         nameplateText,
       ]);
+      speechBubbleBg = this.add.graphics();
+      speechBubble = this.add.container(centerX() + 44, centerY() - 126, [
+        speechBubbleBg,
+      ]);
+      updateSpeechBubbleLabel(HIT_REACTION_LINES[0]);
+      speechBubble.setAlpha(0);
 
       stars = [
         this.add.star(0, 0, 5, 7, 14, 0xffd84d, 1).setOrigin(0.5),
@@ -266,9 +445,16 @@ export function createAngerGame(
           );
 
           if (nameplate) {
-            nameplate.setPosition(avatar.x, avatar.y - 146 + offsetY * 0.18);
+            nameplate.setPosition(avatar.x, avatar.y - 126 + offsetY * 0.16);
             nameplate.setRotation(Phaser.Math.DegToRad(rotate * 0.22));
             nameplate.setScale(1 + shakeEnergy * 0.015, 1 + shakeEnergy * 0.01);
+          }
+
+          if (speechBubble) {
+            speechBubble.setPosition(
+              avatar.x + 44 + offsetX * 0.14,
+              avatar.y - 126 + offsetY * 0.08,
+            );
           }
         }
 
@@ -346,6 +532,17 @@ export function createAngerGame(
       nameplate = null;
       nameplateBg = null;
       nameplateText = null;
+      if (nameplateTextureKey && game.textures.exists(nameplateTextureKey)) {
+        game.textures.remove(nameplateTextureKey);
+      }
+      nameplateTextureKey = null;
+      speechBubble = null;
+      speechBubbleBg = null;
+      speechBubbleText = null;
+      if (speechBubbleTextureKey && game.textures.exists(speechBubbleTextureKey)) {
+        game.textures.remove(speechBubbleTextureKey);
+      }
+      speechBubbleTextureKey = null;
       heatAura = null;
       emberAura = null;
       stars = [];

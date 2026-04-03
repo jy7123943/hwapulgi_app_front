@@ -32,6 +32,6 @@ export const defaultDraft: SessionInput = {
   target: "",
   customTarget: "",
   nickname: "",
-  angerBefore: 30,
+  angerBefore: 100,
   memo: "",
 };
