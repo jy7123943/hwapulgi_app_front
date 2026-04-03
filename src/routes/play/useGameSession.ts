@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TAUNT_LINES } from "../../constants";
 import { safeHaptic } from "../../lib/haptics";
 
@@ -12,19 +12,25 @@ export function useGameSession({ angerBefore }: UseGameSessionParams) {
   const [muted, setMuted] = useState(false);
   const [taunt, setTaunt] = useState(TAUNT_LINES[0]);
   const [sessionKey] = useState(() => crypto.randomUUID());
+  const tauntIntervalRef = useRef<number | null>(null);
   const [gameController, setGameController] = useState<{
     hit: () => void;
   } | null>(null);
 
   useEffect(() => {
-    const interval = window.setInterval(() => {
+    tauntIntervalRef.current = window.setInterval(() => {
       setTaunt((prev) => {
         const index = TAUNT_LINES.indexOf(prev);
         return TAUNT_LINES[(index + 1) % TAUNT_LINES.length];
       });
     }, 5200);
 
-    return () => window.clearInterval(interval);
+    return () => {
+      if (tauntIntervalRef.current !== null) {
+        window.clearInterval(tauntIntervalRef.current);
+        tauntIntervalRef.current = null;
+      }
+    };
   }, []);
 
   const angerGaugePercent = Math.max(
@@ -70,5 +76,11 @@ export function useGameSession({ angerBefore }: UseGameSessionParams) {
     setGameController,
     setMuted,
     handleGameHit,
+    stopTauntRotation: () => {
+      if (tauntIntervalRef.current !== null) {
+        window.clearInterval(tauntIntervalRef.current);
+        tauntIntervalRef.current = null;
+      }
+    },
   };
 }

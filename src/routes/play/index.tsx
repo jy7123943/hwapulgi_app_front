@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import { colors } from "@toss/tds-colors";
 import { Text } from "@toss/tds-mobile";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -28,8 +28,10 @@ export function GameRoute() {
     taunt,
     setGameController,
     setMuted,
+    stopTauntRotation,
   } = useGameSession({ angerBefore: draft.angerBefore });
   const [minLoadingDone, setMinLoadingDone] = useState(false);
+  const hasFinishedRef = useRef(false);
 
   const loadingMessage = useMemo(() => {
     const seed = sessionKey
@@ -51,6 +53,12 @@ export function GameRoute() {
   }
 
   function finishGame() {
+    if (hasFinishedRef.current) {
+      return;
+    }
+
+    hasFinishedRef.current = true;
+    stopTauntRotation();
     completeSession({
       hits,
       skillShots: 0,
@@ -59,6 +67,12 @@ export function GameRoute() {
     void safeHaptic("success");
     navigate("/result");
   }
+
+  useEffect(() => {
+    if (hits > 0 && currentAnger <= 0) {
+      finishGame();
+    }
+  }, [currentAnger, hits]);
 
   return (
     <div
