@@ -388,9 +388,9 @@ export function createAngerGame(
       const width = currentWidth();
       const height = currentHeight();
 
-      this.cameras.main.setBackgroundColor("#102448");
+      this.cameras.main.setBackgroundColor("#173d6a");
 
-      this.add.rectangle(width / 2, height / 2, width, height, 0x102448, 1);
+      this.add.rectangle(width / 2, height / 2, width, height, 0x173d6a, 1);
       shadow = this.add.ellipse(
         centerX(),
         height - 82,
@@ -583,7 +583,7 @@ export function createAngerGame(
     type: Phaser.CANVAS,
     parent: element,
     transparent: false,
-    backgroundColor: "#081427",
+    backgroundColor: "#173d6a",
     width: currentWidth(),
     height: currentHeight(),
     scene: ArenaScene,

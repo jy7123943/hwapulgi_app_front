@@ -9,6 +9,7 @@ interface UseGameSessionParams {
 export function useGameSession({ angerBefore }: UseGameSessionParams) {
   const [currentAnger, setCurrentAnger] = useState(angerBefore);
   const [hits, setHits] = useState(0);
+  const [muted, setMuted] = useState(false);
   const [taunt, setTaunt] = useState(TAUNT_LINES[0]);
   const [sessionKey] = useState(() => crypto.randomUUID());
   const [gameController, setGameController] = useState<{
@@ -40,20 +41,22 @@ export function useGameSession({ angerBefore }: UseGameSessionParams) {
     setHits(nextHits);
 
     if (impactStrength >= 1.15) {
-      void safeHaptic('basicMedium');
+      if (!muted) {
+        void safeHaptic('basicMedium');
+      }
       return;
     }
 
     if (impactStrength >= 0.82) {
-      void safeHaptic('tickMedium');
+      if (!muted) {
+        void safeHaptic('tickMedium');
+      }
       return;
     }
 
-    void safeHaptic('tickWeak');
-  }
-
-  function triggerHit() {
-    gameController?.hit();
+    if (!muted) {
+      void safeHaptic('tickWeak');
+    }
   }
 
   return {
@@ -61,10 +64,11 @@ export function useGameSession({ angerBefore }: UseGameSessionParams) {
     angerGaugePercent,
     gameController,
     hits,
+    muted,
     sessionKey,
     taunt,
     setGameController,
+    setMuted,
     handleGameHit,
-    triggerHit,
   };
 }

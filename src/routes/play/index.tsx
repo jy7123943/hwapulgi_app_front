@@ -19,10 +19,11 @@ export function GameRoute() {
     currentAnger,
     handleGameHit,
     hits,
+    muted,
     sessionKey,
     taunt,
     setGameController,
-    triggerHit,
+    setMuted,
   } = useGameSession({ angerBefore: draft.angerBefore });
 
   if (!draft.nickname.trim()) {
@@ -47,7 +48,7 @@ export function GameRoute() {
         display: 'flex',
         flexDirection: 'column',
         background:
-          'radial-gradient(circle at top, rgba(30, 63, 115, 0.34), transparent 30%), linear-gradient(180deg, #061120 0%, #081427 62%, #09111e 100%)',
+          'radial-gradient(circle at top, rgba(72, 118, 186, 0.28), transparent 30%), linear-gradient(180deg, #123259 0%, #173d6a 62%, #143150 100%)',
         padding: '14px 14px 18px',
         gap: 10,
         overflow: 'hidden',
@@ -91,7 +92,7 @@ export function GameRoute() {
                 inset: 0,
                 borderRadius: 28,
                 color: colors.background,
-                background: '#081427',
+                background: '#173d6a',
               }}
             >
               게임 준비 중...
@@ -107,7 +108,11 @@ export function GameRoute() {
           />
         </Suspense>
 
-        <GameActions onFinish={finishGame} onHit={triggerHit} />
+        <GameActions
+          muted={muted}
+          onFinish={finishGame}
+          onToggleMute={() => setMuted((prev) => !prev)}
+        />
       </div>
     </div>
   );

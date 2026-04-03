@@ -22,11 +22,32 @@ export function GameMetrics({ angerGaugePercent, hits }: GameMetricsProps) {
         boxShadow: '0 14px 30px rgba(5, 12, 24, 0.3)',
       }}
     >
-      <div css={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+      <div
+        css={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          minWidth: 88,
+          flexShrink: 0,
+        }}
+      >
         <Text as="span" typography="t6" fontWeight="medium" css={{ color: colors.grey300 }}>
           타격
         </Text>
-        <strong css={{ fontSize: 28, color: colors.background }}>{hits}</strong>
+        <strong
+          css={{
+            display: 'inline-block',
+            minWidth: 48,
+            fontSize: 28,
+            color: colors.background,
+            textAlign: 'right',
+            fontVariantNumeric: 'tabular-nums',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}
+        >
+          {hits}
+        </strong>
       </div>
       <div
         css={{
@@ -41,7 +62,17 @@ export function GameMetrics({ angerGaugePercent, hits }: GameMetricsProps) {
           <Text as="span" typography="t6" fontWeight="medium" css={{ color: colors.grey300 }}>
             분노 게이지
           </Text>
-          <strong css={{ fontSize: 24, color: colors.background }}>{angerGaugePercent}%</strong>
+          <strong
+            css={{
+              minWidth: 56,
+              fontSize: 24,
+              color: colors.background,
+              textAlign: 'right',
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {angerGaugePercent}%
+          </strong>
         </div>
         <div
           css={{
