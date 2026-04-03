@@ -1,29 +1,29 @@
-import Phaser from 'phaser';
+import Phaser from "phaser";
 
 const avatarAssetUrl = `${import.meta.env.BASE_URL}avatar.png`;
 const HIT_REACTION_LINES = [
-  '죄송합니다.',
-  '제가 잘못했어요.',
-  '한 번만 봐주세요.',
-  '다시는 안 그럴게요.',
-  '진짜 반성 중이에요.',
-  '제가 실수했어요.',
-  '제발 한 번만 용서해 주세요.',
-  '제가 너무 경솔했어요.',
-  '정말 크게 반성하고 있어요.',
-  '말씀하신 게 맞아요.',
-  '이번엔 제가 선 넘었어요.',
-  '변명 안 할게요.',
-  '정말 죄송한 마음뿐이에요.',
-  '제가 생각이 짧았어요.',
-  '다 제 잘못입니다.',
-  '진심으로 사과드려요.',
-  '제가 먼저 잘못했어요.',
-  '다시 생각해 보니 제 탓이에요.',
-  '한 번만 기회 주세요.',
-  '이건 제가 잘못 본 거예요.',
-  '제가 너무 무례했어요.',
-  '제가 괜히 그랬어요.',
+  "죄송합니다.",
+  "제가 잘못했어요.",
+  "한 번만 봐주세요.",
+  "다시는 안 그럴게요.",
+  "진짜 반성 중이에요.",
+  "제가 실수했어요.",
+  "제발 한 번만 용서해 주세요.",
+  "제가 너무 경솔했어요.",
+  "정말 크게 반성하고 있어요.",
+  "말씀하신 게 맞아요.",
+  "이번엔 제가 선 넘었어요.",
+  "변명 안 할게요.",
+  "정말 죄송한 마음뿐이에요.",
+  "제가 생각이 짧았어요.",
+  "다 제 잘못입니다.",
+  "진심으로 사과드려요.",
+  "제가 먼저 잘못했어요.",
+  "다시 생각해 보니 제 탓이에요.",
+  "한 번만 기회 주세요.",
+  "이건 제가 잘못 한 거예요.",
+  "제가 너무 무례했어요.",
+  "제가 괜히 그랬어요.",
 ];
 
 interface Callbacks {
@@ -40,7 +40,7 @@ export function createAngerGame(
   element: HTMLDivElement,
   initialAnger: number,
   nickname: string,
-  callbacks: Callbacks,
+  callbacks: Callbacks
 ): AngerGameController {
   let anger = initialAnger;
   let hits = 0;
@@ -76,6 +76,7 @@ export function createAngerGame(
   let lastHitAt = 0;
   let comboMomentum = 0.5;
   let auraEnergy = 0;
+  let pendingSpeechBubble: Phaser.Time.TimerEvent | null = null;
 
   function createTextTexture(
     scene: Phaser.Scene,
@@ -83,21 +84,21 @@ export function createAngerGame(
     label: string,
     color: string,
     fontSize: number,
-    fontWeight: number,
+    fontWeight: number
   ) {
     if (scene.textures.exists(key)) {
       scene.textures.remove(key);
     }
 
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
 
     if (!context) {
       return null;
     }
 
     const pixelRatio =
-      typeof window !== 'undefined' && window.devicePixelRatio > 1
+      typeof window !== "undefined" && window.devicePixelRatio > 1
         ? window.devicePixelRatio
         : 1;
 
@@ -113,8 +114,8 @@ export function createAngerGame(
     context.clearRect(0, 0, width, height);
     context.font = `${fontWeight} ${fontSize}px sans-serif`;
     context.fillStyle = color;
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
+    context.textAlign = "center";
+    context.textBaseline = "middle";
     context.fillText(label, width / 2, height / 2);
 
     scene.textures.addCanvas(key, canvas);
@@ -145,7 +146,7 @@ export function createAngerGame(
       -bubbleHeight / 2,
       bubbleWidth,
       bubbleHeight,
-      18,
+      18
     );
     speechBubbleBg.fillTriangle(
       tailBaseX - 12,
@@ -153,7 +154,7 @@ export function createAngerGame(
       tailBaseX + 4,
       tailBaseY,
       tailBaseX - 10,
-      tailBaseY + 18,
+      tailBaseY + 18
     );
   }
 
@@ -167,7 +168,10 @@ export function createAngerGame(
       speechBubbleText = null;
     }
 
-    if (speechBubbleTextureKey && sceneRef.textures.exists(speechBubbleTextureKey)) {
+    if (
+      speechBubbleTextureKey &&
+      sceneRef.textures.exists(speechBubbleTextureKey)
+    ) {
       sceneRef.textures.remove(speechBubbleTextureKey);
     }
 
@@ -176,9 +180,9 @@ export function createAngerGame(
       sceneRef,
       speechBubbleTextureKey,
       label,
-      '#202632',
+      "#202632",
       14,
-      700,
+      700
     );
 
     if (!texture) {
@@ -189,6 +193,37 @@ export function createAngerGame(
     speechBubbleText.setDisplaySize(texture.width, texture.height);
     speechBubble.add(speechBubbleText);
     drawSpeechBubble(texture.width, texture.height);
+  }
+
+  function showSpeechBubble(label: string) {
+    if (!sceneRef || !avatar || !speechBubble || !speechBubbleBg) {
+      return;
+    }
+
+    updateSpeechBubbleLabel(label);
+    sceneRef.tweens.killTweensOf(speechBubble);
+    speechBubble.setAlpha(0);
+    speechBubble.setScale(0.92);
+    speechBubble.setPosition(avatar.x + 44, avatar.y - 126);
+    sceneRef.tweens.add({
+      targets: speechBubble,
+      alpha: 1,
+      scaleX: 1,
+      scaleY: 1,
+      y: avatar.y - 134,
+      duration: 140,
+      ease: "Back.easeOut",
+    });
+    sceneRef.tweens.add({
+      targets: speechBubble,
+      alpha: 0,
+      scaleX: 0.97,
+      scaleY: 0.97,
+      y: avatar.y - 144,
+      delay: 680,
+      duration: 180,
+      ease: "Quad.easeIn",
+    });
   }
 
   function currentWidth() {
@@ -219,7 +254,10 @@ export function createAngerGame(
 
     stars.forEach((star, index) => {
       const angle = starOrbitAngle + index * ((Math.PI * 2) / stars.length);
-      star.setPosition(cx + Math.cos(angle) * radiusX, cy + Math.sin(angle) * radiusY);
+      star.setPosition(
+        cx + Math.cos(angle) * radiusX,
+        cy + Math.sin(angle) * radiusY
+      );
     });
   }
 
@@ -246,7 +284,7 @@ export function createAngerGame(
     const cadenceStrength = Phaser.Math.Clamp(
       (420 - elapsedSinceLastHit) / 260,
       0,
-      1,
+      1
     );
 
     comboMomentum =
@@ -255,7 +293,7 @@ export function createAngerGame(
         : Phaser.Math.Clamp(
             comboMomentum * 0.62 + cadenceStrength * 0.9 + 0.24,
             0.46,
-            1.45,
+            1.45
           );
 
     const impactStrength = comboMomentum;
@@ -264,12 +302,17 @@ export function createAngerGame(
     anger = Math.max(0, anger - 1);
     starEnergy = Phaser.Math.Clamp(0.72 + impactStrength * 0.34, 0.72, 1.18);
     shakeEnergy = impactStrength;
-    auraEnergy = Phaser.Math.Clamp(auraEnergy + impactStrength * 0.42, 0.42, 1.8);
+    auraEnergy = Phaser.Math.Clamp(
+      auraEnergy + impactStrength * 0.42,
+      0.42,
+      1.8
+    );
     shakeElapsed = 0;
     shakeOffsetXAmplitude = Phaser.Math.FloatBetween(8, 13) * impactStrength;
     shakeOffsetYAmplitude = Phaser.Math.FloatBetween(1.2, 3.2) * impactStrength;
     shakeRotateAmplitude = Phaser.Math.FloatBetween(3, 6.5) * impactStrength;
-    shakeSquashAmplitude = Phaser.Math.FloatBetween(0.04, 0.09) * impactStrength;
+    shakeSquashAmplitude =
+      Phaser.Math.FloatBetween(0.04, 0.09) * impactStrength;
     shakeSpeedX = Phaser.Math.FloatBetween(30, 42) + cadenceStrength * 10;
     shakeSpeedY = Phaser.Math.FloatBetween(20, 30) + cadenceStrength * 6;
     shakeRotateSpeed = Phaser.Math.FloatBetween(26, 36) + cadenceStrength * 8;
@@ -277,30 +320,11 @@ export function createAngerGame(
 
     callbacks.onHit(anger, hits, impactStrength);
 
-    if (speechBubble && speechBubbleBg) {
-      updateSpeechBubbleLabel(Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES));
-      sceneRef.tweens.killTweensOf(speechBubble);
-      speechBubble.setAlpha(0);
-      speechBubble.setScale(0.92);
-      speechBubble.setPosition(avatar.x + 44, avatar.y - 126);
-      sceneRef.tweens.add({
-        targets: speechBubble,
-        alpha: 1,
-        scaleX: 1,
-        scaleY: 1,
-        y: avatar.y - 134,
-        duration: 140,
-        ease: 'Back.easeOut',
-      });
-      sceneRef.tweens.add({
-        targets: speechBubble,
-        alpha: 0,
-        scaleX: 0.97,
-        scaleY: 0.97,
-        y: avatar.y - 144,
-        delay: 680,
-        duration: 180,
-        ease: 'Quad.easeIn',
+    if (sceneRef && speechBubble && speechBubbleBg) {
+      pendingSpeechBubble?.remove(false);
+      pendingSpeechBubble = sceneRef.time.delayedCall(240, () => {
+        showSpeechBubble(Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES));
+        pendingSpeechBubble = null;
       });
     }
 
@@ -314,7 +338,7 @@ export function createAngerGame(
         scaleY: 1.14,
         alpha: 0,
         duration: 160,
-        ease: 'Quad.easeOut',
+        ease: "Quad.easeOut",
       });
     }
 
@@ -323,7 +347,7 @@ export function createAngerGame(
         avatar.x + Phaser.Math.Between(-42, 42),
         avatar.y + Phaser.Math.Between(-60, 56),
         Phaser.Math.Between(3, 7),
-        Phaser.Math.RND.pick([0xff6459, 0xff8f78, 0xffc400]),
+        Phaser.Math.RND.pick([0xff6459, 0xff8f78, 0xffc400])
       );
 
       sceneRef.tweens.add({
@@ -340,11 +364,11 @@ export function createAngerGame(
 
   class ArenaScene extends Phaser.Scene {
     constructor() {
-      super('arena');
+      super("arena");
     }
 
     preload() {
-      this.load.image('avatar', avatarAssetUrl);
+      this.load.image("avatar", avatarAssetUrl);
     }
 
     create() {
@@ -353,14 +377,35 @@ export function createAngerGame(
       const width = currentWidth();
       const height = currentHeight();
 
-      this.cameras.main.setBackgroundColor('#102448');
+      this.cameras.main.setBackgroundColor("#102448");
 
       this.add.rectangle(width / 2, height / 2, width, height, 0x102448, 1);
-      shadow = this.add.ellipse(centerX(), height - 82, 196, 34, 0x000000, 0.26);
-      heatAura = this.add.ellipse(centerX(), centerY() - 16, 220, 250, 0xff4d4f, 0);
-      emberAura = this.add.ellipse(centerX(), centerY() - 40, 150, 170, 0xffa24a, 0);
+      shadow = this.add.ellipse(
+        centerX(),
+        height - 82,
+        196,
+        34,
+        0x000000,
+        0.26
+      );
+      heatAura = this.add.ellipse(
+        centerX(),
+        centerY() - 16,
+        220,
+        250,
+        0xff4d4f,
+        0
+      );
+      emberAura = this.add.ellipse(
+        centerX(),
+        centerY() - 40,
+        150,
+        170,
+        0xffa24a,
+        0
+      );
       flash = this.add.ellipse(centerX(), centerY(), 210, 210, 0xff4d4f, 0);
-      avatar = this.add.image(centerX(), centerY(), 'avatar');
+      avatar = this.add.image(centerX(), centerY(), "avatar");
       avatar.setOrigin(0.5, 0.5);
       avatar.setDisplaySize(230, 230);
       avatarBaseScaleX = avatar.scaleX;
@@ -371,15 +416,18 @@ export function createAngerGame(
         this,
         nameplateTextureKey,
         nickname,
-        '#ffffff',
+        "#ffffff",
         15,
-        700,
+        700
       );
       if (!nameplateTexture) {
         return;
       }
       nameplateText = this.add.image(0, 0, nameplateTexture.key).setOrigin(0.5);
-      nameplateText.setDisplaySize(nameplateTexture.width, nameplateTexture.height);
+      nameplateText.setDisplaySize(
+        nameplateTexture.width,
+        nameplateTexture.height
+      );
       const nameplateWidth = Math.max(92, nameplateTexture.width + 28);
       const nameplateHeight = 34;
       nameplateBg.fillStyle(0x10182a, 0.92);
@@ -388,7 +436,7 @@ export function createAngerGame(
         -nameplateHeight / 2,
         nameplateWidth,
         nameplateHeight,
-        17,
+        17
       );
       nameplateBg.lineStyle(1.5, 0xffffff, 0.14);
       nameplateBg.strokeRoundedRect(
@@ -396,7 +444,7 @@ export function createAngerGame(
         -nameplateHeight / 2,
         nameplateWidth,
         nameplateHeight,
-        17,
+        17
       );
       nameplate = this.add.container(centerX(), centerY() - 146, [
         nameplateBg,
@@ -420,32 +468,44 @@ export function createAngerGame(
       });
       updateStarsPosition();
 
-      this.input.on('pointerdown', () => {
+      this.input.on("pointerdown", () => {
         triggerHit();
       });
 
-      this.events.on('update', (_time: number, delta: number) => {
+      this.events.on("update", (_time: number, delta: number) => {
         if (avatar) {
           shakeElapsed += delta / 1000;
           shakeEnergy = Math.max(0, shakeEnergy - delta / 260);
           auraEnergy = Math.max(0, auraEnergy - delta / 900);
 
           const offsetX =
-            Math.sin(shakeElapsed * shakeSpeedX) * shakeOffsetXAmplitude * shakeEnergy;
+            Math.sin(shakeElapsed * shakeSpeedX) *
+            shakeOffsetXAmplitude *
+            shakeEnergy;
           const offsetY =
-            Math.cos(shakeElapsed * shakeSpeedY) * shakeOffsetYAmplitude * shakeEnergy;
+            Math.cos(shakeElapsed * shakeSpeedY) *
+            shakeOffsetYAmplitude *
+            shakeEnergy;
           const rotate =
-            Math.sin(shakeElapsed * shakeRotateSpeed) * shakeRotateAmplitude * shakeEnergy;
+            Math.sin(shakeElapsed * shakeRotateSpeed) *
+            shakeRotateAmplitude *
+            shakeEnergy;
           const squashX =
-            1 + Math.cos(shakeElapsed * shakeSquashSpeed) * shakeSquashAmplitude * shakeEnergy;
+            1 +
+            Math.cos(shakeElapsed * shakeSquashSpeed) *
+              shakeSquashAmplitude *
+              shakeEnergy;
           const squashY =
-            1 - Math.cos(shakeElapsed * shakeSquashSpeed) * shakeSquashAmplitude * shakeEnergy;
+            1 -
+            Math.cos(shakeElapsed * shakeSquashSpeed) *
+              shakeSquashAmplitude *
+              shakeEnergy;
 
           avatar.setPosition(centerX() + offsetX, centerY() + offsetY);
           avatar.setAngle(rotate);
           avatar.setScale(
             avatarBaseScaleX * squashX,
-            avatarBaseScaleY * squashY,
+            avatarBaseScaleY * squashY
           );
 
           if (nameplate) {
@@ -457,7 +517,7 @@ export function createAngerGame(
           if (speechBubble) {
             speechBubble.setPosition(
               avatar.x + 44 + offsetX * 0.14,
-              avatar.y - 126 + offsetY * 0.08,
+              avatar.y - 126 + offsetY * 0.08
             );
           }
         }
@@ -469,13 +529,16 @@ export function createAngerGame(
 
           heatAura.setPosition(centerX(), centerY() - 16 - auraEnergy * 8);
           heatAura.setAlpha(Math.min(0.34, auraEnergy * 0.2));
-          heatAura.setScale(heatScale * pulse, (heatScale + auraEnergy * 0.06) * pulse);
+          heatAura.setScale(
+            heatScale * pulse,
+            (heatScale + auraEnergy * 0.06) * pulse
+          );
 
           emberAura.setPosition(centerX(), centerY() - 42 - auraEnergy * 12);
           emberAura.setAlpha(Math.min(0.28, auraEnergy * 0.17));
           emberAura.setScale(
             emberScale * (1 + Math.cos(shakeElapsed * 8.4) * 0.05),
-            emberScale * (1.08 + auraEnergy * 0.08),
+            emberScale * (1.08 + auraEnergy * 0.08)
           );
         }
 
@@ -506,7 +569,7 @@ export function createAngerGame(
     type: Phaser.CANVAS,
     parent: element,
     transparent: false,
-    backgroundColor: '#081427',
+    backgroundColor: "#081427",
     width: currentWidth(),
     height: currentHeight(),
     scene: ArenaScene,
@@ -531,6 +594,8 @@ export function createAngerGame(
       game.destroy(true);
       sceneRef = null;
       avatar = null;
+      pendingSpeechBubble?.remove(false);
+      pendingSpeechBubble = null;
       shadow = null;
       flash = null;
       nameplate = null;
@@ -543,7 +608,10 @@ export function createAngerGame(
       speechBubble = null;
       speechBubbleBg = null;
       speechBubbleText = null;
-      if (speechBubbleTextureKey && game.textures.exists(speechBubbleTextureKey)) {
+      if (
+        speechBubbleTextureKey &&
+        game.textures.exists(speechBubbleTextureKey)
+      ) {
         game.textures.remove(speechBubbleTextureKey);
       }
       speechBubbleTextureKey = null;
