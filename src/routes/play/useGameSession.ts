@@ -26,9 +26,9 @@ export function useGameSession({ angerBefore }: UseGameSessionParams) {
     return () => window.clearInterval(interval);
   }, []);
 
-  const releasePercent = Math.max(
+  const angerGaugePercent = Math.max(
     0,
-    Math.round(((angerBefore - currentAnger) / Math.max(angerBefore, 1)) * 100)
+    Math.round((currentAnger / Math.max(angerBefore, 1)) * 100)
   );
 
   function handleGameHit(
@@ -58,9 +58,9 @@ export function useGameSession({ angerBefore }: UseGameSessionParams) {
 
   return {
     currentAnger,
+    angerGaugePercent,
     gameController,
     hits,
-    releasePercent,
     sessionKey,
     taunt,
     setGameController,

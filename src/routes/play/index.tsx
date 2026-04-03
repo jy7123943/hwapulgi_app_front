@@ -15,10 +15,10 @@ export function GameRoute() {
   const navigate = useNavigate();
   const { draft, completeSession } = useAppState();
   const {
+    angerGaugePercent,
     currentAnger,
     handleGameHit,
     hits,
-    releasePercent,
     sessionKey,
     taunt,
     setGameController,
@@ -53,6 +53,8 @@ export function GameRoute() {
         overflow: 'hidden',
       }}
     >
+      <GameMetrics angerGaugePercent={angerGaugePercent} hits={hits} />
+
       <div
         css={{
           borderRadius: 22,
@@ -70,8 +72,6 @@ export function GameRoute() {
           {taunt}
         </div>
       </div>
-
-      <GameMetrics hits={hits} releasePercent={releasePercent} />
 
       <div
         css={{

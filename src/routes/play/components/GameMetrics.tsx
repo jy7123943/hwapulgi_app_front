@@ -2,17 +2,16 @@ import { colors } from '@toss/tds-colors';
 import { Text } from '@toss/tds-mobile';
 
 interface GameMetricsProps {
+  angerGaugePercent: number;
   hits: number;
-  releasePercent: number;
 }
 
-export function GameMetrics({ hits, releasePercent }: GameMetricsProps) {
+export function GameMetrics({ angerGaugePercent, hits }: GameMetricsProps) {
   return (
     <div
       css={{
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        alignItems: 'stretch',
         gap: 14,
         borderRadius: 22,
         padding: '14px 18px',
@@ -23,7 +22,7 @@ export function GameMetrics({ hits, releasePercent }: GameMetricsProps) {
         boxShadow: '0 14px 30px rgba(5, 12, 24, 0.3)',
       }}
     >
-      <div css={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+      <div css={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
         <Text as="span" typography="t6" fontWeight="medium" css={{ color: colors.grey300 }}>
           타격
         </Text>
@@ -37,11 +36,31 @@ export function GameMetrics({ hits, releasePercent }: GameMetricsProps) {
           flexShrink: 0,
         }}
       />
-      <div css={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-        <Text as="span" typography="t6" fontWeight="medium" css={{ color: colors.grey300 }}>
-          배출률
-        </Text>
-        <strong css={{ fontSize: 28, color: colors.background }}>{releasePercent}%</strong>
+      <div css={{ display: 'flex', flex: 1, flexDirection: 'column', gap: 8, minWidth: 0 }}>
+        <div css={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <Text as="span" typography="t6" fontWeight="medium" css={{ color: colors.grey300 }}>
+            분노 게이지
+          </Text>
+          <strong css={{ fontSize: 24, color: colors.background }}>{angerGaugePercent}%</strong>
+        </div>
+        <div
+          css={{
+            height: 10,
+            overflow: 'hidden',
+            borderRadius: 999,
+            background: 'rgba(255,255,255,0.1)',
+          }}
+        >
+          <div
+            css={{
+              width: `${angerGaugePercent}%`,
+              height: '100%',
+              borderRadius: 999,
+              background: 'linear-gradient(90deg, #ff7d68 0%, #ff5147 100%)',
+              transition: 'width 160ms ease-out',
+            }}
+          />
+        </div>
       </div>
     </div>
   );

@@ -298,8 +298,14 @@ export function createAngerGame(
 
     const impactStrength = comboMomentum;
 
+    const angerDrop = Phaser.Math.Clamp(
+      Phaser.Math.Linear(0.14, 0.62, (impactStrength - 0.46) / (1.45 - 0.46)),
+      0.14,
+      0.62,
+    );
+
     hits += 1;
-    anger = Math.max(0, anger - 1);
+    anger = Math.max(0, anger - angerDrop);
     starEnergy = Phaser.Math.Clamp(0.72 + impactStrength * 0.34, 0.72, 1.18);
     shakeEnergy = impactStrength;
     auraEnergy = Phaser.Math.Clamp(
