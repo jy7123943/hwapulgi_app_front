@@ -122,6 +122,8 @@ export function createAngerGame(
     return {
       height,
       key,
+      pixelWidth: canvas.width,
+      pixelHeight: canvas.height,
       width,
     };
   }
@@ -184,6 +186,7 @@ export function createAngerGame(
     }
 
     speechBubbleText = sceneRef.add.image(0, 0, texture.key).setOrigin(0.5);
+    speechBubbleText.setDisplaySize(texture.width, texture.height);
     speechBubble.add(speechBubbleText);
     drawSpeechBubble(texture.width, texture.height);
   }
@@ -376,6 +379,7 @@ export function createAngerGame(
         return;
       }
       nameplateText = this.add.image(0, 0, nameplateTexture.key).setOrigin(0.5);
+      nameplateText.setDisplaySize(nameplateTexture.width, nameplateTexture.height);
       const nameplateWidth = Math.max(92, nameplateTexture.width + 28);
       const nameplateHeight = 34;
       nameplateBg.fillStyle(0x10182a, 0.92);
