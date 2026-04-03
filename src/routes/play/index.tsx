@@ -150,14 +150,14 @@ export function GameRoute() {
                     />
                   </div>
                   <Text
-                    typography="t3"
+                    typography="t4"
                     fontWeight="bold"
                     css={{ color: colors.background }}
                   >
                     화력 충전 중...
                   </Text>
                   <Text
-                    typography="t6"
+                    typography="t7"
                     fontWeight="medium"
                     css={{ color: colors.grey100 }}
                   >
