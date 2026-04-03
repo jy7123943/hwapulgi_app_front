@@ -1,8 +1,6 @@
 import { Suspense, lazy } from 'react';
 import { colors } from '@toss/tds-colors';
-import { Top } from '@toss/tds-mobile';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { AppShell, BodyStack, FooterDock, FooterInner, ScreenPanel, TopCard } from '../../components/shared/Surface';
 import { useAppState } from '../../state/AppState';
 import { safeHaptic } from '../../lib/haptics';
 import { GameActions } from './components/GameActions';
@@ -22,11 +20,9 @@ export function GameRoute() {
     hits,
     releasePercent,
     sessionKey,
-    skillShots,
     taunt,
     setGameController,
-    triggerPrimaryHit,
-    triggerSkillShot,
+    triggerHit,
   } = useGameSession({ angerBefore: draft.angerBefore });
 
   if (!draft.nickname.trim()) {
@@ -36,7 +32,7 @@ export function GameRoute() {
   function finishGame() {
     completeSession({
       hits,
-      skillShots,
+      skillShots: 0,
       angerAfter: Math.min(currentAnger, draft.angerBefore),
     });
     void safeHaptic('success');
@@ -44,73 +40,85 @@ export function GameRoute() {
   }
 
   return (
-    <AppShell>
-      <ScreenPanel>
-        <TopCard>
-          <Top
-            subtitleBottom={
-              <Top.SubtitleParagraph
-                css={{
-                  color: colors.grey600,
-                  fontSize: 14,
-                }}
-              >
-                {taunt}
-              </Top.SubtitleParagraph>
-            }
-            title={
-              <Top.TitleParagraph
-                css={{
-                  color: colors.grey900,
-                  fontSize: 34,
-                  fontWeight: 800,
-                }}
-              >
-                {draft.nickname}
-              </Top.TitleParagraph>
-            }
+    <div
+      css={{
+        minHeight: '100vh',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        background:
+          'radial-gradient(circle at top, rgba(30, 63, 115, 0.34), transparent 30%), linear-gradient(180deg, #061120 0%, #081427 62%, #09111e 100%)',
+        padding: '14px 14px 18px',
+        gap: 10,
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        css={{
+          borderRadius: 22,
+          padding: '14px 16px',
+          background: 'rgba(255,255,255,0.94)',
+          boxShadow: '0 10px 26px rgba(4, 10, 22, 0.22)',
+        }}
+      >
+        <div
+          css={{
+            color: colors.grey900,
+            fontSize: 26,
+            fontWeight: 800,
+            letterSpacing: '-0.03em',
+          }}
+        >
+          {draft.nickname}
+        </div>
+        <div
+          css={{
+            marginTop: 4,
+            color: colors.grey600,
+            fontSize: 14,
+          }}
+        >
+          {taunt}
+        </div>
+      </div>
+
+      <GameMetrics hits={hits} releasePercent={releasePercent} />
+
+      <div
+        css={{
+          position: 'relative',
+          flex: 1,
+          minHeight: 420,
+          width: '100%',
+        }}
+      >
+        <Suspense
+          fallback={
+            <div
+              css={{
+                display: 'grid',
+                placeItems: 'center',
+                position: 'absolute',
+                inset: 0,
+                borderRadius: 28,
+                color: colors.background,
+                background: '#081427',
+              }}
+            >
+              게임 준비 중...
+            </div>
+          }
+        >
+          <GameArena
+            initialAnger={draft.angerBefore}
+            onHit={handleGameHit}
+            onReady={(controller) => setGameController(controller)}
+            sessionKey={sessionKey}
           />
-        </TopCard>
+        </Suspense>
 
-        <BodyStack>
-          <GameMetrics currentAnger={currentAnger} hits={hits} releasePercent={releasePercent} />
-
-          <Suspense
-            fallback={
-              <div
-                css={{
-                  display: 'grid',
-                  placeItems: 'center',
-                  height: 360,
-                  margin: '16px 0',
-                  borderRadius: 24,
-                  color: colors.red700,
-                  background: 'linear-gradient(180deg, #ffe5db 0%, #f6d1c7 100%)',
-                }}
-              >
-                게임 준비 중...
-              </div>
-            }
-          >
-            <GameArena
-              initialAnger={draft.angerBefore}
-              onHit={handleGameHit}
-              onReady={(controller) => setGameController(controller)}
-              sessionKey={sessionKey}
-            />
-          </Suspense>
-        </BodyStack>
-      </ScreenPanel>
-
-      <FooterDock>
-        <FooterInner>
-          <GameActions
-            onFinish={finishGame}
-            onPrimaryHit={triggerPrimaryHit}
-            onSkillShot={triggerSkillShot}
-          />
-        </FooterInner>
-      </FooterDock>
-    </AppShell>
+        <GameActions onFinish={finishGame} onHit={triggerHit} />
+      </div>
+    </div>
   );
 }

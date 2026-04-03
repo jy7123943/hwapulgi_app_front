@@ -10,14 +10,28 @@ interface GameArenaProps {
 
 export function GameArena({ initialAnger, sessionKey, onHit, onReady }: GameArenaProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
+  const onHitRef = useRef(onHit);
+  const onReadyRef = useRef(onReady);
+
+  useEffect(() => {
+    onHitRef.current = onHit;
+  }, [onHit]);
+
+  useEffect(() => {
+    onReadyRef.current = onReady;
+  }, [onReady]);
 
   useEffect(() => {
     if (!hostRef.current) {
       return;
     }
 
-    const controller = createAngerGame(hostRef.current, initialAnger, { onHit });
-    onReady?.(controller);
+    const controller = createAngerGame(hostRef.current, initialAnger, {
+      onHit: (remaining, hits) => {
+        onHitRef.current(remaining, hits);
+      },
+    });
+    onReadyRef.current?.(controller);
 
     const resizeObserver = new ResizeObserver(() => {
       controller.resize();
@@ -29,16 +43,19 @@ export function GameArena({ initialAnger, sessionKey, onHit, onReady }: GameAren
       resizeObserver.disconnect();
       controller.destroy();
     };
-  }, [initialAnger, onHit, onReady, sessionKey]);
+  }, [initialAnger, sessionKey]);
 
   return (
     <div
       css={{
-        height: 360,
-        margin: '16px 0',
-        borderRadius: 24,
+        position: 'absolute',
+        inset: 0,
+        borderRadius: 28,
         overflow: 'hidden',
-        background: 'linear-gradient(180deg, #ffe5db 0%, #f6d1c7 100%)',
+        background: '#081427',
+        '& canvas': {
+          display: 'block',
+        },
       }}
       ref={hostRef}
     />

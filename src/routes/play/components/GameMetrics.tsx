@@ -2,50 +2,46 @@ import { colors } from '@toss/tds-colors';
 import { Text } from '@toss/tds-mobile';
 
 interface GameMetricsProps {
-  currentAnger: number;
   hits: number;
   releasePercent: number;
 }
 
-export function GameMetrics({ currentAnger, hits, releasePercent }: GameMetricsProps) {
+export function GameMetrics({ hits, releasePercent }: GameMetricsProps) {
   return (
     <div
       css={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: 12,
-        '@media (max-width: 560px)': {
-          gridTemplateColumns: '1fr',
-        },
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 14,
+        borderRadius: 22,
+        padding: '14px 18px',
+        background: 'rgba(255,255,255,0.08)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(10px)',
+        color: colors.background,
+        boxShadow: '0 14px 30px rgba(5, 12, 24, 0.3)',
       }}
     >
-      <div
-        css={{
-          borderRadius: 22,
-          padding: 18,
-          background: 'linear-gradient(135deg, #8f1fff, #d74cff 78%)',
-          color: colors.background,
-          boxShadow: '0 18px 28px rgba(143, 31, 255, 0.2)',
-        }}
-      >
-        <Text as="span" css={{ color: colors.background, opacity: 0.8 }}>
-          타격 {hits}
+      <div css={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+        <Text as="span" typography="t6" fontWeight="medium" css={{ color: colors.grey300 }}>
+          타격
         </Text>
-        <strong css={{ fontSize: 32 }}>{currentAnger}</strong>
+        <strong css={{ fontSize: 28, color: colors.background }}>{hits}</strong>
       </div>
       <div
         css={{
-          borderRadius: 22,
-          padding: 18,
-          background: 'linear-gradient(135deg, #ffb400, #ff6a4e 78%)',
-          color: colors.background,
-          boxShadow: '0 18px 28px rgba(255, 106, 78, 0.18)',
+          width: 1,
+          height: 22,
+          background: 'rgba(255,255,255,0.12)',
+          flexShrink: 0,
         }}
-      >
-        <Text as="span" css={{ color: colors.background, opacity: 0.8 }}>
+      />
+      <div css={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+        <Text as="span" typography="t6" fontWeight="medium" css={{ color: colors.grey300 }}>
           배출률
         </Text>
-        <strong css={{ fontSize: 32 }}>{releasePercent}%</strong>
+        <strong css={{ fontSize: 28, color: colors.background }}>{releasePercent}%</strong>
       </div>
     </div>
   );
