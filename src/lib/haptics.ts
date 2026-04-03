@@ -17,7 +17,20 @@ export async function safeHaptic(type: HapticType) {
     await generateHapticFeedback({ type });
   } catch {
     if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-      navigator.vibrate(type === 'success' ? 30 : 15);
+      const durationByType: Record<HapticType, number> = {
+        tickWeak: 12,
+        tap: 14,
+        tickMedium: 20,
+        softMedium: 18,
+        basicWeak: 16,
+        basicMedium: 26,
+        success: 30,
+        error: 28,
+        wiggle: 22,
+        confetti: 34,
+      };
+
+      navigator.vibrate(durationByType[type]);
     }
   }
 }

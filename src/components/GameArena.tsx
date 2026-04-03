@@ -4,7 +4,7 @@ import { createAngerGame, type AngerGameController } from '../game/createAngerGa
 interface GameArenaProps {
   initialAnger: number;
   sessionKey: string;
-  onHit: (remaining: number, hits: number) => void;
+  onHit: (remaining: number, hits: number, impactStrength: number) => void;
   onReady?: (controller: AngerGameController) => void;
 }
 
@@ -32,8 +32,8 @@ export function GameArena({
     }
 
     const controller = createAngerGame(hostRef.current, initialAnger, {
-      onHit: (remaining, hits) => {
-        onHitRef.current(remaining, hits);
+      onHit: (remaining, hits, impactStrength) => {
+        onHitRef.current(remaining, hits, impactStrength);
       },
     });
     onReadyRef.current?.(controller);

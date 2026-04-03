@@ -31,10 +31,25 @@ export function useGameSession({ angerBefore }: UseGameSessionParams) {
     Math.round(((angerBefore - currentAnger) / Math.max(angerBefore, 1)) * 100)
   );
 
-  function handleGameHit(remaining: number, nextHits: number) {
+  function handleGameHit(
+    remaining: number,
+    nextHits: number,
+    impactStrength: number,
+  ) {
     setCurrentAnger(remaining);
     setHits(nextHits);
-    void safeHaptic(nextHits % 2 === 0 ? "tickMedium" : "tickWeak");
+
+    if (impactStrength >= 1.15) {
+      void safeHaptic('basicMedium');
+      return;
+    }
+
+    if (impactStrength >= 0.82) {
+      void safeHaptic('tickMedium');
+      return;
+    }
+
+    void safeHaptic('tickWeak');
   }
 
   function triggerHit() {

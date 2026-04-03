@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 const angrymanAssetUrl = `${import.meta.env.BASE_URL}angryman.png`;
 
 interface Callbacks {
-  onHit: (remaining: number, hits: number) => void;
+  onHit: (remaining: number, hits: number, impactStrength: number) => void;
 }
 
 export interface AngerGameController {
@@ -23,6 +23,8 @@ export function createAngerGame(
   let avatar: Phaser.GameObjects.Image | null = null;
   let shadow: Phaser.GameObjects.Ellipse | null = null;
   let flash: Phaser.GameObjects.Ellipse | null = null;
+  let heatAura: Phaser.GameObjects.Ellipse | null = null;
+  let emberAura: Phaser.GameObjects.Ellipse | null = null;
   let avatarBaseScaleX = 1;
   let avatarBaseScaleY = 1;
   let stars: Phaser.GameObjects.Text[] = [];
@@ -38,6 +40,9 @@ export function createAngerGame(
   let shakeSpeedY = 28;
   let shakeRotateSpeed = 34;
   let shakeSquashSpeed = 30;
+  let lastHitAt = 0;
+  let comboMomentum = 0.5;
+  let auraEnergy = 0;
 
   function currentWidth() {
     return Math.max(element.clientWidth || 0, 320);
@@ -75,6 +80,8 @@ export function createAngerGame(
     avatar?.setPosition(centerX(), centerY());
     shadow?.setPosition(centerX(), currentHeight() - 82);
     flash?.setPosition(centerX(), centerY());
+    heatAura?.setPosition(centerX(), centerY() - 16);
+    emberAura?.setPosition(centerX(), centerY() - 40);
     updateStarsPosition();
   }
 
@@ -83,21 +90,43 @@ export function createAngerGame(
       return;
     }
 
+    const now = performance.now();
+    const elapsedSinceLastHit = lastHitAt === 0 ? 420 : now - lastHitAt;
+    lastHitAt = now;
+
+    const cadenceStrength = Phaser.Math.Clamp(
+      (420 - elapsedSinceLastHit) / 260,
+      0,
+      1,
+    );
+
+    comboMomentum =
+      elapsedSinceLastHit > 680
+        ? 0.46
+        : Phaser.Math.Clamp(
+            comboMomentum * 0.62 + cadenceStrength * 0.9 + 0.24,
+            0.46,
+            1.45,
+          );
+
+    const impactStrength = comboMomentum;
+
     hits += 1;
     anger = Math.max(0, anger - 1);
-    starEnergy = 1;
-    shakeEnergy = 1;
+    starEnergy = Phaser.Math.Clamp(0.72 + impactStrength * 0.34, 0.72, 1.18);
+    shakeEnergy = impactStrength;
+    auraEnergy = Phaser.Math.Clamp(auraEnergy + impactStrength * 0.42, 0.42, 1.8);
     shakeElapsed = 0;
-    shakeOffsetXAmplitude = Phaser.Math.FloatBetween(10, 18);
-    shakeOffsetYAmplitude = Phaser.Math.FloatBetween(1.5, 4);
-    shakeRotateAmplitude = Phaser.Math.FloatBetween(4, 9);
-    shakeSquashAmplitude = Phaser.Math.FloatBetween(0.05, 0.12);
-    shakeSpeedX = Phaser.Math.FloatBetween(34, 48);
-    shakeSpeedY = Phaser.Math.FloatBetween(22, 34);
-    shakeRotateSpeed = Phaser.Math.FloatBetween(28, 40);
-    shakeSquashSpeed = Phaser.Math.FloatBetween(24, 36);
+    shakeOffsetXAmplitude = Phaser.Math.FloatBetween(8, 13) * impactStrength;
+    shakeOffsetYAmplitude = Phaser.Math.FloatBetween(1.2, 3.2) * impactStrength;
+    shakeRotateAmplitude = Phaser.Math.FloatBetween(3, 6.5) * impactStrength;
+    shakeSquashAmplitude = Phaser.Math.FloatBetween(0.04, 0.09) * impactStrength;
+    shakeSpeedX = Phaser.Math.FloatBetween(30, 42) + cadenceStrength * 10;
+    shakeSpeedY = Phaser.Math.FloatBetween(20, 30) + cadenceStrength * 6;
+    shakeRotateSpeed = Phaser.Math.FloatBetween(26, 36) + cadenceStrength * 8;
+    shakeSquashSpeed = Phaser.Math.FloatBetween(22, 32) + cadenceStrength * 6;
 
-    callbacks.onHit(anger, hits);
+    callbacks.onHit(anger, hits, impactStrength);
 
     if (flash) {
       sceneRef.tweens.killTweensOf(flash);
@@ -154,6 +183,8 @@ export function createAngerGame(
       this.add.circle(width * 0.8, height * 0.78, width * 0.22, 0x0f1d35, 0.42);
 
       shadow = this.add.ellipse(centerX(), height - 82, 196, 34, 0x000000, 0.26);
+      heatAura = this.add.ellipse(centerX(), centerY() - 16, 220, 250, 0xff4d4f, 0);
+      emberAura = this.add.ellipse(centerX(), centerY() - 40, 150, 170, 0xffa24a, 0);
       flash = this.add.ellipse(centerX(), centerY(), 210, 210, 0xff4d4f, 0);
       avatar = this.add.image(centerX(), centerY(), 'angryman');
       avatar.setOrigin(0.5, 0.5);
@@ -195,6 +226,7 @@ export function createAngerGame(
         if (avatar) {
           shakeElapsed += delta / 1000;
           shakeEnergy = Math.max(0, shakeEnergy - delta / 260);
+          auraEnergy = Math.max(0, auraEnergy - delta / 900);
 
           const offsetX =
             Math.sin(shakeElapsed * shakeSpeedX) * shakeOffsetXAmplitude * shakeEnergy;
@@ -212,6 +244,23 @@ export function createAngerGame(
           avatar.setScale(
             avatarBaseScaleX * squashX,
             avatarBaseScaleY * squashY,
+          );
+        }
+
+        if (heatAura && emberAura) {
+          const pulse = 1 + Math.sin(shakeElapsed * 6.5) * 0.04;
+          const heatScale = 0.92 + auraEnergy * 0.18;
+          const emberScale = 0.88 + auraEnergy * 0.14;
+
+          heatAura.setPosition(centerX(), centerY() - 16 - auraEnergy * 8);
+          heatAura.setAlpha(Math.min(0.34, auraEnergy * 0.2));
+          heatAura.setScale(heatScale * pulse, (heatScale + auraEnergy * 0.06) * pulse);
+
+          emberAura.setPosition(centerX(), centerY() - 42 - auraEnergy * 12);
+          emberAura.setAlpha(Math.min(0.28, auraEnergy * 0.17));
+          emberAura.setScale(
+            emberScale * (1 + Math.cos(shakeElapsed * 8.4) * 0.05),
+            emberScale * (1.08 + auraEnergy * 0.08),
           );
         }
 
@@ -269,6 +318,8 @@ export function createAngerGame(
       avatar = null;
       shadow = null;
       flash = null;
+      heatAura = null;
+      emberAura = null;
       stars = [];
     },
     resize,
