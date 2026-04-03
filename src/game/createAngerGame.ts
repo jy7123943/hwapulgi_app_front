@@ -30,6 +30,14 @@ export function createAngerGame(
   let starEnergy = 0;
   let shakeEnergy = 0;
   let shakeElapsed = 0;
+  let shakeOffsetXAmplitude = 14;
+  let shakeOffsetYAmplitude = 2.5;
+  let shakeRotateAmplitude = 7;
+  let shakeSquashAmplitude = 0.09;
+  let shakeSpeedX = 42;
+  let shakeSpeedY = 28;
+  let shakeRotateSpeed = 34;
+  let shakeSquashSpeed = 30;
 
   function currentWidth() {
     return Math.max(element.clientWidth || 0, 320);
@@ -80,6 +88,14 @@ export function createAngerGame(
     starEnergy = 1;
     shakeEnergy = 1;
     shakeElapsed = 0;
+    shakeOffsetXAmplitude = Phaser.Math.FloatBetween(10, 18);
+    shakeOffsetYAmplitude = Phaser.Math.FloatBetween(1.5, 4);
+    shakeRotateAmplitude = Phaser.Math.FloatBetween(4, 9);
+    shakeSquashAmplitude = Phaser.Math.FloatBetween(0.05, 0.12);
+    shakeSpeedX = Phaser.Math.FloatBetween(34, 48);
+    shakeSpeedY = Phaser.Math.FloatBetween(22, 34);
+    shakeRotateSpeed = Phaser.Math.FloatBetween(28, 40);
+    shakeSquashSpeed = Phaser.Math.FloatBetween(24, 36);
 
     callbacks.onHit(anger, hits);
 
@@ -180,11 +196,16 @@ export function createAngerGame(
           shakeElapsed += delta / 1000;
           shakeEnergy = Math.max(0, shakeEnergy - delta / 260);
 
-          const offsetX = Math.sin(shakeElapsed * 42) * 14 * shakeEnergy;
-          const offsetY = Math.cos(shakeElapsed * 28) * 2.5 * shakeEnergy;
-          const rotate = Math.sin(shakeElapsed * 34) * 7 * shakeEnergy;
-          const squashX = 1 + Math.cos(shakeElapsed * 30) * 0.09 * shakeEnergy;
-          const squashY = 1 - Math.cos(shakeElapsed * 30) * 0.09 * shakeEnergy;
+          const offsetX =
+            Math.sin(shakeElapsed * shakeSpeedX) * shakeOffsetXAmplitude * shakeEnergy;
+          const offsetY =
+            Math.cos(shakeElapsed * shakeSpeedY) * shakeOffsetYAmplitude * shakeEnergy;
+          const rotate =
+            Math.sin(shakeElapsed * shakeRotateSpeed) * shakeRotateAmplitude * shakeEnergy;
+          const squashX =
+            1 + Math.cos(shakeElapsed * shakeSquashSpeed) * shakeSquashAmplitude * shakeEnergy;
+          const squashY =
+            1 - Math.cos(shakeElapsed * shakeSquashSpeed) * shakeSquashAmplitude * shakeEnergy;
 
           avatar.setPosition(centerX() + offsetX, centerY() + offsetY);
           avatar.setAngle(rotate);
