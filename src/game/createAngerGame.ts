@@ -73,6 +73,7 @@ export function createAngerGame(
   let shakeSpeedY = 28;
   let shakeRotateSpeed = 34;
   let shakeSquashSpeed = 30;
+  let megaSquashEnergy = 0;
   let lastHitAt = 0;
   let comboMomentum = 0.5;
   let auraEnergy = 0;
@@ -324,6 +325,10 @@ export function createAngerGame(
     shakeRotateSpeed = Phaser.Math.FloatBetween(26, 36) + cadenceStrength * 8;
     shakeSquashSpeed = Phaser.Math.FloatBetween(22, 32) + cadenceStrength * 6;
 
+    if (impactStrength > 1.08 && Math.random() < 0.18) {
+      megaSquashEnergy = Phaser.Math.FloatBetween(0.7, 1);
+    }
+
     callbacks.onHit(anger, hits, impactStrength);
 
     if (sceneRef && speechBubble && speechBubbleBg) {
@@ -483,6 +488,7 @@ export function createAngerGame(
           shakeElapsed += delta / 1000;
           shakeEnergy = Math.max(0, shakeEnergy - delta / 260);
           auraEnergy = Math.max(0, auraEnergy - delta / 900);
+          megaSquashEnergy = Math.max(0, megaSquashEnergy - delta / 180);
 
           const offsetX =
             Math.sin(shakeElapsed * shakeSpeedX) *
@@ -506,12 +512,14 @@ export function createAngerGame(
             Math.cos(shakeElapsed * shakeSquashSpeed) *
               shakeSquashAmplitude *
               shakeEnergy;
+          const megaSquashX = 1 - megaSquashEnergy * 0.18;
+          const megaSquashY = 1 + megaSquashEnergy * 0.08;
 
           avatar.setPosition(centerX() + offsetX, centerY() + offsetY);
           avatar.setAngle(rotate);
           avatar.setScale(
-            avatarBaseScaleX * squashX,
-            avatarBaseScaleY * squashY
+            avatarBaseScaleX * squashX * megaSquashX,
+            avatarBaseScaleY * squashY * megaSquashY
           );
 
           if (nameplate) {
