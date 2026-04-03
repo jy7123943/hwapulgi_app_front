@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-const angrymanAssetUrl = `${import.meta.env.BASE_URL}angryman.png`;
+const avatarAssetUrl = `${import.meta.env.BASE_URL}avatar.png`;
 
 interface Callbacks {
   onHit: (remaining: number, hits: number, impactStrength: number) => void;
@@ -15,6 +15,7 @@ export interface AngerGameController {
 export function createAngerGame(
   element: HTMLDivElement,
   initialAnger: number,
+  nickname: string,
   callbacks: Callbacks,
 ): AngerGameController {
   let anger = initialAnger;
@@ -23,6 +24,9 @@ export function createAngerGame(
   let avatar: Phaser.GameObjects.Image | null = null;
   let shadow: Phaser.GameObjects.Ellipse | null = null;
   let flash: Phaser.GameObjects.Ellipse | null = null;
+  let nameplate: Phaser.GameObjects.Container | null = null;
+  let nameplateBg: Phaser.GameObjects.Graphics | null = null;
+  let nameplateText: Phaser.GameObjects.Text | null = null;
   let heatAura: Phaser.GameObjects.Ellipse | null = null;
   let emberAura: Phaser.GameObjects.Ellipse | null = null;
   let avatarBaseScaleX = 1;
@@ -80,6 +84,7 @@ export function createAngerGame(
     avatar?.setPosition(centerX(), centerY());
     shadow?.setPosition(centerX(), currentHeight() - 82);
     flash?.setPosition(centerX(), centerY());
+    nameplate?.setPosition(centerX(), centerY() - 146);
     heatAura?.setPosition(centerX(), centerY() - 16);
     emberAura?.setPosition(centerX(), centerY() - 40);
     updateStarsPosition();
@@ -168,7 +173,7 @@ export function createAngerGame(
     }
 
     preload() {
-      this.load.image('angryman', angrymanAssetUrl);
+      this.load.image('avatar', avatarAssetUrl);
     }
 
     create() {
@@ -186,11 +191,40 @@ export function createAngerGame(
       heatAura = this.add.ellipse(centerX(), centerY() - 16, 220, 250, 0xff4d4f, 0);
       emberAura = this.add.ellipse(centerX(), centerY() - 40, 150, 170, 0xffa24a, 0);
       flash = this.add.ellipse(centerX(), centerY(), 210, 210, 0xff4d4f, 0);
-      avatar = this.add.image(centerX(), centerY(), 'angryman');
+      avatar = this.add.image(centerX(), centerY(), 'avatar');
       avatar.setOrigin(0.5, 0.5);
       avatar.setDisplaySize(230, 230);
       avatarBaseScaleX = avatar.scaleX;
       avatarBaseScaleY = avatar.scaleY;
+      nameplateBg = this.add.graphics();
+      nameplateText = this.add.text(0, 0, nickname, {
+        color: '#ffffff',
+        fontFamily: 'sans-serif',
+        fontSize: '15px',
+        fontStyle: '700',
+      }).setOrigin(0.5);
+      const nameplateWidth = Math.max(92, nameplateText.width + 28);
+      const nameplateHeight = 34;
+      nameplateBg.fillStyle(0x10182a, 0.92);
+      nameplateBg.fillRoundedRect(
+        -nameplateWidth / 2,
+        -nameplateHeight / 2,
+        nameplateWidth,
+        nameplateHeight,
+        17,
+      );
+      nameplateBg.lineStyle(1.5, 0xffffff, 0.14);
+      nameplateBg.strokeRoundedRect(
+        -nameplateWidth / 2,
+        -nameplateHeight / 2,
+        nameplateWidth,
+        nameplateHeight,
+        17,
+      );
+      nameplate = this.add.container(centerX(), centerY() - 146, [
+        nameplateBg,
+        nameplateText,
+      ]);
 
       stars = [
         this.add.star(0, 0, 5, 7, 14, 0xffd84d, 1).setOrigin(0.5),
@@ -230,6 +264,12 @@ export function createAngerGame(
             avatarBaseScaleX * squashX,
             avatarBaseScaleY * squashY,
           );
+
+          if (nameplate) {
+            nameplate.setPosition(avatar.x, avatar.y - 146 + offsetY * 0.18);
+            nameplate.setRotation(Phaser.Math.DegToRad(rotate * 0.22));
+            nameplate.setScale(1 + shakeEnergy * 0.015, 1 + shakeEnergy * 0.01);
+          }
         }
 
         if (heatAura && emberAura) {
@@ -303,6 +343,9 @@ export function createAngerGame(
       avatar = null;
       shadow = null;
       flash = null;
+      nameplate = null;
+      nameplateBg = null;
+      nameplateText = null;
       heatAura = null;
       emberAura = null;
       stars = [];

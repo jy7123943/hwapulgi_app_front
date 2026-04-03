@@ -63,19 +63,8 @@ export function GameRoute() {
       >
         <div
           css={{
-            color: colors.grey900,
-            fontSize: 26,
-            fontWeight: 800,
-            letterSpacing: '-0.03em',
-          }}
-        >
-          {draft.nickname}
-        </div>
-        <div
-          css={{
-            marginTop: 4,
             color: colors.grey600,
-            fontSize: 14,
+            fontSize: 15,
           }}
         >
           {taunt}
@@ -111,6 +100,7 @@ export function GameRoute() {
         >
           <GameArena
             initialAnger={draft.angerBefore}
+            nickname={draft.nickname}
             onHit={handleGameHit}
             onReady={(controller) => setGameController(controller)}
             sessionKey={sessionKey}
