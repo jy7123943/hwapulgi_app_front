@@ -48,7 +48,7 @@ export function GameRoute() {
         display: 'flex',
         flexDirection: 'column',
         background:
-          'radial-gradient(circle at top, rgba(72, 118, 186, 0.28), transparent 30%), linear-gradient(180deg, #123259 0%, #173d6a 62%, #143150 100%)',
+          'radial-gradient(circle at top, rgba(177, 122, 255, 0.22), transparent 30%), linear-gradient(180deg, #2a2148 0%, #392b61 62%, #2d224f 100%)',
         padding: '14px 14px 18px',
         gap: 10,
         overflow: 'hidden',
@@ -92,7 +92,7 @@ export function GameRoute() {
                 inset: 0,
                 borderRadius: 28,
                 color: colors.background,
-                background: '#173d6a',
+                background: '#392b61',
               }}
             >
               게임 준비 중...

@@ -59,7 +59,7 @@ export function GameArena({
         inset: 0,
         borderRadius: 28,
         overflow: 'hidden',
-        background: '#173d6a',
+        background: '#392b61',
         '& canvas': {
           display: 'block',
         },
