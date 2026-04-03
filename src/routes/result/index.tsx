@@ -1,5 +1,6 @@
+import { useEffect, useRef } from "react";
 import { colors } from "@toss/tds-colors";
-import { FixedBottomCTA, Text } from "@toss/tds-mobile";
+import { Slider, Text } from "@toss/tds-mobile";
 import { Navigate, useNavigate } from "react-router-dom";
 import { MascotHero } from "../../components/shared/MascotHero";
 import {
@@ -7,16 +8,33 @@ import {
   BodyStack,
   ScreenPanel,
   SectionCard,
-  StatCard,
   StatsGrid,
 } from "../../components/shared/Surface";
-import { formatSessionLabel } from "../../lib/storage";
 import { useAppState } from "../../state/AppState";
 import { BottomCTA } from "../../components/shared/BottomCTA";
+import { safeHaptic } from "../../lib/haptics";
+import { ResultStatCard } from "./components/ResultStatCard";
 
 export function ResultRoute() {
   const navigate = useNavigate();
-  const { lastResult, resetDraft } = useAppState();
+  const { lastResult, resetDraft, updateLastResultAngerAfter } = useAppState();
+  const initializedAngerAfterRef = useRef(false);
+
+  useEffect(() => {
+    if (
+      !initializedAngerAfterRef.current &&
+      lastResult &&
+      lastResult.angerAfter !== 0
+    ) {
+      initializedAngerAfterRef.current = true;
+      updateLastResultAngerAfter(0);
+      return;
+    }
+
+    if (lastResult) {
+      initializedAngerAfterRef.current = true;
+    }
+  }, [lastResult?.angerAfter, updateLastResultAngerAfter]);
 
   if (!lastResult) {
     return <Navigate replace to="/" />;
@@ -28,83 +46,103 @@ export function ResultRoute() {
   }
 
   function playAgain() {
-    resetDraft();
-    navigate("/start/target");
+    void safeHaptic("softMedium");
+    navigate("/play");
   }
+
+  const angerDeltaPercent = Math.round(
+    Math.abs(lastResult.angerBefore - lastResult.angerAfter)
+  );
+  const angerSummaryText =
+    lastResult.angerAfter < lastResult.angerBefore
+      ? `${angerDeltaPercent}% 분노가 감소했어요.`
+      : lastResult.angerAfter > lastResult.angerBefore
+      ? `${angerDeltaPercent}% 분노가 늘었어요.`
+      : "분노 게이지가 그대로예요.";
 
   return (
     <AppShell>
       <ScreenPanel>
         <BodyStack>
           <MascotHero
-            subtitle={`${lastResult.angerBefore}에서 ${lastResult.angerAfter}까지 내려왔어요.`}
+            type="happy"
+            subtitle={angerSummaryText}
             title={"참느라\n고생했어요."}
           />
 
           <StatsGrid>
-            <StatCard>
-              <Text
-                as="span"
-                typography="t7"
-                css={{ display: "block", color: colors.grey600 }}
-              >
-                타격 수
-              </Text>
-              <strong css={{ fontSize: 30, color: colors.red500 }}>
-                {lastResult.hits}
-              </strong>
-            </StatCard>
-            <StatCard>
-              <Text
-                as="span"
-                typography="t7"
-                css={{ display: "block", color: colors.grey600 }}
-              >
-                특수 스킬
-              </Text>
-              <strong css={{ fontSize: 30, color: colors.purple600 }}>
-                {lastResult.skillShots}
-              </strong>
-            </StatCard>
-            <StatCard>
-              <Text
-                as="span"
-                typography="t7"
-                css={{ display: "block", color: colors.grey600 }}
-              >
-                배출률
-              </Text>
-              <strong css={{ fontSize: 30, color: colors.yellow700 }}>
-                {lastResult.releasedPercent}%
-              </strong>
-            </StatCard>
-            <StatCard>
-              <Text
-                as="span"
-                typography="t7"
-                css={{ display: "block", color: colors.grey600 }}
-              >
-                포인트
-              </Text>
-              <strong css={{ fontSize: 30, color: colors.blue500 }}>
-                {lastResult.points}P
-              </strong>
-            </StatCard>
+            <ResultStatCard
+              label="타격 수"
+              value={lastResult.hits}
+              valueColor={colors.red500}
+            />
+            <ResultStatCard
+              label="분노 게이지"
+              value={lastResult.angerAfter}
+              valueColor={colors.yellow700}
+            />
           </StatsGrid>
+
+          <div
+            css={{
+              background: "#fff1d4",
+              boxShadow: "0 18px 40px rgba(68, 41, 28, 0.08)",
+              borderRadius: 28,
+              padding: 20,
+              paddingTop: 26,
+            }}
+          >
+            <Text
+              as="div"
+              typography="t6"
+              fontWeight="bold"
+              css={{ marginBottom: 6, color: colors.grey900 }}
+            >
+              지금의 분노 게이지
+            </Text>
+            <Text
+              as="div"
+              typography="t7"
+              css={{ marginBottom: 8, color: colors.grey600 }}
+            >
+              게임을 마친 지금 기분에 맞게 다시 조절해 주세요.
+            </Text>
+            <Text
+              as="div"
+              typography="t2"
+              fontWeight="bold"
+              css={{ marginBottom: 16, color: colors.yellow700 }}
+            >
+              {lastResult.angerAfter} / 100
+            </Text>
+            <Slider
+              color="#c74a32"
+              label={{ min: "괜찮음", mid: "빡침", max: "폭발 직전" }}
+              max={100}
+              min={0}
+              onValueChange={updateLastResultAngerAfter}
+              value={lastResult.angerAfter}
+            />
+          </div>
 
           <SectionCard>
             <Text
               as="div"
               typography="t6"
               fontWeight="bold"
-              css={{ marginBottom: 12 }}
+              css={{ display: "block", marginBottom: 12 }}
             >
-              {formatSessionLabel(lastResult)}
+              이번 기록 메모
             </Text>
             <Text
               as="div"
               typography="t6"
-              css={{ margin: 0, color: colors.grey600 }}
+              css={{
+                display: "block",
+                margin: 0,
+                color: colors.grey600,
+                wordBreak: "break-word",
+              }}
             >
               {lastResult.memo || "이번 기록에는 별도 메모를 남기지 않았어요."}
             </Text>

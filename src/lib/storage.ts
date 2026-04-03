@@ -25,6 +25,13 @@ export function saveSession(session: SessionResult) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify([session, ...sessions]));
 }
 
+export function updateSession(updatedSession: SessionResult) {
+  const sessions = loadSessions().map((session) =>
+    session.id === updatedSession.id ? updatedSession : session,
+  );
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+}
+
 export function getWeeklySummary(sessions: SessionResult[]): WeeklySummary {
   const now = Date.now();
   const weekAgo = now - 7 * 24 * 60 * 60 * 1000;

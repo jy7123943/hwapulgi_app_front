@@ -7,7 +7,7 @@ import {
   type PropsWithChildren,
 } from 'react';
 import { defaultDraft } from '../constants';
-import { getWeeklySummary, loadSessions, saveSession } from '../lib/storage';
+import { getWeeklySummary, loadSessions, saveSession, updateSession } from '../lib/storage';
 import type { SessionInput, SessionResult, TargetOption } from '../types';
 
 interface AppStateValue {
@@ -22,6 +22,7 @@ interface AppStateValue {
   setAngerBefore: (value: number) => void;
   setMemo: (value: string) => void;
   resetDraft: () => void;
+  updateLastResultAngerAfter: (angerAfter: number) => void;
   completeSession: (payload: {
     hits: number;
     skillShots: number;
@@ -60,6 +61,26 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       setAngerBefore: (value) => setDraft((prev) => ({ ...prev, angerBefore: value })),
       setMemo: (value) => setDraft((prev) => ({ ...prev, memo: value })),
       resetDraft: () => setDraft(defaultDraft),
+      updateLastResultAngerAfter: (angerAfter) => {
+        setLastResult((prev) => {
+          if (!prev) {
+            return prev;
+          }
+
+          const updatedResult: SessionResult = {
+            ...prev,
+            angerAfter,
+            releasedPercent: Math.max(
+              0,
+              Math.round(((prev.angerBefore - angerAfter) / Math.max(prev.angerBefore, 1)) * 100),
+            ),
+          };
+
+          updateSession(updatedResult);
+          setSessions(loadSessions());
+          return updatedResult;
+        });
+      },
       completeSession: ({ hits, skillShots, angerAfter }) => {
         const result: SessionResult = {
           ...draft,
