@@ -27,7 +27,7 @@ export function createAngerGame(
   let emberAura: Phaser.GameObjects.Ellipse | null = null;
   let avatarBaseScaleX = 1;
   let avatarBaseScaleY = 1;
-  let stars: Phaser.GameObjects.Text[] = [];
+  let stars: Phaser.GameObjects.Star[] = [];
   let starOrbitAngle = 0;
   let starEnergy = 0;
   let shakeEnergy = 0;
@@ -193,24 +193,9 @@ export function createAngerGame(
       avatarBaseScaleY = avatar.scaleY;
 
       stars = [
-        this.add.text(0, 0, '✦', {
-          color: '#ffd84d',
-          fontFamily: 'sans-serif',
-          fontSize: '28px',
-          fontStyle: '700',
-        }).setOrigin(0.5),
-        this.add.text(0, 0, '✦', {
-          color: '#fff2a8',
-          fontFamily: 'sans-serif',
-          fontSize: '18px',
-          fontStyle: '700',
-        }).setOrigin(0.5),
-        this.add.text(0, 0, '✦', {
-          color: '#ffc83a',
-          fontFamily: 'sans-serif',
-          fontSize: '22px',
-          fontStyle: '700',
-        }).setOrigin(0.5),
+        this.add.star(0, 0, 5, 7, 14, 0xffd84d, 1).setOrigin(0.5),
+        this.add.star(0, 0, 5, 5, 10, 0xfff2a8, 1).setOrigin(0.5),
+        this.add.star(0, 0, 5, 6, 12, 0xffc83a, 1).setOrigin(0.5),
       ];
 
       stars.forEach((star) => {
