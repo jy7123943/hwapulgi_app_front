@@ -1,4 +1,5 @@
-import { Navigate } from 'react-router-dom';
+import type { PropsWithChildren } from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAppState } from '../state/AppState';
 
 export function RootGate() {
@@ -6,7 +7,11 @@ export function RootGate() {
   return <Navigate to={hasHistory ? '/home' : '/start/target'} replace />;
 }
 
-export function RequireHistory() {
+export function RequireHistory({ children }: PropsWithChildren) {
   const { hasHistory } = useAppState();
-  return hasHistory ? null : <Navigate to="/start/target" replace />;
+  if (!hasHistory) {
+    return <Navigate to="/start/target" replace />;
+  }
+
+  return children ?? <Outlet />;
 }

@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
-import { RootGate } from './components/RouteGuards';
+import { RequireHistory, RootGate } from './components/RouteGuards';
 import { HomeRoute } from './routes/home';
 import { GameRoute } from './routes/play';
 import { ResultRoute } from './routes/result';
@@ -16,7 +16,9 @@ function App() {
       <Route path="/start/anger" element={<AngerRoute />} />
       <Route path="/play" element={<GameRoute />} />
       <Route path="/result" element={<ResultRoute />} />
-      <Route path="/home" element={<HomeRoute />} />
+      <Route element={<RequireHistory />}>
+        <Route path="/home" element={<HomeRoute />} />
+      </Route>
     </Routes>
   );
 }
