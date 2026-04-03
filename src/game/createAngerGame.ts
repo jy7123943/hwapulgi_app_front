@@ -23,6 +23,8 @@ export function createAngerGame(
   let avatar: Phaser.GameObjects.Image | null = null;
   let shadow: Phaser.GameObjects.Ellipse | null = null;
   let flash: Phaser.GameObjects.Ellipse | null = null;
+  let avatarBaseScaleX = 1;
+  let avatarBaseScaleY = 1;
   let stars: Phaser.GameObjects.Text[] = [];
   let starOrbitAngle = 0;
   let starEnergy = 0;
@@ -140,6 +142,8 @@ export function createAngerGame(
       avatar = this.add.image(centerX(), centerY(), 'angryman');
       avatar.setOrigin(0.5, 0.5);
       avatar.setDisplaySize(230, 230);
+      avatarBaseScaleX = avatar.scaleX;
+      avatarBaseScaleY = avatar.scaleY;
 
       stars = [
         this.add.text(0, 0, '✦', {
@@ -184,7 +188,10 @@ export function createAngerGame(
 
           avatar.setPosition(centerX() + offsetX, centerY() + offsetY);
           avatar.setAngle(rotate);
-          avatar.setScale(squashX, squashY);
+          avatar.setScale(
+            avatarBaseScaleX * squashX,
+            avatarBaseScaleY * squashY,
+          );
         }
 
         if (shadow) {
