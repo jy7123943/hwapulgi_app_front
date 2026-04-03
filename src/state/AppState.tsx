@@ -87,6 +87,9 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         const nextAngerAfter = Math.trunc(angerAfter);
         const result: SessionResult = {
           ...draft,
+          customTarget: draft.customTarget?.trim() ?? '',
+          memo: draft.memo.trim(),
+          nickname: draft.nickname.trim(),
           id: crypto.randomUUID(),
           createdAt: new Date().toISOString(),
           hits,

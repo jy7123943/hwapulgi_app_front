@@ -62,7 +62,10 @@ export function AngerRoute() {
               labelOption="sustain"
               onChange={(event) =>
                 setMemo(
-                  sanitizeTextInput(event.target.value, { maxLength: 150 })
+                  sanitizeTextInput(event.target.value, {
+                    maxLength: 150,
+                    trim: false,
+                  })
                 )
               }
               placeholder="무슨 일이 있었나요?"
