@@ -62,6 +62,8 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       setMemo: (value) => setDraft((prev) => ({ ...prev, memo: value })),
       resetDraft: () => setDraft(defaultDraft),
       updateLastResultAngerAfter: (angerAfter) => {
+        const nextAngerAfter = Math.trunc(angerAfter);
+
         setLastResult((prev) => {
           if (!prev) {
             return prev;
@@ -69,10 +71,10 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 
           const updatedResult: SessionResult = {
             ...prev,
-            angerAfter,
+            angerAfter: nextAngerAfter,
             releasedPercent: Math.max(
               0,
-              Math.round(((prev.angerBefore - angerAfter) / Math.max(prev.angerBefore, 1)) * 100),
+              Math.round(((prev.angerBefore - nextAngerAfter) / Math.max(prev.angerBefore, 1)) * 100),
             ),
           };
 
@@ -82,19 +84,20 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         });
       },
       completeSession: ({ hits, skillShots, angerAfter }) => {
+        const nextAngerAfter = Math.trunc(angerAfter);
         const result: SessionResult = {
           ...draft,
           id: crypto.randomUUID(),
           createdAt: new Date().toISOString(),
           hits,
           skillShots,
-          angerAfter,
+          angerAfter: nextAngerAfter,
           releasedPercent: Math.max(
             0,
-            Math.round(((draft.angerBefore - angerAfter) / Math.max(draft.angerBefore, 1)) * 100),
+            Math.round(((draft.angerBefore - nextAngerAfter) / Math.max(draft.angerBefore, 1)) * 100),
           ),
           points:
-            10 + hits + skillShots * 4 + Math.round((draft.angerBefore - Math.min(angerAfter, draft.angerBefore)) / 2),
+            10 + hits + skillShots * 4 + Math.round((draft.angerBefore - Math.min(nextAngerAfter, draft.angerBefore)) / 2),
         };
 
         saveSession(result);

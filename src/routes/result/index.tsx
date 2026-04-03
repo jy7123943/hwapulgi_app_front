@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import { colors } from "@toss/tds-colors";
 import { Slider, Text } from "@toss/tds-mobile";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -18,23 +17,6 @@ import { ResultStatCard } from "./components/ResultStatCard";
 export function ResultRoute() {
   const navigate = useNavigate();
   const { lastResult, resetDraft, updateLastResultAngerAfter } = useAppState();
-  const initializedAngerAfterRef = useRef(false);
-
-  useEffect(() => {
-    if (
-      !initializedAngerAfterRef.current &&
-      lastResult &&
-      lastResult.angerAfter !== 0
-    ) {
-      initializedAngerAfterRef.current = true;
-      updateLastResultAngerAfter(0);
-      return;
-    }
-
-    if (lastResult) {
-      initializedAngerAfterRef.current = true;
-    }
-  }, [lastResult?.angerAfter, updateLastResultAngerAfter]);
 
   if (!lastResult) {
     return <Navigate replace to="/" />;
