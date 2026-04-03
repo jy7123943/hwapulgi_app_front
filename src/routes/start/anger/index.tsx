@@ -11,6 +11,7 @@ import { safeHaptic } from "../../../lib/haptics";
 import { useAppState } from "../../../state/AppState";
 import { BottomCTA } from "../../../components/shared/BottomCTA";
 import { MascotHero } from "../../../components/shared/MascotHero";
+import { sanitizeTextInput } from "../../../lib/sanitize";
 
 export function AngerRoute() {
   const navigate = useNavigate();
@@ -59,7 +60,11 @@ export function AngerRoute() {
             <TextField
               label="한 줄 메모 (선택)"
               labelOption="sustain"
-              onChange={(event) => setMemo(event.target.value)}
+              onChange={(event) =>
+                setMemo(
+                  sanitizeTextInput(event.target.value, { maxLength: 150 })
+                )
+              }
               placeholder="무슨 일이 있었나요?"
               value={draft.memo}
               variant="box"

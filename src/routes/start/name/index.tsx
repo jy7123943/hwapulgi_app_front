@@ -8,6 +8,7 @@ import {
 } from "../../../components/shared/Surface";
 import { TextFieldBox } from "../../../components/shared/TextFieldBox";
 import { safeHaptic } from "../../../lib/haptics";
+import { sanitizeTextInput } from "../../../lib/sanitize";
 import { useAppState } from "../../../state/AppState";
 import { BottomCTA } from "../../../components/shared/BottomCTA";
 import { MascotHero } from "../../../components/shared/MascotHero";
@@ -29,9 +30,11 @@ export function NameRoute() {
           <TextFieldBox>
             <TextField
               autoFocus
-              label="호출 이름"
+              label="이름/별명"
               labelOption="sustain"
-              onChange={(event) => setNickname(event.target.value)}
+              onChange={(event) =>
+                setNickname(sanitizeTextInput(event.target.value))
+              }
               placeholder="예: 김부장, 팔팔이"
               value={draft.nickname}
               variant="box"

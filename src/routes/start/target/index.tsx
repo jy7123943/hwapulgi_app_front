@@ -9,6 +9,7 @@ import {
 } from "../../../components/shared/Surface";
 import { TARGET_OPTIONS } from "../../../constants";
 import { safeHaptic } from "../../../lib/haptics";
+import { sanitizeTextInput } from "../../../lib/sanitize";
 import { useAppState } from "../../../state/AppState";
 import { MascotHero } from "../../../components/shared/MascotHero";
 
@@ -43,12 +44,7 @@ export function TargetRoute() {
   }
 
   function handleCustomTargetChange(value: string) {
-    const sanitizedValue = value
-      .replace(/[^0-9A-Za-z가-힣\s]/g, "")
-      .slice(0, 15)
-      .trim();
-
-    setCustomTarget(sanitizedValue);
+    setCustomTarget(sanitizeTextInput(value));
   }
 
   return (
