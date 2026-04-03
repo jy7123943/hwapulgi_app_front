@@ -8,7 +8,12 @@ interface GameArenaProps {
   onReady?: (controller: AngerGameController) => void;
 }
 
-export function GameArena({ initialAnger, sessionKey, onHit, onReady }: GameArenaProps) {
+export function GameArena({
+  initialAnger,
+  sessionKey,
+  onHit,
+  onReady,
+}: GameArenaProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const onHitRef = useRef(onHit);
   const onReadyRef = useRef(onReady);
@@ -57,7 +62,14 @@ export function GameArena({ initialAnger, sessionKey, onHit, onReady }: GameAren
           display: 'block',
         },
       }}
-      ref={hostRef}
-    />
+    >
+      <div
+        ref={hostRef}
+        css={{
+          position: 'absolute',
+          inset: 0,
+        }}
+      />
+    </div>
   );
 }
