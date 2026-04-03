@@ -312,7 +312,7 @@ export function GameRoute() {
                 aria-hidden={true}
                 color={colors.background}
                 frameShape={Asset.frameShape.CleanWFull}
-                name="icon-close-mono"
+                name="icon-x-mono"
               />
             </button>
             <div
