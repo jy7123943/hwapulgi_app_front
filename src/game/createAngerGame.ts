@@ -1,35 +1,50 @@
 import Phaser from "phaser";
 
 const avatarAssetUrl = `${import.meta.env.BASE_URL}avatar.png`;
-const HIT_REACTION_LINES = [
-  "죄송합니다.",
-  "제가 잘못했어요.",
-  "한 번만 봐주세요.",
-  "다시는 안 그럴게요.",
-  "진짜 반성 중이에요.",
-  "제가 실수했어요.",
-  "제발 한 번만 용서해 주세요.",
-  "제가 너무 경솔했어요.",
-  "정말 크게 반성하고 있어요.",
-  "말씀하신 게 맞아요.",
-  "이번엔 제가 선 넘었어요.",
-  "변명 안 할게요.",
-  "정말 죄송한 마음뿐이에요.",
-  "제가 생각이 짧았어요.",
-  "다 제 잘못입니다.",
-  "진심으로 사과드려요.",
-  "제가 먼저 잘못했어요.",
-  "다시 생각해 보니 제 탓이에요.",
-  "한 번만 기회 주세요.",
-  "이건 제가 잘못 한 거예요.",
-  "제가 너무 무례했어요.",
-  "제가 괜히 그랬어요.",
-];
-const COMBO_FEEDBACK: Record<number, { labels: string[]; color: string }> = {
-  5: { labels: ["퍽!"], color: "#ffe06b" },
-  10: { labels: ["연타!"], color: "#ff9e6d" },
-  15: { labels: ["폭주!"], color: "#ff7b7b" },
-  20: { labels: ["난타!"], color: "#d09cff" },
+const HIT_REACTION_LINES = {
+  defiant: [
+    "악!",
+    "왜 때려!",
+    "아파!",
+    "너무하네!",
+    "그만 좀!",
+    "으악!",
+  ],
+  defensive: [
+    "잠깐만요!",
+    "제 말도 들어보세요!",
+    "너무 세잖아요!",
+    "한 번만 봐주세요!",
+    "제가 설명할게요!",
+    "진정해요!",
+  ],
+  apologetic: [
+    "죄송합니다.",
+    "제가 잘못했어요.",
+    "다시는 안 그럴게요.",
+    "진짜 반성 중이에요.",
+    "제가 실수했어요.",
+    "변명 안 할게요.",
+    "한 번만 기회 주세요.",
+  ],
+  formal: [
+    "진심으로 사과드립니다.",
+    "제 잘못을 인정합니다.",
+    "정말 죄송한 마음뿐입니다.",
+    "깊이 반성하고 있습니다.",
+    "다시는 같은 실수 하지 않겠습니다.",
+    "제가 먼저 사과드리겠습니다.",
+    "불편을 드려 죄송합니다.",
+  ],
+};
+const COMBO_FEEDBACK: Record<
+  number,
+  { labels: string[]; color: string; fontSize: number; fontWeight: number }
+> = {
+  5: { labels: ["퍽!"], color: "#ffe06b", fontSize: 14, fontWeight: 800 },
+  10: { labels: ["연타!"], color: "#ff9e6d", fontSize: 17, fontWeight: 900 },
+  15: { labels: ["폭주!"], color: "#ff7b7b", fontSize: 21, fontWeight: 900 },
+  20: { labels: ["난타!"], color: "#d09cff", fontSize: 24, fontWeight: 900 },
 };
 
 interface Callbacks {
@@ -205,7 +220,31 @@ export function createAngerGame(
     drawSpeechBubble(texture.width, texture.height);
   }
 
-  function showComboPopup(labels: string[], color: string) {
+  function getReactionLine() {
+    const releaseRatio =
+      1 - Phaser.Math.Clamp(anger / Math.max(initialAnger, 1), 0, 1);
+
+    if (releaseRatio <= 0.1) {
+      return Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES.defiant);
+    }
+
+    if (releaseRatio <= 0.45) {
+      return Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES.defensive);
+    }
+
+    if (releaseRatio <= 0.82) {
+      return Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES.apologetic);
+    }
+
+    return Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES.formal);
+  }
+
+  function showComboPopup(
+    labels: string[],
+    color: string,
+    fontSize: number,
+    fontWeight: number
+  ) {
     if (!sceneRef) {
       return;
     }
@@ -239,8 +278,8 @@ export function createAngerGame(
       comboPopupTextureKey,
       label,
       color,
-      14,
-      800
+      fontSize,
+      fontWeight
     );
 
     if (!texture) {
@@ -426,7 +465,12 @@ export function createAngerGame(
 
     if (cadenceStrength > 0.9 && impactStrength > 1.02 && COMBO_FEEDBACK[comboStreak]) {
       const comboFeedback = COMBO_FEEDBACK[comboStreak];
-      showComboPopup(comboFeedback.labels, comboFeedback.color);
+      showComboPopup(
+        comboFeedback.labels,
+        comboFeedback.color,
+        comboFeedback.fontSize,
+        comboFeedback.fontWeight
+      );
     }
 
     callbacks.onHit(anger, hits, impactStrength);
@@ -434,7 +478,7 @@ export function createAngerGame(
     if (sceneRef && speechBubble && speechBubbleBg) {
       pendingSpeechBubble?.remove(false);
       pendingSpeechBubble = sceneRef.time.delayedCall(240, () => {
-        showSpeechBubble(Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES));
+        showSpeechBubble(getReactionLine());
         pendingSpeechBubble = null;
       });
     }
@@ -565,7 +609,7 @@ export function createAngerGame(
       speechBubble = this.add.container(centerX() + 44, centerY() - 126, [
         speechBubbleBg,
       ]);
-      updateSpeechBubbleLabel(HIT_REACTION_LINES[0]);
+      updateSpeechBubbleLabel(HIT_REACTION_LINES.defiant[0]);
       speechBubble.setAlpha(0);
 
       stars = [
