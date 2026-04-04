@@ -14,6 +14,8 @@ interface AppStateValue {
   draft: SessionInput;
   homeSnapshot: HomeSnapshot;
   sessions: SessionResult[];
+  recentCustomTargets: string[];
+  recentNicknames: string[];
   weeklyArchives: WeeklyArchive[];
   weeklySummary: ReturnType<typeof getWeeklySummary>;
   lastResult: SessionResult | null;
@@ -47,12 +49,36 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   const weeklySummary = useMemo(() => getWeeklySummary(sessions), [sessions]);
   const weeklyArchives = useMemo(() => getWeeklyArchives(sessions), [sessions]);
   const homeSnapshot = useMemo(() => getHomeSnapshot(sessions, weeklySummary), [sessions, weeklySummary]);
+  const recentCustomTargets = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          sessions
+            .map((session) => session.customTarget?.trim() ?? '')
+            .filter((target) => target.length > 0),
+        ),
+      ).slice(0, 6),
+    [sessions],
+  );
+  const recentNicknames = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          sessions
+            .map((session) => session.nickname.trim())
+            .filter((nickname) => nickname.length > 0),
+        ),
+      ).slice(0, 5),
+    [sessions],
+  );
 
   const value = useMemo<AppStateValue>(
     () => ({
       draft,
       homeSnapshot,
       sessions,
+      recentCustomTargets,
+      recentNicknames,
       weeklyArchives,
       weeklySummary,
       lastResult,
@@ -125,7 +151,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         return result;
       },
     }),
-    [draft, homeSnapshot, lastResult, sessions, weeklyArchives, weeklySummary],
+    [draft, homeSnapshot, lastResult, recentCustomTargets, recentNicknames, sessions, weeklyArchives, weeklySummary],
   );
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;

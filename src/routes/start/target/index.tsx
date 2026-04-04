@@ -15,7 +15,8 @@ import { MascotHero } from "../../../components/shared/MascotHero";
 
 export function TargetRoute() {
   const navigate = useNavigate();
-  const { draft, setTarget, setCustomTarget } = useAppState();
+  const { draft, recentCustomTargets, setTarget, setCustomTarget } =
+    useAppState();
   const customTargetInputRef = useRef<HTMLInputElement>(null);
 
   const canMoveNext =
@@ -47,6 +48,13 @@ export function TargetRoute() {
     setCustomTarget(sanitizeTextInput(value));
   }
 
+  async function selectRecentCustomTarget(value: string) {
+    setTarget("기타");
+    setCustomTarget(value);
+    await safeHaptic("tickWeak");
+    navigate("/start/name");
+  }
+
   return (
     <AppShell>
       <ScreenPanel>
@@ -75,11 +83,9 @@ export function TargetRoute() {
                   borderRadius: 18,
                   minHeight: 70,
                   padding: "10px 8px",
-                  background: "#ffffff",
-                  color:
-                    draft.target === target
-                      ? "#8f1fff"
-                      : colors.grey900,
+                  background:
+                    draft.target === target ? colors.grey500 : "#ffffff",
+                  color: draft.target === target ? "#ffffff" : colors.grey900,
                   border: "none",
                   transition:
                     "transform 160ms ease, background-color 160ms ease, border-color 160ms ease",
@@ -104,7 +110,6 @@ export function TargetRoute() {
                 boxShadow: "none",
                 borderRadius: 28,
                 padding: 20,
-                marginTop: 6,
               }}
             >
               <label
@@ -146,14 +151,59 @@ export function TargetRoute() {
                 size="large"
                 css={{
                   marginTop: 12,
-                  background: "#ffffff",
-                  color: colors.grey900,
                   boxShadow: "none",
                   border: "none",
                 }}
               >
                 다음
               </Button>
+            </div>
+          ) : null}
+
+          {recentCustomTargets.length > 0 ? (
+            <div
+              css={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+                padding: "10px 10px",
+              }}
+            >
+              <Text
+                as="div"
+                typography="t6"
+                fontWeight="bold"
+                css={{ color: colors.grey700 }}
+              >
+                내가 추가한 대상
+              </Text>
+              <div
+                css={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 8,
+                }}
+              >
+                {recentCustomTargets.map((target) => (
+                  <button
+                    key={target}
+                    type="button"
+                    onClick={() => void selectRecentCustomTarget(target)}
+                    css={{
+                      borderRadius: 999,
+                      padding: "10px 14px",
+                      background: "#ffffff",
+                      color: colors.grey900,
+                      border: "none",
+                      boxShadow: "none",
+                    }}
+                  >
+                    <Text as="span" typography="t7" fontWeight="semibold">
+                      {target}
+                    </Text>
+                  </button>
+                ))}
+              </div>
             </div>
           ) : null}
         </BodyStack>
