@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { playHitSound } from "../lib/sounds";
 
 const avatarAssetUrl = `${import.meta.env.BASE_URL}avatar.png`;
 const HIT_REACTION_LINES = {
@@ -49,6 +50,7 @@ const COMBO_FEEDBACK: Record<
 
 interface Callbacks {
   onHit: (remaining: number, hits: number, impactStrength: number) => void;
+  isMuted: () => boolean;
 }
 
 export interface AngerGameController {
@@ -474,6 +476,16 @@ export function createAngerGame(
     }
 
     callbacks.onHit(anger, hits, impactStrength);
+
+    if (!callbacks.isMuted()) {
+      if (impactStrength >= 1.15) {
+        playHitSound("hard");
+      } else if (impactStrength >= 0.82) {
+        playHitSound("medium");
+      } else {
+        playHitSound("soft");
+      }
+    }
 
     if (sceneRef && speechBubble && speechBubbleBg) {
       pendingSpeechBubble?.remove(false);

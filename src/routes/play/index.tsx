@@ -205,6 +205,7 @@ export function GameRoute() {
           >
             <GameArena
               initialAnger={draft.angerBefore}
+              muted={muted}
               nickname={draft.nickname}
               onHit={handleGameHit}
               onReady={(controller) => setGameController(controller)}
