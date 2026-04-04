@@ -52,8 +52,8 @@ export function TargetRoute() {
       <ScreenPanel>
         <BodyStack>
           <MascotHero
-            subtitle={"선택하자마자\n다음 단계로 넘어가요."}
-            title={"오늘의\n스트레스 대상자는?"}
+            subtitle={"선택하면 바로\n혼내주러 가요."}
+            title={"오늘은 누구 때문에\n화가 났나요?"}
           />
 
           <div
