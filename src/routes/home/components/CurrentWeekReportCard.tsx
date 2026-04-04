@@ -171,7 +171,6 @@ export function CurrentWeekReportCard({
         }}
       >
         {[
-          ["평온", colors.blue100],
           ["스트레스", colors.yellow200],
           ["화남", "#ffd6c9"],
           ["폭발", "#f7b3d0"],

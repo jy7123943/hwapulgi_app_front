@@ -9,6 +9,15 @@ interface RecentListProps {
   sessions: SessionResult[];
 }
 
+function formatSessionDateTime(createdAt: string) {
+  const date = new Date(createdAt);
+  const hours = date.getHours();
+  const period = hours >= 12 ? 'pm' : 'am';
+  const displayHour = hours % 12 === 0 ? 12 : hours % 12;
+
+  return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()} ${String(displayHour).padStart(2, '0')}${period}`;
+}
+
 export function RecentList({ onReplay, sessions }: RecentListProps) {
   return (
     <SectionCard css={{ background: '#ffffff' }}>
@@ -38,13 +47,13 @@ export function RecentList({ onReplay, sessions }: RecentListProps) {
             <div>
               <strong css={{ display: 'block', marginBottom: 4 }}>{formatSessionLabel(session)}</strong>
               <p css={{ margin: 0, color: colors.grey600 }}>
-                {session.hits} hits · {session.angerBefore} → {session.angerAfter}
+                {session.hits} hits · 분노 {session.angerBefore} → {session.angerAfter}
               </p>
-            </div>
-            <div css={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
-              <Text as="span" typography="t7" fontWeight="bold" css={{ color: '#c96f2a' }}>
-                {session.releasedPercent}%
+              <Text as="div" typography="t7" css={{ color: colors.grey500, marginTop: 6 }}>
+                {formatSessionDateTime(session.createdAt)}
               </Text>
+            </div>
+            <div css={{ display: 'flex', alignItems: 'center' }}>
               <Button
                 color="dark"
                 onClick={() => onReplay(session)}
