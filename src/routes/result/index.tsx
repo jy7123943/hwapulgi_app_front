@@ -27,14 +27,14 @@ export function ResultRoute() {
   }
 
   const angerDeltaPercent = Math.round(
-    Math.abs(lastResult.angerBefore - lastResult.angerAfter)
+    Math.abs(lastResult.angerBefore - lastResult.angerAfter),
   );
   const angerSummaryText =
     lastResult.angerAfter < lastResult.angerBefore
       ? `${angerDeltaPercent}% 분노가 감소했어요.`
       : lastResult.angerAfter > lastResult.angerBefore
-      ? `${angerDeltaPercent}% 분노가 늘었어요.`
-      : "분노 게이지가 그대로예요.";
+        ? `${angerDeltaPercent}% 분노가 늘었어요.`
+        : "분노 게이지가 그대로예요.";
 
   return (
     <AppShell>
@@ -61,7 +61,7 @@ export function ResultRoute() {
 
           <div
             css={{
-              background: "#fff1d4",
+              background: "#fff6e6",
               boxShadow: "none",
               borderRadius: 28,
               padding: 20,
@@ -126,9 +126,7 @@ export function ResultRoute() {
         </BodyStack>
       </ScreenPanel>
 
-      <BottomCTA onClick={goHome}>
-        홈으로
-      </BottomCTA>
+      <BottomCTA onClick={goHome}>홈으로</BottomCTA>
     </AppShell>
   );
 }
