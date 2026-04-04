@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { playHitSound } from "../lib/sounds";
 
 const avatarAssetUrl = `${import.meta.env.BASE_URL}avatar.png`;
-const FINAL_REACTION_LINE = "오늘은 제가 졌어요...";
+const FINAL_REACTION_LINE = "제가 졌어요...";
 const HIT_REACTION_LINES = {
   defiant: [
     "악!",
@@ -534,6 +534,19 @@ export function createAngerGame(
 
     if (anger <= 0) {
       triggerFinalAnimation();
+      callbacks.onHit(anger, hits, impactStrength);
+
+      if (!callbacks.isMuted()) {
+        if (impactStrength >= 1.15) {
+          playHitSound(Math.random() < 0.58 ? "medium" : "hard");
+        } else if (impactStrength >= 0.82) {
+          playHitSound("medium");
+        } else {
+          playHitSound("soft");
+        }
+      }
+
+      return;
     }
 
     if (cadenceStrength > 0.9 && impactStrength > 1.02 && COMBO_FEEDBACK[comboStreak]) {
