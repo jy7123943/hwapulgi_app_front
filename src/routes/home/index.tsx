@@ -8,6 +8,11 @@ import { BottomTabBar } from "../../components/shared/BottomTabBar";
 import { useAppState } from "../../state/AppState";
 import { HomeHeroBanner } from "./components/HomeHeroBanner";
 import { RecentList } from "./components/RecentList";
+import { TodaySummaryCard } from "./components/TodaySummaryCard";
+
+function getDateKey(date: Date) {
+  return `${date.getFullYear()}-${`${date.getMonth() + 1}`.padStart(2, "0")}-${`${date.getDate()}`.padStart(2, "0")}`;
+}
 
 export function HomeRoute() {
   const navigate = useNavigate();
@@ -17,7 +22,10 @@ export function HomeRoute() {
     resetDraft,
   } =
     useAppState();
-  const recentSessions = sessions.slice(0, 3);
+  const todayKey = getDateKey(new Date());
+  const todaySessions = sessions.filter(
+    (session) => getDateKey(new Date(session.createdAt)) === todayKey,
+  );
   return (
     <AppShell css={{ paddingBottom: 108 }}>
       <ScreenPanel>
@@ -29,7 +37,8 @@ export function HomeRoute() {
             }}
             snapshot={homeSnapshot}
           />
-          <RecentList sessions={recentSessions} />
+          <TodaySummaryCard sessions={todaySessions} />
+          <RecentList sessions={todaySessions} />
         </BodyStack>
       </ScreenPanel>
       <BottomTabBar />
