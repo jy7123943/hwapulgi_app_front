@@ -43,6 +43,19 @@ function getWeekPeriodText(input: Date) {
   return `${weekStart.getMonth() + 1}.${weekStart.getDate()} - ${weekEnd.getMonth() + 1}.${weekEnd.getDate()}`;
 }
 
+function getDailyAngerLevel(sessions: SessionResult[]) {
+  if (sessions.length === 0) {
+    return 0;
+  }
+
+  const averageBefore =
+    sessions.reduce((sum, session) => sum + session.angerBefore, 0) /
+    sessions.length;
+  const sessionWeight = Math.max(0, sessions.length - 1) * 8;
+
+  return Math.min(100, Math.round(averageBefore + sessionWeight));
+}
+
 function buildWeeklySummary(
   weeklySessions: SessionResult[],
   label: string,
@@ -110,7 +123,7 @@ function buildWeeklySummary(
     date.setDate(date.getDate() + index);
     const dateKey = getDateKey(date);
     const daySessions = sessionsByDate[dateKey] ?? [];
-    const angerLevel = daySessions.length > 0 ? Math.max(...daySessions.map((session) => session.angerBefore)) : 0;
+    const angerLevel = getDailyAngerLevel(daySessions);
 
     return {
       dateKey,
