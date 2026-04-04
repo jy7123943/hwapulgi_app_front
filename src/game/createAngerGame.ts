@@ -479,7 +479,7 @@ export function createAngerGame(
 
     if (!callbacks.isMuted()) {
       if (impactStrength >= 1.15) {
-        playHitSound("hard");
+        playHitSound(Math.random() < 0.58 ? "medium" : "hard");
       } else if (impactStrength >= 0.82) {
         playHitSound("medium");
       } else {
