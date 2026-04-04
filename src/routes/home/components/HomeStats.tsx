@@ -10,29 +10,45 @@ interface HomeStatsProps {
 export function HomeStats({ weeklySummary }: HomeStatsProps) {
   return (
     <StatsGrid>
-      <StatCard>
+      <StatCard
+        css={{
+          background: '#ffffff',
+        }}
+      >
         <Text as="span" typography="t7" css={{ display: 'block', color: colors.grey600 }}>
           이번 주 세션
         </Text>
-        <strong>{weeklySummary.totalSessions}</strong>
+        <strong css={{ color: '#6f48c9' }}>{weeklySummary.totalSessions}</strong>
       </StatCard>
-      <StatCard>
+      <StatCard
+        css={{
+          background: '#ffffff',
+        }}
+      >
         <Text as="span" typography="t7" css={{ display: 'block', color: colors.grey600 }}>
-          총 타격 수
+          총 배출량
         </Text>
-        <strong>{weeklySummary.totalHits}</strong>
+        <strong css={{ color: '#c97d1d' }}>{weeklySummary.totalReleased}</strong>
       </StatCard>
-      <StatCard>
+      <StatCard
+        css={{
+          background: '#ffffff',
+        }}
+      >
         <Text as="span" typography="t7" css={{ display: 'block', color: colors.grey600 }}>
-          시작 평균
+          가장 힘들었던 요일
         </Text>
-        <strong>{weeklySummary.averageBefore}</strong>
+        <strong css={{ color: '#d65280' }}>{weeklySummary.hardestWeekday}</strong>
       </StatCard>
-      <StatCard>
+      <StatCard
+        css={{
+          background: '#ffffff',
+        }}
+      >
         <Text as="span" typography="t7" css={{ display: 'block', color: colors.grey600 }}>
-          종료 평균
+          연속 기록
         </Text>
-        <strong>{weeklySummary.averageAfter}</strong>
+        <strong css={{ color: '#b36b13' }}>{weeklySummary.streakDays}일</strong>
       </StatCard>
     </StatsGrid>
   );

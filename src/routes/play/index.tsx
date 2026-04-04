@@ -117,7 +117,7 @@ export function GameRoute() {
           borderRadius: 22,
           padding: "14px 16px",
           background: "rgba(255,255,255,0.94)",
-          boxShadow: "0 10px 26px rgba(4, 10, 22, 0.22)",
+          boxShadow: "none",
         }}
       >
         <div
@@ -170,7 +170,7 @@ export function GameRoute() {
                       background: "rgba(255,255,255,0.08)",
                       display: "grid",
                       placeItems: "center",
-                      boxShadow: "0 14px 30px rgba(18, 8, 42, 0.18)",
+                      boxShadow: "none",
                       overflow: "hidden",
                     }}
                   >
@@ -241,7 +241,7 @@ export function GameRoute() {
                       background: "rgba(255,255,255,0.08)",
                       display: "grid",
                       placeItems: "center",
-                      boxShadow: "0 14px 30px rgba(18, 8, 42, 0.18)",
+                      boxShadow: "none",
                       overflow: "hidden",
                     }}
                   >
@@ -300,7 +300,7 @@ export function GameRoute() {
                 width: 40,
                 height: 40,
                 borderRadius: "50%",
-                border: "1px solid rgba(255,255,255,0.16)",
+                border: "none",
                 background: "rgba(255,255,255,0.12)",
                 color: colors.background,
                 display: "grid",

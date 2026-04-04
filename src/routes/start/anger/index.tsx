@@ -29,7 +29,7 @@ export function AngerRoute() {
           <div
             css={{
               background: "#ffdcd8",
-              boxShadow: "0 18px 40px rgba(68, 41, 28, 0.08)",
+              boxShadow: "none",
               borderRadius: 28,
               padding: 20,
               paddingTop: 26,

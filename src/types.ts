@@ -33,8 +33,19 @@ export interface WeeklySummary {
   averageBefore: number;
   averageAfter: number;
   bestRelease: number;
+  totalReleased: number;
+  hardestWeekday: string;
+  streakDays: number;
+  weeklyHeadline: string;
   topTargets: Array<{
     label: string;
     count: number;
+  }>;
+  calendarDays: Array<{
+    dateKey: string;
+    dayLabel: string;
+    dayNumber: number;
+    angerLevel: number;
+    sessions: SessionResult[];
   }>;
 }

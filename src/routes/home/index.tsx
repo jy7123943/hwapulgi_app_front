@@ -1,31 +1,61 @@
-import { useNavigate } from 'react-router-dom';
-import { AppShell, BodyStack, ScreenPanel } from '../../components/shared/Surface';
-import { useAppState } from '../../state/AppState';
-import { BottomCTA } from '../../components/shared/BottomCTA';
-import { MascotHero } from '../../components/shared/MascotHero';
-import { HomeStats } from './components/HomeStats';
-import { RecentHero } from './components/RecentHero';
-import { RecentList } from './components/RecentList';
-import { TopTargetsCard } from './components/TopTargetsCard';
+import { useNavigate } from "react-router-dom";
+import {
+  AppShell,
+  BodyStack,
+  ScreenPanel,
+} from "../../components/shared/Surface";
+import { useAppState } from "../../state/AppState";
+import { BottomCTA } from "../../components/shared/BottomCTA";
+import { MascotHero } from "../../components/shared/MascotHero";
+import { HomeStats } from "./components/HomeStats";
+import { RecentList } from "./components/RecentList";
+import { TopTargetsCard } from "./components/TopTargetsCard";
+import { WeeklyCalendarCard } from "./components/WeeklyCalendarCard";
+import { SectionCard } from "../../components/shared/Surface";
+import { Text } from "@toss/tds-mobile";
+import { colors } from "@toss/tds-colors";
 
 export function HomeRoute() {
   const navigate = useNavigate();
   const { sessions, weeklySummary, resetDraft } = useAppState();
   const recentSessions = sessions.slice(0, 5);
-  const hero = sessions[0];
-
   return (
     <AppShell>
       <ScreenPanel>
         <BodyStack>
           <MascotHero
-            subtitle="기록이 쌓일수록 내가 언제, 누구에게 가장 많이 소모되는지 보이기 시작해요."
-            title={'이번 주 감정\n배출 흐름'}
+            compact
+            type="happy"
+            subtitle={
+              "기록이 쌓일수록 내가 언제, 누구에게\n가장 많이 소모되는지 보이기 시작해요."
+            }
+            title={"이번 주 기록"}
           />
 
           <HomeStats weeklySummary={weeklySummary} />
+          <SectionCard
+            css={{
+              background: "#ffffff",
+            }}
+          >
+            <Text
+              as="h3"
+              typography="t6"
+              fontWeight="bold"
+              css={{ color: colors.grey900 }}
+            >
+              이번 주 한 줄 요약
+            </Text>
+            <Text
+              as="p"
+              typography="t6"
+              css={{ color: colors.grey700, marginTop: 10 }}
+            >
+              {weeklySummary.weeklyHeadline}
+            </Text>
+          </SectionCard>
+          <WeeklyCalendarCard weeklySummary={weeklySummary} />
           <TopTargetsCard weeklySummary={weeklySummary} />
-          <RecentHero hero={hero} />
           <RecentList sessions={recentSessions} />
         </BodyStack>
       </ScreenPanel>
@@ -33,7 +63,7 @@ export function HomeRoute() {
       <BottomCTA
         onClick={() => {
           resetDraft();
-          navigate('/start/target');
+          navigate("/start/target");
         }}
       >
         지금 화풀기

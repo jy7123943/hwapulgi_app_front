@@ -62,7 +62,7 @@ export function ResultRoute() {
           <div
             css={{
               background: "#fff1d4",
-              boxShadow: "0 18px 40px rgba(68, 41, 28, 0.08)",
+              boxShadow: "none",
               borderRadius: 28,
               padding: 20,
               paddingTop: 26,

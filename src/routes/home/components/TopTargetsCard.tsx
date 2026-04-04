@@ -11,7 +11,7 @@ export function TopTargetsCard({ weeklySummary }: TopTargetsCardProps) {
   return (
     <SectionCard
       css={{
-        background: 'linear-gradient(180deg, rgba(255,246,222,0.98) 0%, rgba(255,239,209,0.94) 100%)',
+        background: '#ffffff',
       }}
     >
       <Text as="h3" typography="t5" fontWeight="bold" css={{ color: colors.grey900 }}>
@@ -30,7 +30,7 @@ export function TopTargetsCard({ weeklySummary }: TopTargetsCardProps) {
                 gap: 12,
                 padding: '12px 14px',
                 borderRadius: 18,
-                background: 'rgba(255,255,255,0.7)',
+                background: colors.grey50,
               }}
             >
               <div css={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
@@ -38,7 +38,7 @@ export function TopTargetsCard({ weeklySummary }: TopTargetsCardProps) {
                   as="span"
                   typography="t6"
                   fontWeight="bold"
-                  css={{ color: colors.red500, flexShrink: 0 }}
+                  css={{ color: '#d15d8f', flexShrink: 0 }}
                 >
                   {index + 1}위
                 </Text>

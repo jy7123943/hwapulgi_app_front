@@ -10,7 +10,7 @@ interface RecentListProps {
 
 export function RecentList({ sessions }: RecentListProps) {
   return (
-    <SectionCard>
+    <SectionCard css={{ background: '#ffffff' }}>
       <Text as="div" typography="t6" fontWeight="bold" css={{ marginBottom: 12 }}>
         최근 기록
       </Text>
@@ -31,7 +31,7 @@ export function RecentList({ sessions }: RecentListProps) {
               alignItems: 'center',
               padding: 16,
               borderRadius: 18,
-              background: '#fff5f1',
+              background: colors.grey50,
             }}
           >
             <div>
@@ -44,7 +44,7 @@ export function RecentList({ sessions }: RecentListProps) {
                 flexDirection: 'column',
                 alignItems: 'flex-end',
                 gap: 4,
-                color: colors.red700,
+                color: '#c96f2a',
                 fontSize: 13,
                 fontWeight: 700,
               }}

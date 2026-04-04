@@ -75,24 +75,15 @@ export function TargetRoute() {
                   borderRadius: 18,
                   minHeight: 70,
                   padding: "10px 8px",
-                  background:
-                    draft.target === target
-                      ? "linear-gradient(135deg, #8f1fff, #ff6a4e)"
-                      : "linear-gradient(180deg, #ffffff 0%, #fff6f0 100%)",
+                  background: "#ffffff",
                   color:
                     draft.target === target
-                      ? colors.background
+                      ? "#8f1fff"
                       : colors.grey900,
-                  border:
-                    draft.target === target
-                      ? "1px solid transparent"
-                      : "1px solid rgba(110, 88, 72, 0.08)",
+                  border: "none",
                   transition:
                     "transform 160ms ease, background-color 160ms ease, border-color 160ms ease",
-                  boxShadow:
-                    draft.target === target
-                      ? "0 12px 18px rgba(143, 31, 255, 0.18)"
-                      : "0 8px 14px rgba(68, 41, 28, 0.05)",
+                  boxShadow: "none",
                   ":active": {
                     transform: "scale(0.98)",
                   },
@@ -109,8 +100,8 @@ export function TargetRoute() {
             <div
               css={{
                 background: "rgba(255, 252, 248, 0.96)",
-                border: "1px solid rgba(110, 88, 72, 0.08)",
-                boxShadow: "0 18px 40px rgba(68, 41, 28, 0.08)",
+                border: "none",
+                boxShadow: "none",
                 borderRadius: 28,
                 padding: 20,
                 marginTop: 6,
@@ -140,7 +131,7 @@ export function TargetRoute() {
                 css={{
                   width: "100%",
                   borderRadius: 16,
-                  border: "1px solid rgba(110, 88, 72, 0.12)",
+                  border: "none",
                   background: "#fff",
                   padding: "14px 16px",
                   color: colors.grey900,
@@ -155,6 +146,10 @@ export function TargetRoute() {
                 size="large"
                 css={{
                   marginTop: 12,
+                  background: "#ffffff",
+                  color: colors.grey900,
+                  boxShadow: "none",
+                  border: "none",
                 }}
               >
                 다음
