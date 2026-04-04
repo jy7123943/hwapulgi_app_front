@@ -6,6 +6,7 @@ import { MascotHero } from '../../components/shared/MascotHero';
 import { HomeStats } from './components/HomeStats';
 import { RecentHero } from './components/RecentHero';
 import { RecentList } from './components/RecentList';
+import { TopTargetsCard } from './components/TopTargetsCard';
 
 export function HomeRoute() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export function HomeRoute() {
           />
 
           <HomeStats weeklySummary={weeklySummary} />
+          <TopTargetsCard weeklySummary={weeklySummary} />
           <RecentHero hero={hero} />
           <RecentList sessions={recentSessions} />
         </BodyStack>

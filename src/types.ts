@@ -33,4 +33,8 @@ export interface WeeklySummary {
   averageBefore: number;
   averageAfter: number;
   bestRelease: number;
+  topTargets: Array<{
+    label: string;
+    count: number;
+  }>;
 }

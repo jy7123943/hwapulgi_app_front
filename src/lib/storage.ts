@@ -44,11 +44,27 @@ export function getWeeklySummary(sessions: SessionResult[]): WeeklySummary {
       averageBefore: 0,
       averageAfter: 0,
       bestRelease: 0,
+      topTargets: [],
     };
   }
 
   const totalBefore = weeklySessions.reduce((sum, session) => sum + session.angerBefore, 0);
   const totalAfter = weeklySessions.reduce((sum, session) => sum + session.angerAfter, 0);
+  const targetCounts = weeklySessions.reduce<Record<string, number>>((accumulator, session) => {
+    const label = formatSessionLabel(session);
+    accumulator[label] = (accumulator[label] ?? 0) + 1;
+    return accumulator;
+  }, {});
+  const topTargets = Object.entries(targetCounts)
+    .sort((left, right) => {
+      if (right[1] !== left[1]) {
+        return right[1] - left[1];
+      }
+
+      return left[0].localeCompare(right[0], "ko");
+    })
+    .slice(0, 3)
+    .map(([label, count]) => ({ label, count }));
 
   return {
     totalSessions: weeklySessions.length,
@@ -56,6 +72,7 @@ export function getWeeklySummary(sessions: SessionResult[]): WeeklySummary {
     averageBefore: Math.round(totalBefore / weeklySessions.length),
     averageAfter: Math.round(totalAfter / weeklySessions.length),
     bestRelease: Math.max(...weeklySessions.map((session) => session.releasedPercent)),
+    topTargets,
   };
 }
 
