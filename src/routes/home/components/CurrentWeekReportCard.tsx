@@ -1,39 +1,35 @@
 import { useMemo, useState } from "react";
 import { colors } from "@toss/tds-colors";
-import { Text } from "@toss/tds-mobile";
+import { Button, Text } from "@toss/tds-mobile";
 import { SectionCard } from "../../../components/shared/Surface";
 import { formatSessionLabel } from "../../../lib/storage";
 import type { WeeklySummary } from "../../../types";
 
-interface WeeklyCalendarCardProps {
+interface CurrentWeekReportCardProps {
   weeklySummary: WeeklySummary;
+  onOpen?: () => void;
 }
 
-function getAngerTone(angerLevel: number) {
-  if (angerLevel <= 0) {
-    return {
-      background: "rgba(255,255,255,0.7)",
-      border: "none",
-      text: colors.grey500,
-    };
-  }
-
-  if (angerLevel <= 40) {
-    return { background: "#e6deff", border: "none", text: "#7a5cc1" };
+function getBarColor(angerLevel: number) {
+  if (angerLevel <= 20) {
+    return colors.blue100;
   }
 
   if (angerLevel <= 60) {
-    return { background: "#fff0b8", border: "none", text: "#a27000" };
+    return colors.yellow200;
   }
 
   if (angerLevel <= 80) {
-    return { background: "#ffd7c9", border: "none", text: "#bf6450" };
+    return "#ffd6c9";
   }
 
-  return { background: "#ffc6d9", border: "none", text: "#c04d7c" };
+  return "#f7b3d0";
 }
 
-export function WeeklyCalendarCard({ weeklySummary }: WeeklyCalendarCardProps) {
+export function CurrentWeekReportCard({
+  weeklySummary,
+  onOpen,
+}: CurrentWeekReportCardProps) {
   const firstActiveDateKey = weeklySummary.calendarDays.find(
     (day) => day.sessions.length > 0,
   )?.dateKey;
@@ -51,80 +47,119 @@ export function WeeklyCalendarCard({ weeklySummary }: WeeklyCalendarCardProps) {
   const selectedSession = selectedDay?.sessions[0];
 
   return (
-    <SectionCard
-      css={{
-        background: "#ffffff",
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-      }}
-    >
+    <SectionCard css={{ background: "#ffffff" }}>
       <Text
         as="h3"
         typography="t6"
         fontWeight="bold"
         css={{ color: colors.grey900 }}
       >
-        이번 주 감정 캘린더
+        이번 주 감정 흐름
       </Text>
-      <Text as="p" typography="t7" css={{ color: colors.grey500 }}>
-        화를 꺼낸 날이 쌓일수록 내 패턴이 보여요.
+      <Text
+        as="p"
+        typography="t7"
+        css={{ color: colors.grey700, marginTop: 8 }}
+      >
+        이번 주 {weeklySummary.totalSessions}일 기록했고, 가장 많이 화난 대상은{" "}
+        {weeklySummary.topTargets[0]?.label ?? "-"}이에요.
+      </Text>
+      <Text
+        as="p"
+        typography="t7"
+        css={{ color: colors.grey700, marginTop: 4 }}
+      >
+        가장 힘들었던 요일은 {weeklySummary.hardestWeekday}였어요.
       </Text>
 
       <div
         css={{
           display: "grid",
           gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
-          gap: 8,
-          marginTop: 16,
+          gap: 10,
+          marginTop: 18,
+          alignItems: "end",
         }}
       >
-        {weeklySummary.calendarDays.map((day) => {
-          const tone = getAngerTone(day.angerLevel);
-
-          return (
-            <button
-              key={day.dateKey}
-              type="button"
-              onClick={() => setSelectedDateKey(day.dateKey)}
+        {weeklySummary.calendarDays.map((day) => (
+          <button
+            key={day.dateKey}
+            type="button"
+            onClick={() => setSelectedDateKey(day.dateKey)}
+            css={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              background: "transparent",
+              border: "none",
+              padding: 0,
+              margin: 0,
+            }}
+          >
+            <div
               css={{
-                borderRadius: 18,
-                border: "none",
-                background: tone.background,
-                padding: "12px 6px",
+                width: "100%",
+                maxWidth: 32,
+                height: 116,
+                borderRadius: 999,
+                background: colors.grey100,
+                display: "flex",
+                alignItems: "flex-end",
+                justifyContent: "center",
+                padding: 4,
+              }}
+            >
+              <div
+                css={{
+                  width: "100%",
+                  minHeight: day.sessions.length > 0 ? 12 : 8,
+                  height: `${Math.max(day.angerLevel, day.sessions.length > 0 ? 14 : 8)}%`,
+                  borderRadius: 999,
+                  background:
+                    day.sessions.length > 0
+                      ? getBarColor(day.angerLevel)
+                      : colors.grey200,
+                  transition: "height 180ms ease",
+                }}
+              />
+            </div>
+            <div
+              css={{
+                marginTop: 8,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: 6,
-                minHeight: 86,
-                boxShadow: "none",
               }}
             >
-              <Text as="span" typography="t7" css={{ color: colors.grey600 }}>
+              <Text
+                as="div"
+                typography="t7"
+                css={{
+                  color:
+                    day.dateKey === selectedDateKey
+                      ? colors.grey900
+                      : colors.grey400,
+                }}
+              >
                 {day.dayLabel}
               </Text>
               <Text
-                as="span"
+                as="div"
                 typography="t6"
                 fontWeight="bold"
-                css={{ color: tone.text }}
+                css={{
+                  color:
+                    day.dateKey === selectedDateKey
+                      ? colors.grey900
+                      : colors.grey500,
+                  marginTop: 2,
+                }}
               >
                 {day.dayNumber}
               </Text>
-              <div
-                css={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: "999px",
-                  background:
-                    day.sessions.length > 0
-                      ? tone.text
-                      : "rgba(120, 120, 120, 0.18)",
-                }}
-              />
-            </button>
-          );
-        })}
+            </div>
+          </button>
+        ))}
       </div>
 
       <div
@@ -136,10 +171,10 @@ export function WeeklyCalendarCard({ weeklySummary }: WeeklyCalendarCardProps) {
         }}
       >
         {[
-          ["평온", "#e6deff"],
-          ["스트레스", "#fff0b8"],
-          ["화남", "#ffd7c9"],
-          ["폭발", "#ffc6d9"],
+          ["평온", colors.blue100],
+          ["스트레스", colors.yellow200],
+          ["화남", "#ffd6c9"],
+          ["폭발", "#f7b3d0"],
         ].map(([label, color]) => (
           <div
             key={label}
@@ -169,10 +204,12 @@ export function WeeklyCalendarCard({ weeklySummary }: WeeklyCalendarCardProps) {
 
       <div
         css={{
-          marginTop: 16,
+          marginTop: 14,
           borderRadius: 22,
           padding: 16,
           background: colors.grey50,
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <Text
@@ -196,7 +233,7 @@ export function WeeklyCalendarCard({ weeklySummary }: WeeklyCalendarCardProps) {
             }}
           >
             <Text as="div" typography="t7" css={{ color: colors.grey700 }}>
-              대상: {formatSessionLabel(selectedSession)}
+              분노 유발자: {formatSessionLabel(selectedSession)}
             </Text>
             <Text as="div" typography="t7" css={{ color: colors.grey700 }}>
               분노 게이지: {selectedSession.angerBefore} →{" "}
@@ -219,6 +256,18 @@ export function WeeklyCalendarCard({ weeklySummary }: WeeklyCalendarCardProps) {
           </Text>
         )}
       </div>
+
+      {onOpen ? (
+        <Button
+          color="primary"
+          display="block"
+          onClick={onOpen}
+          size="large"
+          css={{ marginTop: 16 }}
+        >
+          이번 주 정리 보기
+        </Button>
+      ) : null}
     </SectionCard>
   );
 }

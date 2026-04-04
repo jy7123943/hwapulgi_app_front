@@ -7,12 +7,14 @@ import {
   type PropsWithChildren,
 } from 'react';
 import { defaultDraft } from '../constants';
-import { getWeeklySummary, loadSessions, saveSession, updateSession } from '../lib/storage';
-import type { SessionInput, SessionResult, TargetOption } from '../types';
+import { getHomeSnapshot, getWeeklyArchives, getWeeklySummary, loadSessions, saveSession, updateSession } from '../lib/storage';
+import type { HomeSnapshot, SessionInput, SessionResult, TargetOption, WeeklyArchive } from '../types';
 
 interface AppStateValue {
   draft: SessionInput;
+  homeSnapshot: HomeSnapshot;
   sessions: SessionResult[];
+  weeklyArchives: WeeklyArchive[];
   weeklySummary: ReturnType<typeof getWeeklySummary>;
   lastResult: SessionResult | null;
   hasHistory: boolean;
@@ -22,6 +24,7 @@ interface AppStateValue {
   setAngerBefore: (value: number) => void;
   setMemo: (value: string) => void;
   resetDraft: () => void;
+  reuseSessionDraft: (session: SessionResult) => void;
   updateLastResultAngerAfter: (angerAfter: number) => void;
   completeSession: (payload: {
     hits: number;
@@ -42,11 +45,15 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   }, []);
 
   const weeklySummary = useMemo(() => getWeeklySummary(sessions), [sessions]);
+  const weeklyArchives = useMemo(() => getWeeklyArchives(sessions), [sessions]);
+  const homeSnapshot = useMemo(() => getHomeSnapshot(sessions, weeklySummary), [sessions, weeklySummary]);
 
   const value = useMemo<AppStateValue>(
     () => ({
       draft,
+      homeSnapshot,
       sessions,
+      weeklyArchives,
       weeklySummary,
       lastResult,
       hasHistory: sessions.length > 0,
@@ -61,6 +68,14 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       setAngerBefore: (value) => setDraft((prev) => ({ ...prev, angerBefore: value })),
       setMemo: (value) => setDraft((prev) => ({ ...prev, memo: value })),
       resetDraft: () => setDraft(defaultDraft),
+      reuseSessionDraft: (session) =>
+        setDraft({
+          target: session.target,
+          customTarget: session.customTarget ?? '',
+          nickname: session.nickname,
+          angerBefore: session.angerBefore,
+          memo: session.memo,
+        }),
       updateLastResultAngerAfter: (angerAfter) => {
         const nextAngerAfter = Math.trunc(angerAfter);
 
@@ -110,7 +125,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         return result;
       },
     }),
-    [draft, lastResult, sessions, weeklySummary],
+    [draft, homeSnapshot, lastResult, sessions, weeklyArchives, weeklySummary],
   );
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;

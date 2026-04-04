@@ -28,6 +28,8 @@ export interface SessionResult extends SessionInput {
 }
 
 export interface WeeklySummary {
+  averageRelease: number;
+  label: string;
   totalSessions: number;
   totalHits: number;
   averageBefore: number;
@@ -48,4 +50,27 @@ export interface WeeklySummary {
     angerLevel: number;
     sessions: SessionResult[];
   }>;
+}
+
+export interface WeeklyArchive {
+  id: string;
+  label: string;
+  periodText: string;
+  totalSessions: number;
+  totalHits: number;
+  totalReleased: number;
+  averageBefore: number;
+  averageAfter: number;
+  averageRelease: number;
+  topTarget: string;
+  hardestWeekday: string;
+}
+
+export interface HomeSnapshot {
+  todayCount: number;
+  latestReleasePercent: number;
+  latestTarget: string;
+  primaryTarget: string;
+  weeklySessions: number;
+  weeklyAverageRelease: number;
 }

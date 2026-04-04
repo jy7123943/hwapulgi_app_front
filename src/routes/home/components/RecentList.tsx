@@ -1,14 +1,15 @@
 import { colors } from '@toss/tds-colors';
-import { Text } from '@toss/tds-mobile';
+import { Button, Text } from '@toss/tds-mobile';
 import { SectionCard } from '../../../components/shared/Surface';
 import { formatSessionLabel } from '../../../lib/storage';
 import type { SessionResult } from '../../../types';
 
 interface RecentListProps {
+  onReplay: (session: SessionResult) => void;
   sessions: SessionResult[];
 }
 
-export function RecentList({ sessions }: RecentListProps) {
+export function RecentList({ onReplay, sessions }: RecentListProps) {
   return (
     <SectionCard css={{ background: '#ffffff' }}>
       <Text as="div" typography="t6" fontWeight="bold" css={{ marginBottom: 12 }}>
@@ -25,8 +26,8 @@ export function RecentList({ sessions }: RecentListProps) {
           <article
             key={session.id}
             css={{
-              display: 'flex',
-              justifyContent: 'space-between',
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 1fr) auto',
               gap: 12,
               alignItems: 'center',
               padding: 16,
@@ -36,21 +37,21 @@ export function RecentList({ sessions }: RecentListProps) {
           >
             <div>
               <strong css={{ display: 'block', marginBottom: 4 }}>{formatSessionLabel(session)}</strong>
-              <p css={{ margin: 0, color: colors.grey600 }}>{new Date(session.createdAt).toLocaleString('ko-KR')}</p>
+              <p css={{ margin: 0, color: colors.grey600 }}>
+                {session.hits} hits · {session.angerBefore} → {session.angerAfter}
+              </p>
             </div>
-            <div
-              css={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-end',
-                gap: 4,
-                color: '#c96f2a',
-                fontSize: 13,
-                fontWeight: 700,
-              }}
-            >
-              <span>{session.hits} hits</span>
-              <span>{session.releasedPercent}%</span>
+            <div css={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+              <Text as="span" typography="t7" fontWeight="bold" css={{ color: '#c96f2a' }}>
+                {session.releasedPercent}%
+              </Text>
+              <Button
+                color="dark"
+                onClick={() => onReplay(session)}
+                size="small"
+              >
+                다시 혼내주기
+              </Button>
             </div>
           </article>
         ))}
