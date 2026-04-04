@@ -13,7 +13,6 @@ export function HomeRoute() {
   const navigate = useNavigate();
   const {
     homeSnapshot,
-    reuseSessionDraft,
     sessions,
     resetDraft,
   } =
@@ -30,13 +29,7 @@ export function HomeRoute() {
             }}
             snapshot={homeSnapshot}
           />
-          <RecentList
-            onReplay={(session) => {
-              reuseSessionDraft(session);
-              navigate("/play");
-            }}
-            sessions={recentSessions}
-          />
+          <RecentList sessions={recentSessions} />
         </BodyStack>
       </ScreenPanel>
       <BottomTabBar />

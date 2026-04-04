@@ -14,6 +14,7 @@ interface AppStateValue {
   draft: SessionInput;
   homeSnapshot: HomeSnapshot;
   sessions: SessionResult[];
+  isHydrated: boolean;
   recentCustomTargets: string[];
   recentNicknames: string[];
   weeklyArchives: WeeklyArchive[];
@@ -39,11 +40,13 @@ const AppStateContext = createContext<AppStateValue | null>(null);
 
 export function AppStateProvider({ children }: PropsWithChildren) {
   const [draft, setDraft] = useState<SessionInput>(defaultDraft);
-  const [sessions, setSessions] = useState<SessionResult[]>([]);
+  const [sessions, setSessions] = useState<SessionResult[]>(() => loadSessions());
+  const [isHydrated, setIsHydrated] = useState(false);
   const [lastResult, setLastResult] = useState<SessionResult | null>(null);
 
   useEffect(() => {
     setSessions(loadSessions());
+    setIsHydrated(true);
   }, []);
 
   const weeklySummary = useMemo(() => getWeeklySummary(sessions), [sessions]);
@@ -77,6 +80,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       draft,
       homeSnapshot,
       sessions,
+      isHydrated,
       recentCustomTargets,
       recentNicknames,
       weeklyArchives,
@@ -151,7 +155,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         return result;
       },
     }),
-    [draft, homeSnapshot, lastResult, recentCustomTargets, recentNicknames, sessions, weeklyArchives, weeklySummary],
+    [draft, homeSnapshot, isHydrated, lastResult, recentCustomTargets, recentNicknames, sessions, weeklyArchives, weeklySummary],
   );
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;

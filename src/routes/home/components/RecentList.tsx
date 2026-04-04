@@ -1,11 +1,10 @@
 import { colors } from "@toss/tds-colors";
-import { Button, Text } from "@toss/tds-mobile";
+import { Text } from "@toss/tds-mobile";
 import { SectionCard } from "../../../components/shared/Surface";
 import { formatSessionLabel } from "../../../lib/storage";
 import type { SessionResult } from "../../../types";
 
 interface RecentListProps {
-  onReplay: (session: SessionResult) => void;
   sessions: SessionResult[];
 }
 
@@ -18,7 +17,7 @@ function formatSessionDateTime(createdAt: string) {
   return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()} ${String(displayHour).padStart(2, "0")}${period}`;
 }
 
-export function RecentList({ onReplay, sessions }: RecentListProps) {
+export function RecentList({ sessions }: RecentListProps) {
   return (
     <SectionCard css={{ background: "#ffffff" }}>
       <Text
