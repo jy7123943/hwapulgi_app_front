@@ -36,6 +36,9 @@ export function HomeRoute() {
           <SectionCard
             css={{
               background: "#ffffff",
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
             }}
           >
             <Text
@@ -46,11 +49,7 @@ export function HomeRoute() {
             >
               이번 주 한 줄 요약
             </Text>
-            <Text
-              as="p"
-              typography="t6"
-              css={{ color: colors.grey700, marginTop: 10 }}
-            >
+            <Text as="p" typography="t6" css={{ color: colors.grey700 }}>
               {weeklySummary.weeklyHeadline}
             </Text>
           </SectionCard>

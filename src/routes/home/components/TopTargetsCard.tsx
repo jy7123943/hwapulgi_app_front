@@ -14,7 +14,7 @@ export function TopTargetsCard({ weeklySummary }: TopTargetsCardProps) {
         background: '#ffffff',
       }}
     >
-      <Text as="h3" typography="t5" fontWeight="bold" css={{ color: colors.grey900 }}>
+      <Text as="h3" typography="t6" fontWeight="bold" css={{ color: colors.grey900 }}>
         이번 주 나를 가장 화나게 한 대상
       </Text>
 
