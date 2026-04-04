@@ -22,11 +22,13 @@ export function GameRoute() {
     angerGaugePercent,
     currentAnger,
     handleGameHit,
+    hapticsMuted,
     hits,
     muted,
     sessionKey,
     taunt,
     setGameController,
+    setHapticsMuted,
     setMuted,
     stopTauntRotation,
   } = useGameSession({ angerBefore: draft.angerBefore });
@@ -353,8 +355,10 @@ export function GameRoute() {
         ) : null}
 
         <GameActions
+          hapticsMuted={hapticsMuted}
           muted={muted}
           onFinish={finishGame}
+          onToggleHaptics={() => setHapticsMuted((prev) => !prev)}
           onToggleMute={() => setMuted((prev) => !prev)}
         />
       </div>
