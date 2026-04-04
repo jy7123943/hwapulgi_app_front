@@ -105,8 +105,8 @@ export function CurrentWeekReportCard({
                 background: colors.grey100,
                 display: "flex",
                 alignItems: "flex-end",
-                justifyContent: "center",
-                padding: 4,
+                justifyContent: "stretch",
+                overflow: "hidden",
               }}
             >
               <div
