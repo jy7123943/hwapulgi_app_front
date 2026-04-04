@@ -255,6 +255,8 @@ export function createAngerGame(
       .setScale(startScale)
       .setAngle(startAngle);
 
+    starEnergy = Phaser.Math.FloatBetween(0.92, 1.18);
+
     scene.tweens.add({
       targets: comboPopup,
       alpha: 1,
@@ -401,7 +403,6 @@ export function createAngerGame(
 
     hits += 1;
     anger = Math.max(0, anger - angerDrop);
-    starEnergy = Phaser.Math.Clamp(0.72 + impactStrength * 0.34, 0.72, 1.18);
     shakeEnergy = impactStrength;
     auraEnergy = Phaser.Math.Clamp(
       auraEnergy + impactStrength * 0.42,
