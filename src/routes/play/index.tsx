@@ -12,7 +12,7 @@ import { useGameSession } from "./useGameSession";
 const GameArena = lazy(() =>
   import("../../components/GameArena").then((module) => ({
     default: module.GameArena,
-  }))
+  })),
 );
 
 export function GameRoute() {
@@ -94,7 +94,11 @@ export function GameRoute() {
 
   useEffect(() => {
     if (hits > 0 && currentAnger <= 0) {
-      finishGameWithOverlay();
+      const timeout = window.setTimeout(() => {
+        finishGameWithOverlay();
+      }, 2200);
+
+      return () => window.clearTimeout(timeout);
     }
   }, [currentAnger, hits]);
 
@@ -236,29 +240,29 @@ export function GameRoute() {
                 textAlign: "center",
               }}
             >
-                  <div
-                    css={{
-                      width: 88,
-                      height: 88,
-                      borderRadius: 24,
-                      background: "rgba(255,255,255,0.08)",
-                      display: "grid",
-                      placeItems: "center",
-                      boxShadow: "none",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <img
-                      alt=""
-                      src={`${import.meta.env.BASE_URL}angryface.png`}
-                      css={{
-                        width: 72,
-                        height: 72,
-                        objectFit: "contain",
-                        display: "block",
-                      }}
-                    />
-                  </div>
+              <div
+                css={{
+                  width: 88,
+                  height: 88,
+                  borderRadius: 24,
+                  background: "rgba(255,255,255,0.08)",
+                  display: "grid",
+                  placeItems: "center",
+                  boxShadow: "none",
+                  overflow: "hidden",
+                }}
+              >
+                <img
+                  alt=""
+                  src={`${import.meta.env.BASE_URL}angryface.png`}
+                  css={{
+                    width: 72,
+                    height: 72,
+                    objectFit: "contain",
+                    display: "block",
+                  }}
+                />
+              </div>
               <Text
                 typography="t4"
                 fontWeight="bold"
@@ -341,7 +345,7 @@ export function GameRoute() {
                 fontWeight="bold"
                 css={{ color: colors.background }}
               >
-                배출 완료!
+                분노 격파 성공!
               </Text>
               <Text
                 typography="t6"

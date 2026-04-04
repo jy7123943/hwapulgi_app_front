@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { playHitSound } from "../lib/sounds";
 
 const avatarAssetUrl = `${import.meta.env.BASE_URL}avatar.png`;
+const FINAL_REACTION_LINE = "오늘은 제가 졌어요...";
 const HIT_REACTION_LINES = {
   defiant: [
     "악!",
@@ -104,6 +105,7 @@ export function createAngerGame(
   let comboMomentum = 0.5;
   let auraEnergy = 0;
   let pendingSpeechBubble: Phaser.Time.TimerEvent | null = null;
+  let finishTriggered = false;
 
   function createTextTexture(
     scene: Phaser.Scene,
@@ -239,6 +241,71 @@ export function createAngerGame(
     }
 
     return Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES.formal);
+  }
+
+  function triggerFinalAnimation() {
+    if (!sceneRef || !avatar || finishTriggered) {
+      return;
+    }
+
+    finishTriggered = true;
+    pendingSpeechBubble?.remove(false);
+    pendingSpeechBubble = null;
+    showSpeechBubble(FINAL_REACTION_LINE);
+    starEnergy = 1.45;
+    shakeEnergy = 0;
+    megaSquashEnergy = 0;
+    sceneRef.cameras.main.shake(240, 0.0065);
+
+    if (nameplate) {
+      sceneRef.tweens.add({
+        targets: nameplate,
+        alpha: 0.3,
+        y: avatar.y - 104,
+        duration: 260,
+        ease: "Quad.easeOut",
+      });
+    }
+
+    sceneRef.tweens.add({
+      targets: avatar,
+      angle: 18,
+      x: centerX() + 18,
+      y: centerY() + 8,
+      duration: 150,
+      ease: "Sine.easeOut",
+      onComplete: () => {
+        sceneRef?.tweens.add({
+          targets: avatar,
+          angle: 90,
+          x: centerX() + 92,
+          y: centerY() + 62,
+          scaleX: avatarBaseScaleX * 0.94,
+          scaleY: avatarBaseScaleY * 0.94,
+          duration: 320,
+          ease: "Cubic.easeIn",
+          onComplete: () => {
+            sceneRef?.tweens.add({
+              targets: avatar,
+              x: centerX() + 98,
+              y: centerY() + 66,
+              duration: 180,
+              ease: "Bounce.easeOut",
+            });
+          },
+        });
+      },
+    });
+
+    if (shadow) {
+      sceneRef.tweens.add({
+        targets: shadow,
+        scaleX: 1.18,
+        alpha: 0.34,
+        duration: 380,
+        ease: "Quad.easeOut",
+      });
+    }
   }
 
   function showComboPopup(
@@ -465,6 +532,10 @@ export function createAngerGame(
       megaSquashEnergy = Phaser.Math.FloatBetween(0.7, 1);
     }
 
+    if (anger <= 0) {
+      triggerFinalAnimation();
+    }
+
     if (cadenceStrength > 0.9 && impactStrength > 1.02 && COMBO_FEEDBACK[comboStreak]) {
       const comboFeedback = COMBO_FEEDBACK[comboStreak];
       showComboPopup(
@@ -671,6 +742,11 @@ export function createAngerGame(
           const megaSquashX = 1 - megaSquashEnergy * 0.18;
           const megaSquashY = 1 + megaSquashEnergy * 0.08;
 
+          if (finishTriggered) {
+            updateStarsPosition();
+            return;
+          }
+
           avatar.setPosition(centerX() + offsetX, centerY() + offsetY);
           avatar.setAngle(rotate);
           avatar.setScale(
@@ -690,6 +766,7 @@ export function createAngerGame(
               avatar.y - 126 + offsetY * 0.08
             );
           }
+
         }
 
         if (heatAura && emberAura) {
@@ -794,6 +871,7 @@ export function createAngerGame(
       heatAura = null;
       emberAura = null;
       stars = [];
+      finishTriggered = false;
     },
     resize,
   };
