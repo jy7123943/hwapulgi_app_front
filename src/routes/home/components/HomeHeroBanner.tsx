@@ -50,29 +50,35 @@ export function HomeHeroBanner({ onStart, snapshot }: HomeHeroBannerProps) {
         />
 
         <div css={{ minWidth: 0 }}>
-          <Text
-            as="h2"
-            typography="t2"
-            fontWeight="bold"
-            css={{ color: colors.grey900, whiteSpace: "pre-wrap" }}
-          >
-            {"오늘도 참느라\n고생했어요."}
-          </Text>
-          <Text
-            as="p"
-            typography="t7"
-            css={{ color: colors.grey700, marginTop: 8 }}
-          >
-            오늘 {snapshot.todayCount}번 꺼내봤고, 최근엔{" "}
-            <b>{snapshot.latestTarget}</b> 때문에 기록했어요.
-          </Text>
-          <Text
-            as="p"
-            typography="t7"
-            css={{ color: colors.grey700, marginTop: 4 }}
-          >
-            이번 주엔 <b>{snapshot.primaryTarget}</b> 때문에 가장 자주 화가 났어요.
-          </Text>
+          <div>
+            <Text
+              as="h2"
+              typography="t2"
+              fontWeight="bold"
+              css={{ color: colors.grey900, whiteSpace: "pre-wrap" }}
+            >
+              {"오늘도 참느라\n고생했어요."}
+            </Text>
+          </div>
+          <div css={{ marginTop: 8 }}>
+            <Text
+              as="p"
+              typography="t7"
+              css={{ color: colors.grey700 }}
+            >
+              오늘 {snapshot.todayCount}번 꺼내봤고, 최근엔{" "}
+              <b>{snapshot.latestTarget}</b> 때문에 기록했어요.
+            </Text>
+          </div>
+          <div css={{ marginTop: 4 }}>
+            <Text
+              as="p"
+              typography="t7"
+              css={{ color: colors.grey700 }}
+            >
+              이번 주엔 <b>{snapshot.primaryTarget}</b> 때문에 가장 자주 화가 났어요.
+            </Text>
+          </div>
         </div>
       </div>
 

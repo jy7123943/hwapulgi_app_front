@@ -102,26 +102,28 @@ export function ResultRoute() {
           </div>
 
           <SectionCard>
-            <Text
-              as="div"
-              typography="t6"
-              fontWeight="bold"
-              css={{ display: "block", marginBottom: 12 }}
-            >
-              이번 기록 메모
-            </Text>
-            <Text
-              as="div"
-              typography="t6"
-              css={{
-                display: "block",
-                margin: 0,
-                color: colors.grey600,
-                wordBreak: "break-word",
-              }}
-            >
-              {lastResult.memo || "이번 기록에는 별도 메모를 남기지 않았어요."}
-            </Text>
+            <div css={{ marginBottom: 12 }}>
+              <Text
+                as="div"
+                typography="t6"
+                fontWeight="bold"
+                css={{ color: colors.grey900 }}
+              >
+                이번 기록 메모
+              </Text>
+            </div>
+            <div>
+              <Text
+                as="div"
+                typography="t6"
+                css={{
+                  color: colors.grey600,
+                  wordBreak: "break-word",
+                }}
+              >
+                {lastResult.memo || "이번 기록에는 별도 메모를 남기지 않았어요."}
+              </Text>
+            </div>
           </SectionCard>
         </BodyStack>
       </ScreenPanel>
