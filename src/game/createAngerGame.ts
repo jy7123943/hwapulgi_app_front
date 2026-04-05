@@ -1,33 +1,57 @@
 import Phaser from "phaser";
+import { playHitSound } from "../lib/sounds";
 
 const avatarAssetUrl = `${import.meta.env.BASE_URL}avatar.png`;
-const HIT_REACTION_LINES = [
-  "죄송합니다.",
-  "제가 잘못했어요.",
-  "한 번만 봐주세요.",
-  "다시는 안 그럴게요.",
-  "진짜 반성 중이에요.",
-  "제가 실수했어요.",
-  "제발 한 번만 용서해 주세요.",
-  "제가 너무 경솔했어요.",
-  "정말 크게 반성하고 있어요.",
-  "말씀하신 게 맞아요.",
-  "이번엔 제가 선 넘었어요.",
-  "변명 안 할게요.",
-  "정말 죄송한 마음뿐이에요.",
-  "제가 생각이 짧았어요.",
-  "다 제 잘못입니다.",
-  "진심으로 사과드려요.",
-  "제가 먼저 잘못했어요.",
-  "다시 생각해 보니 제 탓이에요.",
-  "한 번만 기회 주세요.",
-  "이건 제가 잘못 한 거예요.",
-  "제가 너무 무례했어요.",
-  "제가 괜히 그랬어요.",
-];
+const FINAL_REACTION_LINE = "제가 졌어요...";
+const HIT_REACTION_LINES = {
+  defiant: [
+    "악!",
+    "왜 때려!",
+    "아파!",
+    "너무하네!",
+    "그만 좀!",
+    "으악!",
+  ],
+  defensive: [
+    "잠깐만요!",
+    "제 말도 들어보세요!",
+    "너무 세잖아요!",
+    "한 번만 봐주세요!",
+    "제가 설명할게요!",
+    "진정해요!",
+  ],
+  apologetic: [
+    "죄송합니다.",
+    "제가 잘못했어요.",
+    "다시는 안 그럴게요.",
+    "진짜 반성 중이에요.",
+    "제가 실수했어요.",
+    "변명 안 할게요.",
+    "한 번만 기회 주세요.",
+  ],
+  formal: [
+    "진심으로 사과드립니다.",
+    "제 잘못을 인정합니다.",
+    "정말 죄송한 마음뿐입니다.",
+    "깊이 반성하고 있습니다.",
+    "다시는 같은 실수 하지 않겠습니다.",
+    "제가 먼저 사과드리겠습니다.",
+    "불편을 드려 죄송합니다.",
+  ],
+};
+const COMBO_FEEDBACK: Record<
+  number,
+  { labels: string[]; color: string; fontSize: number; fontWeight: number }
+> = {
+  5: { labels: ["퍽!"], color: "#ffe06b", fontSize: 14, fontWeight: 800 },
+  10: { labels: ["연타!"], color: "#ff9e6d", fontSize: 17, fontWeight: 900 },
+  15: { labels: ["폭주!"], color: "#ff7b7b", fontSize: 21, fontWeight: 900 },
+  20: { labels: ["난타!"], color: "#d09cff", fontSize: 24, fontWeight: 900 },
+};
 
 interface Callbacks {
   onHit: (remaining: number, hits: number, impactStrength: number) => void;
+  isMuted: () => boolean;
 }
 
 export interface AngerGameController {
@@ -58,6 +82,8 @@ export function createAngerGame(
   let speechBubbleTextureKey: string | null = null;
   let heatAura: Phaser.GameObjects.Ellipse | null = null;
   let emberAura: Phaser.GameObjects.Ellipse | null = null;
+  let comboPopup: Phaser.GameObjects.Image | null = null;
+  let comboPopupTextureKey: string | null = null;
   let avatarBaseScaleX = 1;
   let avatarBaseScaleY = 1;
   let stars: Phaser.GameObjects.Star[] = [];
@@ -75,9 +101,11 @@ export function createAngerGame(
   let shakeSquashSpeed = 30;
   let megaSquashEnergy = 0;
   let lastHitAt = 0;
+  let comboStreak = 0;
   let comboMomentum = 0.5;
   let auraEnergy = 0;
   let pendingSpeechBubble: Phaser.Time.TimerEvent | null = null;
+  let finishTriggered = false;
 
   function createTextTexture(
     scene: Phaser.Scene,
@@ -196,6 +224,181 @@ export function createAngerGame(
     drawSpeechBubble(texture.width, texture.height);
   }
 
+  function getReactionLine() {
+    const releaseRatio =
+      1 - Phaser.Math.Clamp(anger / Math.max(initialAnger, 1), 0, 1);
+
+    if (releaseRatio <= 0.1) {
+      return Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES.defiant);
+    }
+
+    if (releaseRatio <= 0.45) {
+      return Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES.defensive);
+    }
+
+    if (releaseRatio <= 0.82) {
+      return Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES.apologetic);
+    }
+
+    return Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES.formal);
+  }
+
+  function triggerFinalAnimation() {
+    if (!sceneRef || !avatar || finishTriggered) {
+      return;
+    }
+
+    finishTriggered = true;
+    pendingSpeechBubble?.remove(false);
+    pendingSpeechBubble = null;
+    showSpeechBubble(FINAL_REACTION_LINE);
+    starEnergy = 1.45;
+    shakeEnergy = 0;
+    megaSquashEnergy = 0;
+    sceneRef.cameras.main.shake(240, 0.0065);
+
+    if (nameplate) {
+      sceneRef.tweens.add({
+        targets: nameplate,
+        alpha: 0.3,
+        y: avatar.y - 104,
+        duration: 260,
+        ease: "Quad.easeOut",
+      });
+    }
+
+    sceneRef.tweens.add({
+      targets: avatar,
+      angle: 18,
+      x: centerX() + 18,
+      y: centerY() + 8,
+      duration: 150,
+      ease: "Sine.easeOut",
+      onComplete: () => {
+        sceneRef?.tweens.add({
+          targets: avatar,
+          angle: 90,
+          x: centerX() + 92,
+          y: centerY() + 62,
+          scaleX: avatarBaseScaleX * 0.94,
+          scaleY: avatarBaseScaleY * 0.94,
+          duration: 320,
+          ease: "Cubic.easeIn",
+          onComplete: () => {
+            sceneRef?.tweens.add({
+              targets: avatar,
+              x: centerX() + 98,
+              y: centerY() + 66,
+              duration: 180,
+              ease: "Bounce.easeOut",
+            });
+          },
+        });
+      },
+    });
+
+    if (shadow) {
+      sceneRef.tweens.add({
+        targets: shadow,
+        scaleX: 1.18,
+        alpha: 0.34,
+        duration: 380,
+        ease: "Quad.easeOut",
+      });
+    }
+  }
+
+  function showComboPopup(
+    labels: string[],
+    color: string,
+    fontSize: number,
+    fontWeight: number
+  ) {
+    if (!sceneRef) {
+      return;
+    }
+    const scene = sceneRef;
+    const label = Phaser.Utils.Array.GetRandom(labels);
+    const startX = centerX() + Phaser.Math.Between(-26, 26);
+    const startY = centerY() - Phaser.Math.Between(104, 126);
+    const endX = startX + Phaser.Math.Between(-10, 10);
+    const endY = startY - Phaser.Math.Between(10, 18);
+    const fadeX = endX + Phaser.Math.Between(-6, 6);
+    const fadeY = endY - Phaser.Math.Between(10, 16);
+    const startAngle = Phaser.Math.FloatBetween(-12, 12);
+    const endAngle = Phaser.Math.FloatBetween(-5, 5);
+    const startScale = Phaser.Math.FloatBetween(0.72, 0.82);
+    const popScale = Phaser.Math.FloatBetween(0.94, 1.02);
+    const fadeScale = Phaser.Math.FloatBetween(1.02, 1.1);
+
+    if (comboPopup) {
+      scene.tweens.killTweensOf(comboPopup);
+      comboPopup.destroy();
+      comboPopup = null;
+    }
+
+    if (comboPopupTextureKey && scene.textures.exists(comboPopupTextureKey)) {
+      scene.textures.remove(comboPopupTextureKey);
+    }
+
+    comboPopupTextureKey = `combo-popup-${crypto.randomUUID()}`;
+    const texture = createTextTexture(
+      scene,
+      comboPopupTextureKey,
+      label,
+      color,
+      fontSize,
+      fontWeight
+    );
+
+    if (!texture) {
+      return;
+    }
+
+    comboPopup = scene.add
+      .image(startX, startY, texture.key)
+      .setOrigin(0.5)
+      .setDisplaySize(texture.width, texture.height)
+      .setAlpha(0)
+      .setScale(startScale)
+      .setAngle(startAngle);
+
+    starEnergy = Phaser.Math.FloatBetween(0.92, 1.18);
+
+    scene.tweens.add({
+      targets: comboPopup,
+      alpha: 1,
+      scaleX: popScale,
+      scaleY: popScale,
+      x: endX,
+      y: endY,
+      angle: endAngle,
+      duration: 120,
+      ease: "Back.easeOut",
+    });
+
+    scene.tweens.add({
+      targets: comboPopup,
+      alpha: 0,
+      scaleX: fadeScale,
+      scaleY: fadeScale,
+      x: fadeX,
+      y: fadeY,
+      angle: endAngle + Phaser.Math.FloatBetween(-4, 4),
+      delay: 240,
+      duration: 180,
+      ease: "Quad.easeIn",
+      onComplete: () => {
+        comboPopup?.destroy();
+        comboPopup = null;
+        if (comboPopupTextureKey && scene.textures.exists(comboPopupTextureKey)) {
+          scene.textures.remove(comboPopupTextureKey);
+        }
+        comboPopupTextureKey = null;
+      },
+    });
+  }
+
   function showSpeechBubble(label: string) {
     if (!sceneRef || !avatar || !speechBubble || !speechBubbleBg) {
       return;
@@ -287,6 +490,7 @@ export function createAngerGame(
       0,
       1
     );
+    comboStreak = elapsedSinceLastHit <= 160 ? comboStreak + 1 : 1;
 
     comboMomentum =
       elapsedSinceLastHit > 680
@@ -307,7 +511,6 @@ export function createAngerGame(
 
     hits += 1;
     anger = Math.max(0, anger - angerDrop);
-    starEnergy = Phaser.Math.Clamp(0.72 + impactStrength * 0.34, 0.72, 1.18);
     shakeEnergy = impactStrength;
     auraEnergy = Phaser.Math.Clamp(
       auraEnergy + impactStrength * 0.42,
@@ -329,12 +532,49 @@ export function createAngerGame(
       megaSquashEnergy = Phaser.Math.FloatBetween(0.7, 1);
     }
 
+    if (anger <= 0) {
+      triggerFinalAnimation();
+      callbacks.onHit(anger, hits, impactStrength);
+
+      if (!callbacks.isMuted()) {
+        if (impactStrength >= 1.15) {
+          playHitSound(Math.random() < 0.58 ? "medium" : "hard");
+        } else if (impactStrength >= 0.82) {
+          playHitSound("medium");
+        } else {
+          playHitSound("soft");
+        }
+      }
+
+      return;
+    }
+
+    if (cadenceStrength > 0.9 && impactStrength > 1.02 && COMBO_FEEDBACK[comboStreak]) {
+      const comboFeedback = COMBO_FEEDBACK[comboStreak];
+      showComboPopup(
+        comboFeedback.labels,
+        comboFeedback.color,
+        comboFeedback.fontSize,
+        comboFeedback.fontWeight
+      );
+    }
+
     callbacks.onHit(anger, hits, impactStrength);
+
+    if (!callbacks.isMuted()) {
+      if (impactStrength >= 1.15) {
+        playHitSound(Math.random() < 0.58 ? "medium" : "hard");
+      } else if (impactStrength >= 0.82) {
+        playHitSound("medium");
+      } else {
+        playHitSound("soft");
+      }
+    }
 
     if (sceneRef && speechBubble && speechBubbleBg) {
       pendingSpeechBubble?.remove(false);
       pendingSpeechBubble = sceneRef.time.delayedCall(240, () => {
-        showSpeechBubble(Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES));
+        showSpeechBubble(getReactionLine());
         pendingSpeechBubble = null;
       });
     }
@@ -465,7 +705,7 @@ export function createAngerGame(
       speechBubble = this.add.container(centerX() + 44, centerY() - 126, [
         speechBubbleBg,
       ]);
-      updateSpeechBubbleLabel(HIT_REACTION_LINES[0]);
+      updateSpeechBubbleLabel(HIT_REACTION_LINES.defiant[0]);
       speechBubble.setAlpha(0);
 
       stars = [
@@ -515,6 +755,11 @@ export function createAngerGame(
           const megaSquashX = 1 - megaSquashEnergy * 0.18;
           const megaSquashY = 1 + megaSquashEnergy * 0.08;
 
+          if (finishTriggered) {
+            updateStarsPosition();
+            return;
+          }
+
           avatar.setPosition(centerX() + offsetX, centerY() + offsetY);
           avatar.setAngle(rotate);
           avatar.setScale(
@@ -534,6 +779,7 @@ export function createAngerGame(
               avatar.y - 126 + offsetY * 0.08
             );
           }
+
         }
 
         if (heatAura && emberAura) {
@@ -612,6 +858,12 @@ export function createAngerGame(
       pendingSpeechBubble = null;
       shadow = null;
       flash = null;
+      comboPopup?.destroy();
+      comboPopup = null;
+      if (comboPopupTextureKey && game.textures.exists(comboPopupTextureKey)) {
+        game.textures.remove(comboPopupTextureKey);
+      }
+      comboPopupTextureKey = null;
       nameplate = null;
       nameplateBg = null;
       nameplateText = null;
@@ -632,6 +884,7 @@ export function createAngerGame(
       heatAura = null;
       emberAura = null;
       stars = [];
+      finishTriggered = false;
     },
     resize,
   };

@@ -6,7 +6,25 @@ interface GameMetricsProps {
   hits: number;
 }
 
+function getGaugeColor(angerGaugePercent: number) {
+  if (angerGaugePercent <= 20) {
+    return colors.blue400;
+  }
+
+  if (angerGaugePercent <= 50) {
+    return colors.yellow400;
+  }
+
+  if (angerGaugePercent <= 80) {
+    return '#ff9a6d';
+  }
+
+  return '#ff5a54';
+}
+
 export function GameMetrics({ angerGaugePercent, hits }: GameMetricsProps) {
+  const gaugeColor = getGaugeColor(angerGaugePercent);
+
   return (
     <div
       css={{
@@ -16,10 +34,10 @@ export function GameMetrics({ angerGaugePercent, hits }: GameMetricsProps) {
         borderRadius: 22,
         padding: '14px 18px',
         background: 'rgba(255,255,255,0.08)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        border: 'none',
         backdropFilter: 'blur(10px)',
         color: colors.background,
-        boxShadow: '0 14px 30px rgba(5, 12, 24, 0.3)',
+        boxShadow: 'none',
       }}
     >
       <div
@@ -87,8 +105,8 @@ export function GameMetrics({ angerGaugePercent, hits }: GameMetricsProps) {
               width: `${angerGaugePercent}%`,
               height: '100%',
               borderRadius: 999,
-              background: 'linear-gradient(90deg, #ff7d68 0%, #ff5147 100%)',
-              transition: 'width 160ms ease-out',
+              background: gaugeColor,
+              transition: 'width 160ms ease-out, background-color 180ms ease-out',
             }}
           />
         </div>

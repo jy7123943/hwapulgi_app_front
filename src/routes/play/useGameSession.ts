@@ -10,6 +10,7 @@ export function useGameSession({ angerBefore }: UseGameSessionParams) {
   const [currentAnger, setCurrentAnger] = useState(angerBefore);
   const [hits, setHits] = useState(0);
   const [muted, setMuted] = useState(false);
+  const [hapticsMuted, setHapticsMuted] = useState(false);
   const [taunt, setTaunt] = useState(TAUNT_LINES[0]);
   const [sessionKey] = useState(() => crypto.randomUUID());
   const tauntIntervalRef = useRef<number | null>(null);
@@ -47,20 +48,20 @@ export function useGameSession({ angerBefore }: UseGameSessionParams) {
     setHits(nextHits);
 
     if (impactStrength >= 1.15) {
-      if (!muted) {
+      if (!hapticsMuted) {
         void safeHaptic('basicMedium');
       }
       return;
     }
 
     if (impactStrength >= 0.82) {
-      if (!muted) {
+      if (!hapticsMuted) {
         void safeHaptic('tickMedium');
       }
       return;
     }
 
-    if (!muted) {
+    if (!hapticsMuted) {
       void safeHaptic('tickWeak');
     }
   }
@@ -69,11 +70,13 @@ export function useGameSession({ angerBefore }: UseGameSessionParams) {
     currentAnger,
     angerGaugePercent,
     gameController,
+    hapticsMuted,
     hits,
     muted,
     sessionKey,
     taunt,
     setGameController,
+    setHapticsMuted,
     setMuted,
     handleGameHit,
     stopTauntRotation: () => {

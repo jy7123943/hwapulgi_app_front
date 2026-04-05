@@ -3,6 +3,7 @@ import { createAngerGame, type AngerGameController } from '../game/createAngerGa
 
 interface GameArenaProps {
   initialAnger: number;
+  muted: boolean;
   nickname: string;
   sessionKey: string;
   onHit: (remaining: number, hits: number, impactStrength: number) => void;
@@ -11,6 +12,7 @@ interface GameArenaProps {
 
 export function GameArena({
   initialAnger,
+  muted,
   nickname,
   sessionKey,
   onHit,
@@ -19,6 +21,7 @@ export function GameArena({
   const hostRef = useRef<HTMLDivElement | null>(null);
   const onHitRef = useRef(onHit);
   const onReadyRef = useRef(onReady);
+  const mutedRef = useRef(muted);
 
   useEffect(() => {
     onHitRef.current = onHit;
@@ -29,6 +32,10 @@ export function GameArena({
   }, [onReady]);
 
   useEffect(() => {
+    mutedRef.current = muted;
+  }, [muted]);
+
+  useEffect(() => {
     if (!hostRef.current) {
       return;
     }
@@ -37,6 +44,7 @@ export function GameArena({
       onHit: (remaining, hits, impactStrength) => {
         onHitRef.current(remaining, hits, impactStrength);
       },
+      isMuted: () => mutedRef.current,
     });
     onReadyRef.current?.(controller);
 

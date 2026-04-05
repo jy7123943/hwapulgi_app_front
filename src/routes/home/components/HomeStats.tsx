@@ -1,7 +1,7 @@
-import { colors } from '@toss/tds-colors';
-import { Text } from '@toss/tds-mobile';
-import { StatCard, StatsGrid } from '../../../components/shared/Surface';
-import type { WeeklySummary } from '../../../types';
+import { colors } from "@toss/tds-colors";
+import { Text } from "@toss/tds-mobile";
+import { StatCard, StatsGrid } from "../../../components/shared/Surface";
+import type { WeeklySummary } from "../../../types";
 
 interface HomeStatsProps {
   weeklySummary: WeeklySummary;
@@ -10,29 +10,39 @@ interface HomeStatsProps {
 export function HomeStats({ weeklySummary }: HomeStatsProps) {
   return (
     <StatsGrid>
-      <StatCard>
-        <Text as="span" typography="t7" css={{ display: 'block', color: colors.grey600 }}>
-          이번 주 세션
-        </Text>
-        <strong>{weeklySummary.totalSessions}</strong>
-      </StatCard>
-      <StatCard>
-        <Text as="span" typography="t7" css={{ display: 'block', color: colors.grey600 }}>
+      <StatCard
+        css={{
+          background: "#ffffff",
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
+        <Text
+          as="span"
+          typography="t7"
+          css={{ display: "block", color: colors.grey600 }}
+        >
           총 타격 수
         </Text>
-        <strong>{weeklySummary.totalHits}</strong>
+        <strong css={{ color: "#6f48c9" }}>{weeklySummary.totalHits}</strong>
       </StatCard>
-      <StatCard>
-        <Text as="span" typography="t7" css={{ display: 'block', color: colors.grey600 }}>
-          시작 평균
+      <StatCard
+        css={{
+          background: "#ffffff",
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
+        <Text
+          as="span"
+          typography="t7"
+          css={{ display: "block", color: colors.grey600 }}
+        >
+          연속 기록
         </Text>
-        <strong>{weeklySummary.averageBefore}</strong>
-      </StatCard>
-      <StatCard>
-        <Text as="span" typography="t7" css={{ display: 'block', color: colors.grey600 }}>
-          종료 평균
-        </Text>
-        <strong>{weeklySummary.averageAfter}</strong>
+        <strong css={{ color: "#b36b13" }}>{weeklySummary.streakDays}일</strong>
       </StatCard>
     </StatsGrid>
   );

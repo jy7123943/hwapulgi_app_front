@@ -12,7 +12,7 @@ import { useGameSession } from "./useGameSession";
 const GameArena = lazy(() =>
   import("../../components/GameArena").then((module) => ({
     default: module.GameArena,
-  }))
+  })),
 );
 
 export function GameRoute() {
@@ -22,11 +22,13 @@ export function GameRoute() {
     angerGaugePercent,
     currentAnger,
     handleGameHit,
+    hapticsMuted,
     hits,
     muted,
     sessionKey,
     taunt,
     setGameController,
+    setHapticsMuted,
     setMuted,
     stopTauntRotation,
   } = useGameSession({ angerBefore: draft.angerBefore });
@@ -92,7 +94,11 @@ export function GameRoute() {
 
   useEffect(() => {
     if (hits > 0 && currentAnger <= 0) {
-      finishGameWithOverlay();
+      const timeout = window.setTimeout(() => {
+        finishGameWithOverlay();
+      }, 2200);
+
+      return () => window.clearTimeout(timeout);
     }
   }, [currentAnger, hits]);
 
@@ -117,7 +123,7 @@ export function GameRoute() {
           borderRadius: 22,
           padding: "14px 16px",
           background: "rgba(255,255,255,0.94)",
-          boxShadow: "0 10px 26px rgba(4, 10, 22, 0.22)",
+          boxShadow: "none",
         }}
       >
         <div
@@ -170,7 +176,7 @@ export function GameRoute() {
                       background: "rgba(255,255,255,0.08)",
                       display: "grid",
                       placeItems: "center",
-                      boxShadow: "0 14px 30px rgba(18, 8, 42, 0.18)",
+                      boxShadow: "none",
                       overflow: "hidden",
                     }}
                   >
@@ -205,6 +211,7 @@ export function GameRoute() {
           >
             <GameArena
               initialAnger={draft.angerBefore}
+              muted={muted}
               nickname={draft.nickname}
               onHit={handleGameHit}
               onReady={(controller) => setGameController(controller)}
@@ -233,29 +240,29 @@ export function GameRoute() {
                 textAlign: "center",
               }}
             >
-                  <div
-                    css={{
-                      width: 88,
-                      height: 88,
-                      borderRadius: 24,
-                      background: "rgba(255,255,255,0.08)",
-                      display: "grid",
-                      placeItems: "center",
-                      boxShadow: "0 14px 30px rgba(18, 8, 42, 0.18)",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <img
-                      alt=""
-                      src={`${import.meta.env.BASE_URL}angryface.png`}
-                      css={{
-                        width: 72,
-                        height: 72,
-                        objectFit: "contain",
-                        display: "block",
-                      }}
-                    />
-                  </div>
+              <div
+                css={{
+                  width: 88,
+                  height: 88,
+                  borderRadius: 24,
+                  background: "rgba(255,255,255,0.08)",
+                  display: "grid",
+                  placeItems: "center",
+                  boxShadow: "none",
+                  overflow: "hidden",
+                }}
+              >
+                <img
+                  alt=""
+                  src={`${import.meta.env.BASE_URL}angryface.png`}
+                  css={{
+                    width: 72,
+                    height: 72,
+                    objectFit: "contain",
+                    display: "block",
+                  }}
+                />
+              </div>
               <Text
                 typography="t4"
                 fontWeight="bold"
@@ -300,7 +307,7 @@ export function GameRoute() {
                 width: 40,
                 height: 40,
                 borderRadius: "50%",
-                border: "1px solid rgba(255,255,255,0.16)",
+                border: "none",
                 background: "rgba(255,255,255,0.12)",
                 color: colors.background,
                 display: "grid",
@@ -338,7 +345,7 @@ export function GameRoute() {
                 fontWeight="bold"
                 css={{ color: colors.background }}
               >
-                배출 완료!
+                분노 격파 성공!
               </Text>
               <Text
                 typography="t6"
@@ -352,8 +359,10 @@ export function GameRoute() {
         ) : null}
 
         <GameActions
+          hapticsMuted={hapticsMuted}
           muted={muted}
           onFinish={finishGame}
+          onToggleHaptics={() => setHapticsMuted((prev) => !prev)}
           onToggleMute={() => setMuted((prev) => !prev)}
         />
       </div>

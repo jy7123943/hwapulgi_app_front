@@ -11,7 +11,13 @@ export function BottomCTA({ css, ...props }: BottomCTAProps) {
     <FixedBottomCTA
       css={{
         "--bottom-cta-gradient": "transparent !important",
-        "& button": { "--button-background-color": "#842bdd !important" },
+        "& button": {
+          "--button-background-color": "#842bdd !important",
+          background: "#842bdd !important",
+          color: "#ffffff !important",
+          boxShadow: "none !important",
+          border: "none",
+        },
         ...css,
       }}
       {...props}

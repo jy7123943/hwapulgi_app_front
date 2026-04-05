@@ -1,41 +1,47 @@
-import { useNavigate } from 'react-router-dom';
-import { AppShell, BodyStack, ScreenPanel } from '../../components/shared/Surface';
-import { useAppState } from '../../state/AppState';
-import { BottomCTA } from '../../components/shared/BottomCTA';
-import { MascotHero } from '../../components/shared/MascotHero';
-import { HomeStats } from './components/HomeStats';
-import { RecentHero } from './components/RecentHero';
-import { RecentList } from './components/RecentList';
+import { useNavigate } from "react-router-dom";
+import {
+  AppShell,
+  BodyStack,
+  ScreenPanel,
+} from "../../components/shared/Surface";
+import { BottomTabBar } from "../../components/shared/BottomTabBar";
+import { useAppState } from "../../state/AppState";
+import { HomeHeroBanner } from "./components/HomeHeroBanner";
+import { RecentList } from "./components/RecentList";
+import { TodaySummaryCard } from "./components/TodaySummaryCard";
+
+function getDateKey(date: Date) {
+  return `${date.getFullYear()}-${`${date.getMonth() + 1}`.padStart(2, "0")}-${`${date.getDate()}`.padStart(2, "0")}`;
+}
 
 export function HomeRoute() {
   const navigate = useNavigate();
-  const { sessions, weeklySummary, resetDraft } = useAppState();
-  const recentSessions = sessions.slice(0, 5);
-  const hero = sessions[0];
-
+  const {
+    homeSnapshot,
+    sessions,
+    resetDraft,
+  } =
+    useAppState();
+  const todayKey = getDateKey(new Date());
+  const todaySessions = sessions.filter(
+    (session) => getDateKey(new Date(session.createdAt)) === todayKey,
+  );
   return (
-    <AppShell>
+    <AppShell css={{ paddingBottom: 108 }}>
       <ScreenPanel>
         <BodyStack>
-          <MascotHero
-            subtitle="기록이 쌓일수록 내가 언제, 누구에게 가장 많이 소모되는지 보이기 시작해요."
-            title={'이번 주 감정\n배출 흐름'}
+          <HomeHeroBanner
+            onStart={() => {
+              resetDraft();
+              navigate("/start/target");
+            }}
+            snapshot={homeSnapshot}
           />
-
-          <HomeStats weeklySummary={weeklySummary} />
-          <RecentHero hero={hero} />
-          <RecentList sessions={recentSessions} />
+          <TodaySummaryCard sessions={todaySessions} />
+          <RecentList sessions={todaySessions} />
         </BodyStack>
       </ScreenPanel>
-
-      <BottomCTA
-        onClick={() => {
-          resetDraft();
-          navigate('/start/target');
-        }}
-      >
-        지금 화풀기
-      </BottomCTA>
+      <BottomTabBar />
     </AppShell>
   );
 }

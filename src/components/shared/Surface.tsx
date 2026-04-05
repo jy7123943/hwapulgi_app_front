@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
 
 const surfaceBase = {
-  background: "rgba(255, 252, 248, 0.96)",
-  border: "1px solid rgba(110, 88, 72, 0.08)",
-  boxShadow: "0 18px 40px rgba(68, 41, 28, 0.08)",
+  background: "#ffffff",
+  border: "none",
+  boxShadow: "none",
 };
 
 export const AppShell = styled.div({
@@ -26,8 +26,7 @@ export const TopCard = styled.section({
   ...surfaceBase,
   borderRadius: 30,
   padding: 20,
-  background:
-    "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,248,243,0.92) 100%)",
+  background: "#ffffff",
 });
 
 export const BodyStack = styled.section({
@@ -56,8 +55,7 @@ export const SectionCard = styled.section({
   ...surfaceBase,
   borderRadius: 28,
   padding: 20,
-  background:
-    "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,249,245,0.92) 100%)",
+  background: "#ffffff",
 });
 
 export const StatsGrid = styled.div({
@@ -73,8 +71,7 @@ export const StatCard = styled.article({
   ...surfaceBase,
   borderRadius: 22,
   padding: 18,
-  background:
-    "linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(255,247,242,0.92) 100%)",
+  background: "#ffffff",
 });
 
 export const ButtonStack = styled.div({

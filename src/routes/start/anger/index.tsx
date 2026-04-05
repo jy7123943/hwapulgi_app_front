@@ -22,14 +22,14 @@ export function AngerRoute() {
       <ScreenPanel>
         <BodyStack>
           <MascotHero
-            subtitle="이 수치가 기준점이 돼요."
+            subtitle="지금 기분을 숫자로 표현해볼까요?"
             title={"지금 나의 분노\n게이지는?"}
           />
 
           <div
             css={{
               background: "#ffdcd8",
-              boxShadow: "0 18px 40px rgba(68, 41, 28, 0.08)",
+              boxShadow: "none",
               borderRadius: 28,
               padding: 20,
               paddingTop: 26,
@@ -58,7 +58,7 @@ export function AngerRoute() {
 
           <TextFieldBox>
             <TextField
-              label="한 줄 메모 (선택)"
+              label="무슨 일이 있었나요? (선택)"
               labelOption="sustain"
               onChange={(event) =>
                 setMemo(
