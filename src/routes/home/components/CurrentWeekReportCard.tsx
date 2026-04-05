@@ -48,29 +48,35 @@ export function CurrentWeekReportCard({
 
   return (
     <SectionCard css={{ background: "#ffffff" }}>
-      <Text
-        as="h3"
-        typography="t6"
-        fontWeight="bold"
-        css={{ color: colors.grey900 }}
-      >
-        이번 주 감정 흐름
-      </Text>
-      <Text
-        as="p"
-        typography="t7"
-        css={{ color: colors.grey700, marginTop: 8 }}
-      >
-        이번 주 {weeklySummary.totalSessions}일 기록했고, 가장 많이 화난 대상은{" "}
-        {weeklySummary.topTargets[0]?.label ?? "-"}이에요.
-      </Text>
-      <Text
-        as="p"
-        typography="t7"
-        css={{ color: colors.grey700, marginTop: 4 }}
-      >
-        가장 힘들었던 요일은 {weeklySummary.hardestWeekday}였어요.
-      </Text>
+      <div>
+        <Text
+          as="h3"
+          typography="t6"
+          fontWeight="bold"
+          css={{ color: colors.grey900 }}
+        >
+          이번 주 감정 흐름
+        </Text>
+      </div>
+      <div css={{ marginTop: 8 }}>
+        <Text
+          as="p"
+          typography="t7"
+          css={{ color: colors.grey700 }}
+        >
+          이번 주 {weeklySummary.totalSessions}일 기록했고, 가장 많이 화난 대상은{" "}
+          {weeklySummary.topTargets[0]?.label ?? "-"}이에요.
+        </Text>
+      </div>
+      <div css={{ marginTop: 4 }}>
+        <Text
+          as="p"
+          typography="t7"
+          css={{ color: colors.grey700 }}
+        >
+          가장 힘들었던 요일은 {weeklySummary.hardestWeekday}였어요.
+        </Text>
+      </div>
 
       <div
         css={{
