@@ -394,18 +394,18 @@ export function createAngerGame(
       onComplete: () => {
         sceneRef?.tweens.add({
           targets: avatar,
-          angle: 78,
-          x: centerX() + 58,
-          y: centerY() + 54,
-          scaleX: avatarBaseScaleX * 0.94,
-          scaleY: avatarBaseScaleY * 0.94,
+          angle: 72,
+          x: centerX() + 44,
+          y: centerY() + 52,
+          scaleX: avatarBaseScaleX * 0.88,
+          scaleY: avatarBaseScaleY * 0.88,
           duration: 520,
           ease: "Cubic.easeInOut",
           onComplete: () => {
             sceneRef?.tweens.add({
               targets: avatar,
-              x: centerX() + 62,
-              y: centerY() + 58,
+              x: centerX() + 48,
+              y: centerY() + 56,
               duration: 240,
               ease: "Bounce.easeOut",
             });
