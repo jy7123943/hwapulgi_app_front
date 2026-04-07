@@ -25,8 +25,10 @@ const AVATAR_BODY_WIDTH = 154;
 const AVATAR_BODY_HEIGHT = 230;
 const AVATAR_FACE_WIDTH = 172;
 const AVATAR_FACE_HEIGHT = 124;
-const AVATAR_HAIR_WIDTH = 338;
-const AVATAR_HAIR_HEIGHT = 226;
+const AVATAR_HAIR_GIRL_WIDTH = 338;
+const AVATAR_HAIR_GIRL_HEIGHT = 226;
+const AVATAR_HAIR_BOY_WIDTH = 308;
+const AVATAR_HAIR_BOY_HEIGHT = 207;
 const AVATAR_BODY_OFFSET_X = 3;
 const AVATAR_BODY_OFFSET_Y = 44;
 const AVATAR_FACE_OFFSET_Y = -116;
@@ -812,7 +814,10 @@ export function createAngerGame(
         gender === "boy" ? "avatar-hair-boy" : "avatar-hair-girl"
       );
       avatarHair.setOrigin(0.5, 0.5);
-      avatarHair.setDisplaySize(AVATAR_HAIR_WIDTH, AVATAR_HAIR_HEIGHT);
+      avatarHair.setDisplaySize(
+        gender === "boy" ? AVATAR_HAIR_BOY_WIDTH : AVATAR_HAIR_GIRL_WIDTH,
+        gender === "boy" ? AVATAR_HAIR_BOY_HEIGHT : AVATAR_HAIR_GIRL_HEIGHT
+      );
       currentFaceKey = initialFaceKey;
       avatar = this.add.container(centerX(), centerY(), [
         avatarBody,
