@@ -14,6 +14,7 @@ export const TARGET_OPTIONS: TargetOption[] = [
 ];
 
 export const STORAGE_KEY = "hwapulgi/sessions";
+export const START_GUIDE_STORAGE_KEY = "hwapulgi/start-guide-seen";
 
 export const LOADING_MESSAGES = [
   "분노를 조준하고 있어요...",

@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import { colors } from "@toss/tds-colors";
 import { Asset, Text } from "@toss/tds-mobile";
 import { Navigate, useNavigate } from "react-router-dom";
-import { LOADING_MESSAGES } from "../../constants";
+import { LOADING_MESSAGES, START_GUIDE_STORAGE_KEY } from "../../constants";
 import { useAppState } from "../../state/AppState";
 import { safeHaptic } from "../../lib/haptics";
 import { GameActions } from "./components/GameActions";
@@ -33,10 +33,11 @@ export function GameRoute() {
     stopTauntRotation,
   } = useGameSession({ angerBefore: draft.angerBefore });
   const [minLoadingDone, setMinLoadingDone] = useState(false);
-  const [showStartGuide, setShowStartGuide] = useState(true);
+  const [showStartGuide, setShowStartGuide] = useState(false);
   const [showEndingOverlay, setShowEndingOverlay] = useState(false);
   const hasFinishedRef = useRef(false);
   const endingTimeoutRef = useRef<number | null>(null);
+  const startGuideTimeoutRef = useRef<number | null>(null);
 
   const loadingMessage = useMemo(() => {
     const seed = sessionKey
@@ -57,6 +58,9 @@ export function GameRoute() {
     return () => {
       if (endingTimeoutRef.current !== null) {
         window.clearTimeout(endingTimeoutRef.current);
+      }
+      if (startGuideTimeoutRef.current !== null) {
+        window.clearTimeout(startGuideTimeoutRef.current);
       }
     };
   }, []);
@@ -102,6 +106,32 @@ export function GameRoute() {
       return () => window.clearTimeout(timeout);
     }
   }, [currentAnger, hits]);
+
+  useEffect(() => {
+    if (!minLoadingDone) {
+      return;
+    }
+
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if (window.localStorage.getItem(START_GUIDE_STORAGE_KEY) === "true") {
+      return;
+    }
+
+    startGuideTimeoutRef.current = window.setTimeout(() => {
+      setShowStartGuide(true);
+      window.localStorage.setItem(START_GUIDE_STORAGE_KEY, "true");
+    }, 260);
+
+    return () => {
+      if (startGuideTimeoutRef.current !== null) {
+        window.clearTimeout(startGuideTimeoutRef.current);
+        startGuideTimeoutRef.current = null;
+      }
+    };
+  }, [minLoadingDone]);
 
   useEffect(() => {
     if (hits > 0) {
