@@ -3,6 +3,7 @@ import { playHitSound } from "../lib/sounds";
 import type { AvatarGender } from "../types";
 
 const avatarBodyAssetUrl = `${import.meta.env.BASE_URL}avatar/body/body.png`;
+const gloveAssetUrl = `${import.meta.env.BASE_URL}glove.png`;
 const avatarHairAssetUrls = {
   boy: `${import.meta.env.BASE_URL}avatar/hair/boy_hair.png`,
   girl: `${import.meta.env.BASE_URL}avatar/hair/girl_hair.png`,
@@ -34,6 +35,7 @@ const AVATAR_BODY_OFFSET_Y = 44;
 const AVATAR_FACE_OFFSET_Y = -116;
 const AVATAR_HAIR_OFFSET_X = 0;
 const AVATAR_HAIR_OFFSET_Y = -129;
+const GLOVE_WIDTH = 110;
 const FINAL_REACTION_LINE = "제가 졌어요...";
 const HIT_REACTION_LINES = {
   defiant: [
@@ -105,6 +107,9 @@ export function createAngerGame(
   let avatar: Phaser.GameObjects.Container | null = null;
   let avatarHitZone: Phaser.GameObjects.Zone | null = null;
   let avatarFace: Phaser.GameObjects.Image | null = null;
+  let glove: Phaser.GameObjects.Image | null = null;
+  let gloveBaseScaleX = 1;
+  let gloveBaseScaleY = 1;
   let shadow: Phaser.GameObjects.Ellipse | null = null;
   let flash: Phaser.GameObjects.Ellipse | null = null;
   let nameplate: Phaser.GameObjects.Container | null = null;
@@ -598,6 +603,7 @@ export function createAngerGame(
   function layout() {
     avatar?.setPosition(centerX(), centerY());
     avatarHitZone?.setPosition(centerX(), centerY() - 6);
+    glove?.setPosition(currentWidth() / 2, currentHeight() - 56);
     shadow?.setPosition(centerX(), currentHeight() - 82);
     flash?.setPosition(centerX(), centerY());
     nameplate?.setPosition(centerX(), centerY() - 126);
@@ -607,9 +613,53 @@ export function createAngerGame(
     updateStarsPosition();
   }
 
-  function triggerHit() {
+  function triggerGloveHit(targetX: number, targetY: number) {
+    if (!sceneRef || !glove) {
+      return;
+    }
+
+    const restX = currentWidth() / 2;
+    const restY = currentHeight() - 56;
+    const clampedTargetX = Phaser.Math.Clamp(targetX, 42, currentWidth() - 42);
+    const clampedTargetY = Phaser.Math.Clamp(targetY, 42, currentHeight() - 120);
+
+    sceneRef.tweens.killTweensOf(glove);
+    glove.setPosition(restX, restY);
+    glove.setScale(gloveBaseScaleX, gloveBaseScaleY);
+    glove.setAngle(0);
+
+    sceneRef.tweens.add({
+      targets: glove,
+      x: clampedTargetX,
+      y: clampedTargetY,
+      scaleX: gloveBaseScaleX * 1.04,
+      scaleY: gloveBaseScaleY * 1.04,
+      angle: Phaser.Math.Between(-18, 18),
+      duration: 85,
+      ease: "Cubic.easeOut",
+      yoyo: false,
+      onComplete: () => {
+        sceneRef?.tweens.add({
+          targets: glove,
+          x: restX,
+          y: restY,
+          scaleX: gloveBaseScaleX,
+          scaleY: gloveBaseScaleY,
+          angle: 0,
+          duration: 130,
+          ease: "Quad.easeInOut",
+        });
+      },
+    });
+  }
+
+  function triggerHit(targetX?: number, targetY?: number) {
     if (!sceneRef || !avatar || anger <= 0) {
       return;
+    }
+
+    if (typeof targetX === "number" && typeof targetY === "number") {
+      triggerGloveHit(targetX, targetY);
     }
 
     const now = performance.now();
@@ -753,6 +803,7 @@ export function createAngerGame(
 
     preload() {
       this.load.image("avatar-body", avatarBodyAssetUrl);
+      this.load.image("glove", gloveAssetUrl);
       this.load.image("avatar-hair-boy", avatarHairAssetUrls.boy);
       this.load.image("avatar-hair-girl", avatarHairAssetUrls.girl);
       this.load.image("face-angry", avatarFaceAssetUrls.angry);
@@ -786,6 +837,7 @@ export function createAngerGame(
         0x000000,
         0.26
       );
+      shadow.setDepth(0);
       heatAura = this.add.ellipse(
         centerX(),
         centerY() - 16,
@@ -794,6 +846,7 @@ export function createAngerGame(
         0xff4d4f,
         0
       );
+      heatAura.setDepth(1);
       emberAura = this.add.ellipse(
         centerX(),
         centerY() - 40,
@@ -802,7 +855,16 @@ export function createAngerGame(
         0xffa24a,
         0
       );
+      emberAura.setDepth(1);
       flash = this.add.ellipse(centerX(), centerY(), 210, 210, 0xff4d4f, 0);
+      flash.setDepth(2);
+      glove = this.add.image(currentWidth() / 2, currentHeight() - 56, "glove");
+      glove.setOrigin(0.5, 0.5);
+      const gloveScale = GLOVE_WIDTH / glove.width;
+      glove.setScale(gloveScale, gloveScale);
+      gloveBaseScaleX = gloveScale;
+      gloveBaseScaleY = gloveScale;
+      glove.setDepth(6);
       const avatarBody = this.add.image(AVATAR_BODY_OFFSET_X, AVATAR_BODY_OFFSET_Y, "avatar-body");
       avatarBody.setOrigin(0.5, 0.5);
       avatarBody.setDisplaySize(AVATAR_BODY_WIDTH, AVATAR_BODY_HEIGHT);
@@ -827,11 +889,12 @@ export function createAngerGame(
         avatarHair,
       ]);
       avatar.setSize(AVATAR_BODY_WIDTH, AVATAR_BODY_HEIGHT);
+      avatar.setDepth(5);
       avatarHitZone = this.add
         .zone(centerX(), centerY() - 6, 256, 320)
         .setInteractive({ useHandCursor: true });
-      avatarHitZone.on("pointerdown", () => {
-        triggerHit();
+      avatarHitZone.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+        triggerHit(pointer.worldX, pointer.worldY);
       });
       avatarBaseScaleX = 1;
       avatarBaseScaleY = 1;
@@ -876,12 +939,14 @@ export function createAngerGame(
         nameplateText,
       ]);
       nameplate.setPosition(centerX(), centerY() - 30);
+      nameplate.setDepth(7);
       speechBubbleBg = this.add.graphics();
       speechBubble = this.add.container(centerX() + 44, centerY() - 126, [
         speechBubbleBg,
       ]);
       updateSpeechBubbleLabel(HIT_REACTION_LINES.defiant[0]);
       speechBubble.setAlpha(0);
+      speechBubble.setDepth(8);
 
       stars = [
         this.add.star(0, 0, 5, 7, 14, 0xffd84d, 1).setOrigin(0.5),
@@ -891,6 +956,7 @@ export function createAngerGame(
 
       stars.forEach((star) => {
         star.setAlpha(0);
+        star.setDepth(9);
       });
       updateStarsPosition();
 
@@ -1028,6 +1094,7 @@ export function createAngerGame(
       avatar = null;
       avatarHitZone = null;
       avatarFace = null;
+      glove = null;
       pendingSpeechBubble?.remove(false);
       pendingSpeechBubble = null;
       pendingFaceReset?.remove(false);
