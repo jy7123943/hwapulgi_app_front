@@ -27,7 +27,6 @@ export function GameRoute() {
     muted,
     sessionKey,
     taunt,
-    setGameController,
     setHapticsMuted,
     setMuted,
     stopTauntRotation,
@@ -252,7 +251,6 @@ export function GameRoute() {
               muted={muted}
               nickname={draft.nickname}
               onHit={handleGameHit}
-              onReady={(controller) => setGameController(controller)}
               sessionKey={sessionKey}
             />
           </Suspense>

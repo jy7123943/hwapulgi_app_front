@@ -71,7 +71,6 @@ export interface WeeklyArchive {
 
 export interface HomeSnapshot {
   todayCount: number;
-  latestReleasePercent: number;
   latestTarget: string;
   primaryTarget: string;
   weeklySessions: number;

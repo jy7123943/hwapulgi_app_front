@@ -250,7 +250,6 @@ export function getHomeSnapshot(sessions: SessionResult[], weeklySummary: Weekly
 
   return {
     todayCount: todaySessions.length,
-    latestReleasePercent: latestSession?.releasedPercent ?? 0,
     latestTarget: latestSession ? formatSessionLabel(latestSession) : '-',
     primaryTarget: weeklySummary.topTargets[0]?.label ?? '-',
     weeklySessions: weeklySummary.totalSessions,

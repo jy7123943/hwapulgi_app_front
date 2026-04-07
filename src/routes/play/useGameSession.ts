@@ -14,9 +14,6 @@ export function useGameSession({ angerBefore }: UseGameSessionParams) {
   const [taunt, setTaunt] = useState(TAUNT_LINES[0]);
   const [sessionKey] = useState(() => crypto.randomUUID());
   const tauntIntervalRef = useRef<number | null>(null);
-  const [gameController, setGameController] = useState<{
-    hit: () => void;
-  } | null>(null);
 
   useEffect(() => {
     tauntIntervalRef.current = window.setInterval(() => {
@@ -69,13 +66,11 @@ export function useGameSession({ angerBefore }: UseGameSessionParams) {
   return {
     currentAnger,
     angerGaugePercent,
-    gameController,
     hapticsMuted,
     hits,
     muted,
     sessionKey,
     taunt,
-    setGameController,
     setHapticsMuted,
     setMuted,
     handleGameHit,

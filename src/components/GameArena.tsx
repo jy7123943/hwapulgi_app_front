@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { createAngerGame, type AngerGameController } from '../game/createAngerGame';
+import { createAngerGame } from '../game/createAngerGame';
 
 interface GameArenaProps {
   gender: "girl" | "boy";
@@ -8,7 +8,6 @@ interface GameArenaProps {
   nickname: string;
   sessionKey: string;
   onHit: (remaining: number, hits: number, impactStrength: number) => void;
-  onReady?: (controller: AngerGameController) => void;
 }
 
 export function GameArena({
@@ -18,20 +17,14 @@ export function GameArena({
   nickname,
   sessionKey,
   onHit,
-  onReady,
 }: GameArenaProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const onHitRef = useRef(onHit);
-  const onReadyRef = useRef(onReady);
   const mutedRef = useRef(muted);
 
   useEffect(() => {
     onHitRef.current = onHit;
   }, [onHit]);
-
-  useEffect(() => {
-    onReadyRef.current = onReady;
-  }, [onReady]);
 
   useEffect(() => {
     mutedRef.current = muted;
@@ -48,7 +41,6 @@ export function GameArena({
       },
       isMuted: () => mutedRef.current,
     });
-    onReadyRef.current?.(controller);
 
     const resizeObserver = new ResizeObserver(() => {
       controller.resize();
