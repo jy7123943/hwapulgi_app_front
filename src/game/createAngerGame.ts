@@ -45,14 +45,49 @@ const HIT_REACTION_LINES = {
     "너무하네!",
     "그만 좀!",
     "으악!",
+    "아, 왜 이래요 진짜!",
+    "말로 하시죠, 거참!",
+    "너무하신 거 아니에요?",
+    "아직 전 쌩쌩하거든요?",
+    "겨우 이 정도예요?",
+    "제가 뭘 그렇게 잘못했다고!",
+    "억울해 죽겠네, 진짜!",
+    "이거 폭력이에요, 폭력!",
+    "에이, 하나도 안 아픈데?",
+    "적당히 좀 하시죠!",
+    "지금 저랑 해보자는 거예요?",
+    "속이 좁으시네!",
+    "이거 신고할 거예요, 진짜!",
+    "어쭈? 좀 치시나 본데?",
+    "누가 보면 제가 잘못한 줄 알겠네!",
+    "아이 참, 거슬리게 진짜!",
+    "적당히 하고 대화로 합시다!",
+    "어머, 힘이 이것뿐이에요?",
+    "농담도 못 하나요, 참나!",
   ],
   defensive: [
     "잠깐만요!",
     "제 말도 들어보세요!",
-    "너무 세잖아요!",
     "한 번만 봐주세요!",
     "제가 설명할게요!",
     "진정해요!",
+    "잠깐만! 타임, 타임!",
+    "오해가... 오해가 있다고요!",
+    "아니, 제 말 좀 들어보라니까요?",
+    "그게 그러니까... 사정이 있었어요!",
+    "악! 아까보다 세진 거 같은데?",
+    "진정하시고 차나 한잔...",
+    "아니, 제가 다 그런 건 아니고!",
+    "잠시만요! 뼈 맞았어요, 방금!",
+    "아아! 방금 건 좀 아픈데?!",
+    "잠깐, 제 머리 조심해 주세요!",
+    "아까 그건 농담이었어요, 농담!",
+    "살살해요, 저 터지면 어떡해요!",
+    "저기... 제가 커피라도 한 잔 살까요?",
+    "악! 제 소중한 옆구리가...!",
+    "말씀 중에 죄송한데, 진짜 아파요!",
+    "오해가 깊어도 너무 깊으시네!",
+    "잠깐만요! 저 숨 좀 돌릴게요!",
   ],
   apologetic: [
     "죄송합니다.",
@@ -62,6 +97,25 @@ const HIT_REACTION_LINES = {
     "제가 실수했어요.",
     "변명 안 할게요.",
     "한 번만 기회 주세요.",
+    "잘못했어요... 진짜로요!",
+    "다신 안 그럴게요, 제발!",
+    "제가 경솔했습니다, 죽을죄를 졌어요!",
+    "변명 안 할게요, 제가 다 나빠요!",
+    "한 번만 기회를 주세요, 예?",
+    "이제야 제 잘못을 깨달았어요...",
+    "진심으로 반성하고 있습니다!",
+    "제가 선을 세게 넘었네요, 죄송해요!",
+    "제가 죽을죄를 졌습니다",
+    "진심으로 반성 중입니다! 멈춰주세요!",
+    "제가 생각이 짧았습니다! 제발요!",
+    "한 번만, 딱 한 번만 용서해 주세요!",
+    "이제야 제가 얼마나 나빴는지 알겠어요!",
+    "제가 선을 넘어도 한참 넘었네요!",
+    "제발 그만! 정신이 혼미해요...!",
+    "앞으로는 착하게 살게요, 약속!",
+    "다 제 탓입니다! 제가 다 망쳤어요!",
+    "손이 발이 되도록 빌게요, 제발요!",
+    "제가 감히 누굴 건드렸는지 깨달았습니다!",
   ],
   formal: [
     "진심으로 사과드립니다.",
@@ -71,6 +125,24 @@ const HIT_REACTION_LINES = {
     "다시는 같은 실수 하지 않겠습니다.",
     "제가 먼저 사과드리겠습니다.",
     "불편을 드려 죄송합니다.",
+    "완전히 인정합니다... 제가 졌어요.",
+    "깊이 반성하며 살겠습니다...",
+    "이제 그만... 제발 놓아주세요.",
+    "불편을 드려 정말 죄송합니다...",
+    "저는 이제 가망이 없어요... 항복!",
+    "잘못했습니다... 두 번 다시 안 그럴게요.",
+    "너덜너덜해졌네요... 제가 다 잘못했습니다.",
+    "반성문 100장 쓸게요! 진짜로!",
+    "모든 잘못은 저에게 있습니다... 꽥.",
+    "진심으로 사과드립니다. 용서해 주세요...",
+    "이제 더 이상 버틸 힘도 없네요...",
+    "잘못했습니다... 부디 노여움을 푸세요.",
+    "반성하고 또 반성하겠습니다... 흑.",
+    "오늘의 이 아픔, 평생 기억할게요.",
+    "제가 경솔했습니다... 완전히 항복!",
+    "이제 그만... 저 세상 갈 것 같아요...",
+    "불편을 드려 대단히 죄송했습니다...",
+    "모든 잘못을 시인합니다... 사죄드려요.",
   ],
 };
 const COMBO_FEEDBACK: Record<
@@ -99,7 +171,7 @@ export function createAngerGame(
   initialAnger: number,
   nickname: string,
   gender: AvatarGender,
-  callbacks: Callbacks
+  callbacks: Callbacks,
 ): AngerGameController {
   let anger = initialAnger;
   let hits = 0;
@@ -155,7 +227,7 @@ export function createAngerGame(
     const remainingRatio = Phaser.Math.Clamp(
       anger / Math.max(initialAnger, 1),
       0,
-      1
+      1,
     );
 
     if (finishTriggered || remainingRatio <= 0.05) {
@@ -248,7 +320,7 @@ export function createAngerGame(
     label: string,
     color: string,
     fontSize: number,
-    fontWeight: number
+    fontWeight: number,
   ) {
     if (scene.textures.exists(key)) {
       scene.textures.remove(key);
@@ -310,7 +382,7 @@ export function createAngerGame(
       -bubbleHeight / 2,
       bubbleWidth,
       bubbleHeight,
-      18
+      18,
     );
     speechBubbleBg.fillTriangle(
       tailBaseX - 12,
@@ -318,7 +390,7 @@ export function createAngerGame(
       tailBaseX + 4,
       tailBaseY,
       tailBaseX - 10,
-      tailBaseY + 18
+      tailBaseY + 18,
     );
   }
 
@@ -346,7 +418,7 @@ export function createAngerGame(
       label,
       "#202632",
       14,
-      700
+      700,
     );
 
     if (!texture) {
@@ -449,7 +521,7 @@ export function createAngerGame(
     labels: string[],
     color: string,
     fontSize: number,
-    fontWeight: number
+    fontWeight: number,
   ) {
     if (!sceneRef) {
       return;
@@ -485,7 +557,7 @@ export function createAngerGame(
       label,
       color,
       fontSize,
-      fontWeight
+      fontWeight,
     );
 
     if (!texture) {
@@ -529,7 +601,10 @@ export function createAngerGame(
       onComplete: () => {
         comboPopup?.destroy();
         comboPopup = null;
-        if (comboPopupTextureKey && scene.textures.exists(comboPopupTextureKey)) {
+        if (
+          comboPopupTextureKey &&
+          scene.textures.exists(comboPopupTextureKey)
+        ) {
           scene.textures.remove(comboPopupTextureKey);
         }
         comboPopupTextureKey = null;
@@ -602,7 +677,7 @@ export function createAngerGame(
       const angle = starOrbitAngle + index * ((Math.PI * 2) / stars.length);
       star.setPosition(
         cx + Math.cos(angle) * radiusX,
-        cy + Math.sin(angle) * radiusY
+        cy + Math.sin(angle) * radiusY,
       );
     });
   }
@@ -628,7 +703,11 @@ export function createAngerGame(
     const restX = currentWidth() / 2;
     const restY = currentHeight() - 56;
     const clampedTargetX = Phaser.Math.Clamp(targetX, 42, currentWidth() - 42);
-    const clampedTargetY = Phaser.Math.Clamp(targetY, 42, currentHeight() - 120);
+    const clampedTargetY = Phaser.Math.Clamp(
+      targetY,
+      42,
+      currentHeight() - 120,
+    );
 
     sceneRef.tweens.killTweensOf(glove);
     glove.setPosition(restX, restY);
@@ -676,7 +755,7 @@ export function createAngerGame(
     const cadenceStrength = Phaser.Math.Clamp(
       (420 - elapsedSinceLastHit) / 260,
       0,
-      1
+      1,
     );
     comboStreak = elapsedSinceLastHit <= 190 ? comboStreak + 1 : 1;
 
@@ -686,7 +765,7 @@ export function createAngerGame(
         : Phaser.Math.Clamp(
             comboMomentum * 0.62 + cadenceStrength * 0.9 + 0.24,
             0.46,
-            1.45
+            1.45,
           );
 
     const impactStrength = comboMomentum;
@@ -703,7 +782,7 @@ export function createAngerGame(
     auraEnergy = Phaser.Math.Clamp(
       auraEnergy + impactStrength * 0.42,
       0.42,
-      1.8
+      1.8,
     );
     shakeElapsed = 0;
     shakeOffsetXAmplitude = Phaser.Math.FloatBetween(8, 13) * impactStrength;
@@ -739,13 +818,17 @@ export function createAngerGame(
 
     triggerHitFace();
 
-    if (cadenceStrength > 0.78 && impactStrength > 0.92 && COMBO_FEEDBACK[comboStreak]) {
+    if (
+      cadenceStrength > 0.78 &&
+      impactStrength > 0.92 &&
+      COMBO_FEEDBACK[comboStreak]
+    ) {
       const comboFeedback = COMBO_FEEDBACK[comboStreak];
       showComboPopup(
         comboFeedback.labels,
         comboFeedback.color,
         comboFeedback.fontSize,
-        comboFeedback.fontWeight
+        comboFeedback.fontWeight,
       );
     }
 
@@ -788,7 +871,7 @@ export function createAngerGame(
         avatar.x + Phaser.Math.Between(-42, 42),
         avatar.y + Phaser.Math.Between(-60, 56),
         Phaser.Math.Between(3, 7),
-        Phaser.Math.RND.pick([0xff6459, 0xff8f78, 0xffc400])
+        Phaser.Math.RND.pick([0xff6459, 0xff8f78, 0xffc400]),
       );
 
       sceneRef.tweens.add({
@@ -836,14 +919,7 @@ export function createAngerGame(
       this.cameras.main.setBackgroundColor("#392b61");
 
       this.add.rectangle(width / 2, height / 2, width, height, 0x392b61, 1);
-      shadow = this.add.ellipse(
-        centerX(),
-        groundY(),
-        196,
-        34,
-        0x000000,
-        0.26
-      );
+      shadow = this.add.ellipse(centerX(), groundY(), 196, 34, 0x000000, 0.26);
       shadow.setDepth(0);
       heatAura = this.add.ellipse(
         centerX(),
@@ -851,7 +927,7 @@ export function createAngerGame(
         560,
         760,
         0xff4d4f,
-        0
+        0,
       );
       heatAura.setDepth(5.4);
       heatAura.setBlendMode(Phaser.BlendModes.ADD);
@@ -861,7 +937,7 @@ export function createAngerGame(
         400,
         560,
         0xffa24a,
-        0
+        0,
       );
       emberAura.setDepth(5.5);
       emberAura.setBlendMode(Phaser.BlendModes.ADD);
@@ -871,7 +947,7 @@ export function createAngerGame(
         86,
         240,
         0xff7b5e,
-        0
+        0,
       );
       frontHeatAuraLeft.setDepth(6.2);
       frontHeatAuraLeft.setBlendMode(Phaser.BlendModes.ADD);
@@ -881,7 +957,7 @@ export function createAngerGame(
         86,
         240,
         0xff7b5e,
-        0
+        0,
       );
       frontHeatAuraRight.setDepth(6.2);
       frontHeatAuraRight.setBlendMode(Phaser.BlendModes.ADD);
@@ -894,7 +970,11 @@ export function createAngerGame(
       gloveBaseScaleX = gloveScale;
       gloveBaseScaleY = gloveScale;
       glove.setDepth(8);
-      const avatarBody = this.add.image(AVATAR_BODY_OFFSET_X, AVATAR_BODY_OFFSET_Y, "avatar-body");
+      const avatarBody = this.add.image(
+        AVATAR_BODY_OFFSET_X,
+        AVATAR_BODY_OFFSET_Y,
+        "avatar-body",
+      );
       avatarBody.setOrigin(0.5, 0.5);
       avatarBody.setDisplaySize(AVATAR_BODY_WIDTH, AVATAR_BODY_HEIGHT);
       const initialFaceKey = Phaser.Math.RND.pick(["face-smug", "face-smile"]);
@@ -904,12 +984,12 @@ export function createAngerGame(
       const avatarHair = this.add.image(
         AVATAR_HAIR_OFFSET_X,
         AVATAR_HAIR_OFFSET_Y,
-        gender === "boy" ? "avatar-hair-boy" : "avatar-hair-girl"
+        gender === "boy" ? "avatar-hair-boy" : "avatar-hair-girl",
       );
       avatarHair.setOrigin(0.5, 0.5);
       avatarHair.setDisplaySize(
         gender === "boy" ? AVATAR_HAIR_BOY_WIDTH : AVATAR_HAIR_GIRL_WIDTH,
-        gender === "boy" ? AVATAR_HAIR_BOY_HEIGHT : AVATAR_HAIR_GIRL_HEIGHT
+        gender === "boy" ? AVATAR_HAIR_BOY_HEIGHT : AVATAR_HAIR_GIRL_HEIGHT,
       );
       currentFaceKey = initialFaceKey;
       avatar = this.add.container(centerX(), centerY(), [
@@ -935,7 +1015,7 @@ export function createAngerGame(
         nickname,
         "#ffffff",
         15,
-        700
+        700,
       );
       if (!nameplateTexture) {
         return;
@@ -943,7 +1023,7 @@ export function createAngerGame(
       nameplateText = this.add.image(0, 0, nameplateTexture.key).setOrigin(0.5);
       nameplateText.setDisplaySize(
         nameplateTexture.width,
-        nameplateTexture.height
+        nameplateTexture.height,
       );
       const nameplateWidth = Math.max(92, nameplateTexture.width + 28);
       const nameplateHeight = 34;
@@ -953,7 +1033,7 @@ export function createAngerGame(
         -nameplateHeight / 2,
         nameplateWidth,
         nameplateHeight,
-        17
+        17,
       );
       nameplateBg.lineStyle(1.5, 0xffffff, 0.14);
       nameplateBg.strokeRoundedRect(
@@ -961,7 +1041,7 @@ export function createAngerGame(
         -nameplateHeight / 2,
         nameplateWidth,
         nameplateHeight,
-        17
+        17,
       );
       nameplate = this.add.container(centerX(), centerY() - 146, [
         nameplateBg,
@@ -1031,7 +1111,7 @@ export function createAngerGame(
           avatar.setAngle(rotate);
           avatar.setScale(
             avatarBaseScaleX * squashX * megaSquashX,
-            avatarBaseScaleY * squashY * megaSquashY
+            avatarBaseScaleY * squashY * megaSquashY,
           );
 
           if (nameplate) {
@@ -1043,18 +1123,12 @@ export function createAngerGame(
           if (speechBubble) {
             speechBubble.setPosition(
               avatar.x + 44 + offsetX * 0.14,
-              avatar.y - 194 + offsetY * 0.08
+              avatar.y - 194 + offsetY * 0.08,
             );
           }
-
         }
 
-        if (
-          heatAura &&
-          emberAura &&
-          frontHeatAuraLeft &&
-          frontHeatAuraRight
-        ) {
+        if (heatAura && emberAura && frontHeatAuraLeft && frontHeatAuraRight) {
           const pulse = 1 + Math.sin(shakeElapsed * 6.5) * 0.09;
           const heatScale = 1.02 + auraEnergy * 0.38;
           const emberScale = 1.04 + auraEnergy * 0.3;
@@ -1063,14 +1137,14 @@ export function createAngerGame(
           heatAura.setAlpha(Math.min(0.36, 0.08 + auraEnergy * 0.18));
           heatAura.setScale(
             (heatScale + 0.18) * pulse,
-            (heatScale + auraEnergy * 0.42 + 0.34) * pulse
+            (heatScale + auraEnergy * 0.42 + 0.34) * pulse,
           );
 
           emberAura.setPosition(centerX(), centerY() + 14 - auraEnergy * 20);
           emberAura.setAlpha(Math.min(0.3, 0.06 + auraEnergy * 0.16));
           emberAura.setScale(
             (emberScale + 0.18) * (1 + Math.cos(shakeElapsed * 8.4) * 0.08),
-            (emberScale + 0.18) * (1.26 + auraEnergy * 0.22)
+            (emberScale + 0.18) * (1.26 + auraEnergy * 0.22),
           );
 
           const frontPulse = 1 + Math.sin(shakeElapsed * 7.2) * 0.1;
@@ -1081,22 +1155,22 @@ export function createAngerGame(
 
           frontHeatAuraLeft.setPosition(
             centerX() - (96 + auraEnergy * 8),
-            frontY
+            frontY,
           );
           frontHeatAuraLeft.setAlpha(frontAlpha);
           frontHeatAuraLeft.setScale(
             frontScaleX * frontPulse,
-            frontScaleY * frontPulse
+            frontScaleY * frontPulse,
           );
 
           frontHeatAuraRight.setPosition(
             centerX() + (96 + auraEnergy * 8),
-            frontY
+            frontY,
           );
           frontHeatAuraRight.setAlpha(frontAlpha);
           frontHeatAuraRight.setScale(
             frontScaleX * frontPulse,
-            frontScaleY * frontPulse
+            frontScaleY * frontPulse,
           );
         }
 
