@@ -234,7 +234,7 @@ export function createAngerGame(
       return "finish" as const;
     }
 
-    if (remainingRatio <= 0.35) {
+    if (remainingRatio <= 0.3) {
       return "late" as const;
     }
 
