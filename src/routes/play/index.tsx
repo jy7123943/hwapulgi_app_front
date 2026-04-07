@@ -29,7 +29,6 @@ export function GameRoute() {
     taunt,
     setHapticsMuted,
     setMuted,
-    stopTauntRotation,
   } = useGameSession({ angerBefore: draft.angerBefore });
   const [minLoadingDone, setMinLoadingDone] = useState(false);
   const [showStartGuide, setShowStartGuide] = useState(false);
@@ -74,7 +73,6 @@ export function GameRoute() {
     }
 
     hasFinishedRef.current = true;
-    stopTauntRotation();
     completeSession({
       hits,
       skillShots: 0,
