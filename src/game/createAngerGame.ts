@@ -437,7 +437,7 @@ export function createAngerGame(
     const scene = sceneRef;
     const label = Phaser.Utils.Array.GetRandom(labels);
     const startX = centerX() + Phaser.Math.Between(-26, 26);
-    const startY = centerY() - Phaser.Math.Between(104, 126);
+    const startY = centerY() - Phaser.Math.Between(172, 196);
     const endX = startX + Phaser.Math.Between(-10, 10);
     const endY = startY - Phaser.Math.Between(10, 18);
     const fadeX = endX + Phaser.Math.Between(-6, 6);
