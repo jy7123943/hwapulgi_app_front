@@ -33,6 +33,7 @@ export function GameRoute() {
     stopTauntRotation,
   } = useGameSession({ angerBefore: draft.angerBefore });
   const [minLoadingDone, setMinLoadingDone] = useState(false);
+  const [showStartGuide, setShowStartGuide] = useState(true);
   const [showEndingOverlay, setShowEndingOverlay] = useState(false);
   const hasFinishedRef = useRef(false);
   const endingTimeoutRef = useRef<number | null>(null);
@@ -101,6 +102,12 @@ export function GameRoute() {
       return () => window.clearTimeout(timeout);
     }
   }, [currentAnger, hits]);
+
+  useEffect(() => {
+    if (hits > 0) {
+      setShowStartGuide(false);
+    }
+  }, [hits]);
 
   return (
     <div
@@ -281,6 +288,53 @@ export function GameRoute() {
             </div>
           </div>
         )}
+
+        {minLoadingDone && showStartGuide && !showEndingOverlay ? (
+          <div
+            css={{
+              position: "absolute",
+              left: 20,
+              right: 20,
+              top: "58%",
+              transform: "translateY(-50%)",
+              zIndex: 3,
+              display: "flex",
+              justifyContent: "center",
+              pointerEvents: "none",
+            }}
+          >
+            <div
+              css={{
+                maxWidth: 280,
+                borderRadius: 20,
+                padding: "16px 18px",
+                background: "rgba(23, 16, 42, 0.62)",
+                backdropFilter: "blur(12px)",
+                boxShadow: "0 12px 28px rgba(10, 6, 20, 0.22)",
+                textAlign: "center",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <Text
+                typography="t6"
+                fontWeight="bold"
+                css={{ color: "#ffffff" }}
+              >
+                캐릭터를 터치해서 때려보세요.
+              </Text>
+              <Text
+                typography="t7"
+                fontWeight="medium"
+                css={{
+                  color: "rgba(255,255,255,0.92)",
+                  marginTop: 8,
+                }}
+              >
+                마음 가는 대로 두들겨보아요.
+              </Text>
+            </div>
+          </div>
+        ) : null}
 
         {showEndingOverlay ? (
           <div
