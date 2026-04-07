@@ -864,7 +864,7 @@ export function createAngerGame(
       glove.setScale(gloveScale, gloveScale);
       gloveBaseScaleX = gloveScale;
       gloveBaseScaleY = gloveScale;
-      glove.setDepth(6);
+      glove.setDepth(8);
       const avatarBody = this.add.image(AVATAR_BODY_OFFSET_X, AVATAR_BODY_OFFSET_Y, "avatar-body");
       avatarBody.setOrigin(0.5, 0.5);
       avatarBody.setDisplaySize(AVATAR_BODY_WIDTH, AVATAR_BODY_HEIGHT);
@@ -946,7 +946,7 @@ export function createAngerGame(
       ]);
       updateSpeechBubbleLabel(HIT_REACTION_LINES.defiant[0]);
       speechBubble.setAlpha(0);
-      speechBubble.setDepth(8);
+      speechBubble.setDepth(9);
 
       stars = [
         this.add.star(0, 0, 5, 7, 14, 0xffd84d, 1).setOrigin(0.5),
@@ -956,7 +956,7 @@ export function createAngerGame(
 
       stars.forEach((star) => {
         star.setAlpha(0);
-        star.setDepth(9);
+        star.setDepth(10);
       });
       updateStarsPosition();
 
