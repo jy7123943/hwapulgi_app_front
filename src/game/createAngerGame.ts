@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { playHitSound } from "../lib/sounds";
 
 const avatarBodyAssetUrl = `${import.meta.env.BASE_URL}avatar/body/body.png`;
+const avatarHairAssetUrl = `${import.meta.env.BASE_URL}avatar/hair/girl_hair.png`;
 const avatarFaceAssetUrls = {
   angry: `${import.meta.env.BASE_URL}avatar/face/face_angry.png`,
   crying: `${import.meta.env.BASE_URL}avatar/face/face_crying.png`,
@@ -20,9 +21,13 @@ const AVATAR_BODY_WIDTH = 154;
 const AVATAR_BODY_HEIGHT = 230;
 const AVATAR_FACE_WIDTH = 172;
 const AVATAR_FACE_HEIGHT = 124;
+const AVATAR_HAIR_WIDTH = 338;
+const AVATAR_HAIR_HEIGHT = 226;
 const AVATAR_BODY_OFFSET_X = 3;
 const AVATAR_BODY_OFFSET_Y = 44;
 const AVATAR_FACE_OFFSET_Y = -116;
+const AVATAR_HAIR_OFFSET_X = 0;
+const AVATAR_HAIR_OFFSET_Y = -129;
 const FINAL_REACTION_LINE = "제가 졌어요...";
 const HIT_REACTION_LINES = {
   defiant: [
@@ -739,6 +744,7 @@ export function createAngerGame(
 
     preload() {
       this.load.image("avatar-body", avatarBodyAssetUrl);
+      this.load.image("avatar-hair", avatarHairAssetUrl);
       this.load.image("face-angry", avatarFaceAssetUrls.angry);
       this.load.image("face-crying", avatarFaceAssetUrls.crying);
       this.load.image("face-furious", avatarFaceAssetUrls.furious);
@@ -794,8 +800,19 @@ export function createAngerGame(
       avatarFace = this.add.image(0, AVATAR_FACE_OFFSET_Y, initialFaceKey);
       avatarFace.setOrigin(0.5, 0.5);
       avatarFace.setDisplaySize(AVATAR_FACE_WIDTH, AVATAR_FACE_HEIGHT);
+      const avatarHair = this.add.image(
+        AVATAR_HAIR_OFFSET_X,
+        AVATAR_HAIR_OFFSET_Y,
+        "avatar-hair"
+      );
+      avatarHair.setOrigin(0.5, 0.5);
+      avatarHair.setDisplaySize(AVATAR_HAIR_WIDTH, AVATAR_HAIR_HEIGHT);
       currentFaceKey = initialFaceKey;
-      avatar = this.add.container(centerX(), centerY(), [avatarBody, avatarFace]);
+      avatar = this.add.container(centerX(), centerY(), [
+        avatarBody,
+        avatarFace,
+        avatarHair,
+      ]);
       avatar.setSize(AVATAR_BODY_WIDTH, AVATAR_BODY_HEIGHT);
       avatarBaseScaleX = 1;
       avatarBaseScaleY = 1;
