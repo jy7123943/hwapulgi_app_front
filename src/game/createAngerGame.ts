@@ -1,7 +1,28 @@
 import Phaser from "phaser";
 import { playHitSound } from "../lib/sounds";
 
-const avatarAssetUrl = `${import.meta.env.BASE_URL}avatar.png`;
+const avatarBodyAssetUrl = `${import.meta.env.BASE_URL}avatar/body/body.png`;
+const avatarFaceAssetUrls = {
+  angry: `${import.meta.env.BASE_URL}avatar/face/face_angry.png`,
+  crying: `${import.meta.env.BASE_URL}avatar/face/face_crying.png`,
+  furious: `${import.meta.env.BASE_URL}avatar/face/face_furious.png`,
+  sad: `${import.meta.env.BASE_URL}avatar/face/face_sad.png`,
+  smile: `${import.meta.env.BASE_URL}avatar/face/face_smile.png`,
+  smug: `${import.meta.env.BASE_URL}avatar/face/face_smug.png`,
+  surprised: `${import.meta.env.BASE_URL}avatar/face/face_surprised.png`,
+  tearyShocked: `${import.meta.env.BASE_URL}avatar/face/face_teary_shocked.png`,
+  worried: `${import.meta.env.BASE_URL}avatar/face/face_worried.png`,
+  tearful: `${import.meta.env.BASE_URL}avatar/face/face_tearful.png`,
+  sobbing: `${import.meta.env.BASE_URL}avatar/face/face_sobbing.png`,
+  verySad: `${import.meta.env.BASE_URL}avatar/face/face_very_sad.png`,
+} as const;
+const AVATAR_BODY_WIDTH = 154;
+const AVATAR_BODY_HEIGHT = 230;
+const AVATAR_FACE_WIDTH = 172;
+const AVATAR_FACE_HEIGHT = 124;
+const AVATAR_BODY_OFFSET_X = 3;
+const AVATAR_BODY_OFFSET_Y = 44;
+const AVATAR_FACE_OFFSET_Y = -116;
 const FINAL_REACTION_LINE = "제가 졌어요...";
 const HIT_REACTION_LINES = {
   defiant: [
@@ -69,7 +90,8 @@ export function createAngerGame(
   let anger = initialAnger;
   let hits = 0;
   let sceneRef: Phaser.Scene | null = null;
-  let avatar: Phaser.GameObjects.Image | null = null;
+  let avatar: Phaser.GameObjects.Container | null = null;
+  let avatarFace: Phaser.GameObjects.Image | null = null;
   let shadow: Phaser.GameObjects.Ellipse | null = null;
   let flash: Phaser.GameObjects.Ellipse | null = null;
   let nameplate: Phaser.GameObjects.Container | null = null;
@@ -105,7 +127,100 @@ export function createAngerGame(
   let comboMomentum = 0.5;
   let auraEnergy = 0;
   let pendingSpeechBubble: Phaser.Time.TimerEvent | null = null;
+  let pendingFaceReset: Phaser.Time.TimerEvent | null = null;
   let finishTriggered = false;
+  let currentFaceKey: string | null = null;
+
+  function getEmotionPhase() {
+    const remainingRatio = Phaser.Math.Clamp(
+      anger / Math.max(initialAnger, 1),
+      0,
+      1
+    );
+
+    if (finishTriggered || remainingRatio <= 0.05) {
+      return "finish" as const;
+    }
+
+    if (remainingRatio <= 0.35) {
+      return "late" as const;
+    }
+
+    if (remainingRatio <= 0.7) {
+      return "mid" as const;
+    }
+
+    return "early" as const;
+  }
+
+  function getIdleFaceKey() {
+    const phase = getEmotionPhase();
+
+    if (phase === "finish") {
+      return "face-verySad";
+    }
+
+    if (phase === "late") {
+      return Phaser.Math.RND.pick(["face-crying", "face-sobbing"]);
+    }
+
+    if (phase === "mid") {
+      return Phaser.Math.RND.pick(["face-sad", "face-tearful"]);
+    }
+
+    return hits === 0
+      ? Phaser.Math.RND.pick(["face-smug", "face-smile"])
+      : "face-angry";
+  }
+
+  function getHitFaceKey() {
+    const phase = getEmotionPhase();
+
+    if (phase === "early") {
+      return Phaser.Math.RND.pick(["face-surprised", "face-angry"]);
+    }
+
+    if (phase === "mid") {
+      return "face-worried";
+    }
+
+    return "face-tearyShocked";
+  }
+
+  function setAvatarFace(nextFaceKey: string) {
+    if (!avatarFace) {
+      return;
+    }
+
+    if (currentFaceKey === nextFaceKey) {
+      return;
+    }
+
+    currentFaceKey = nextFaceKey;
+    avatarFace.setTexture(nextFaceKey);
+  }
+
+  function updateAvatarFace() {
+    setAvatarFace(getIdleFaceKey());
+  }
+
+  function triggerHitFace() {
+    if (!sceneRef || finishTriggered) {
+      return;
+    }
+
+    pendingFaceReset?.remove(false);
+    pendingFaceReset = null;
+    setAvatarFace(getHitFaceKey());
+    pendingFaceReset = sceneRef.time.delayedCall(190, () => {
+      if (finishTriggered) {
+        return;
+      }
+
+      updateAvatarFace();
+      pendingFaceReset = null;
+    });
+  }
 
   function createTextTexture(
     scene: Phaser.Scene,
@@ -225,18 +340,17 @@ export function createAngerGame(
   }
 
   function getReactionLine() {
-    const releaseRatio =
-      1 - Phaser.Math.Clamp(anger / Math.max(initialAnger, 1), 0, 1);
+    const phase = getEmotionPhase();
 
-    if (releaseRatio <= 0.1) {
+    if (phase === "early") {
       return Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES.defiant);
     }
 
-    if (releaseRatio <= 0.45) {
+    if (phase === "mid") {
       return Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES.defensive);
     }
 
-    if (releaseRatio <= 0.82) {
+    if (phase === "late") {
       return Phaser.Utils.Array.GetRandom(HIT_REACTION_LINES.apologetic);
     }
 
@@ -249,6 +363,9 @@ export function createAngerGame(
     }
 
     finishTriggered = true;
+    pendingFaceReset?.remove(false);
+    pendingFaceReset = null;
+    setAvatarFace("face-verySad");
     pendingSpeechBubble?.remove(false);
     pendingSpeechBubble = null;
     showSpeechBubble(FINAL_REACTION_LINE);
@@ -261,7 +378,7 @@ export function createAngerGame(
       sceneRef.tweens.add({
         targets: nameplate,
         alpha: 0.3,
-        y: avatar.y - 104,
+        y: avatar.y + 10,
         duration: 260,
         ease: "Quad.easeOut",
       });
@@ -272,24 +389,24 @@ export function createAngerGame(
       angle: 18,
       x: centerX() + 18,
       y: centerY() + 8,
-      duration: 150,
-      ease: "Sine.easeOut",
+      duration: 260,
+      ease: "Quad.easeOut",
       onComplete: () => {
         sceneRef?.tweens.add({
           targets: avatar,
-          angle: 90,
-          x: centerX() + 92,
-          y: centerY() + 62,
+          angle: 78,
+          x: centerX() + 58,
+          y: centerY() + 54,
           scaleX: avatarBaseScaleX * 0.94,
           scaleY: avatarBaseScaleY * 0.94,
-          duration: 320,
-          ease: "Cubic.easeIn",
+          duration: 520,
+          ease: "Cubic.easeInOut",
           onComplete: () => {
             sceneRef?.tweens.add({
               targets: avatar,
-              x: centerX() + 98,
-              y: centerY() + 66,
-              duration: 180,
+              x: centerX() + 62,
+              y: centerY() + 58,
+              duration: 240,
               ease: "Bounce.easeOut",
             });
           },
@@ -408,13 +525,13 @@ export function createAngerGame(
     sceneRef.tweens.killTweensOf(speechBubble);
     speechBubble.setAlpha(0);
     speechBubble.setScale(0.92);
-    speechBubble.setPosition(avatar.x + 44, avatar.y - 126);
+    speechBubble.setPosition(avatar.x + 44, avatar.y - 194);
     sceneRef.tweens.add({
       targets: speechBubble,
       alpha: 1,
       scaleX: 1,
       scaleY: 1,
-      y: avatar.y - 134,
+      y: avatar.y - 202,
       duration: 140,
       ease: "Back.easeOut",
     });
@@ -423,7 +540,7 @@ export function createAngerGame(
       alpha: 0,
       scaleX: 0.97,
       scaleY: 0.97,
-      y: avatar.y - 144,
+      y: avatar.y - 212,
       delay: 680,
       duration: 180,
       ease: "Quad.easeIn",
@@ -470,7 +587,7 @@ export function createAngerGame(
     shadow?.setPosition(centerX(), currentHeight() - 82);
     flash?.setPosition(centerX(), centerY());
     nameplate?.setPosition(centerX(), centerY() - 126);
-    speechBubble?.setPosition(centerX() + 44, centerY() - 126);
+    speechBubble?.setPosition(centerX() + 44, centerY() - 194);
     heatAura?.setPosition(centerX(), centerY() - 16);
     emberAura?.setPosition(centerX(), centerY() - 40);
     updateStarsPosition();
@@ -549,6 +666,8 @@ export function createAngerGame(
       return;
     }
 
+    triggerHitFace();
+
     if (cadenceStrength > 0.9 && impactStrength > 1.02 && COMBO_FEEDBACK[comboStreak]) {
       const comboFeedback = COMBO_FEEDBACK[comboStreak];
       showComboPopup(
@@ -619,7 +738,19 @@ export function createAngerGame(
     }
 
     preload() {
-      this.load.image("avatar", avatarAssetUrl);
+      this.load.image("avatar-body", avatarBodyAssetUrl);
+      this.load.image("face-angry", avatarFaceAssetUrls.angry);
+      this.load.image("face-crying", avatarFaceAssetUrls.crying);
+      this.load.image("face-furious", avatarFaceAssetUrls.furious);
+      this.load.image("face-sad", avatarFaceAssetUrls.sad);
+      this.load.image("face-smile", avatarFaceAssetUrls.smile);
+      this.load.image("face-smug", avatarFaceAssetUrls.smug);
+      this.load.image("face-surprised", avatarFaceAssetUrls.surprised);
+      this.load.image("face-tearyShocked", avatarFaceAssetUrls.tearyShocked);
+      this.load.image("face-worried", avatarFaceAssetUrls.worried);
+      this.load.image("face-tearful", avatarFaceAssetUrls.tearful);
+      this.load.image("face-sobbing", avatarFaceAssetUrls.sobbing);
+      this.load.image("face-verySad", avatarFaceAssetUrls.verySad);
     }
 
     create() {
@@ -656,11 +787,18 @@ export function createAngerGame(
         0
       );
       flash = this.add.ellipse(centerX(), centerY(), 210, 210, 0xff4d4f, 0);
-      avatar = this.add.image(centerX(), centerY(), "avatar");
-      avatar.setOrigin(0.5, 0.5);
-      avatar.setDisplaySize(230, 230);
-      avatarBaseScaleX = avatar.scaleX;
-      avatarBaseScaleY = avatar.scaleY;
+      const avatarBody = this.add.image(AVATAR_BODY_OFFSET_X, AVATAR_BODY_OFFSET_Y, "avatar-body");
+      avatarBody.setOrigin(0.5, 0.5);
+      avatarBody.setDisplaySize(AVATAR_BODY_WIDTH, AVATAR_BODY_HEIGHT);
+      const initialFaceKey = Phaser.Math.RND.pick(["face-smug", "face-smile"]);
+      avatarFace = this.add.image(0, AVATAR_FACE_OFFSET_Y, initialFaceKey);
+      avatarFace.setOrigin(0.5, 0.5);
+      avatarFace.setDisplaySize(AVATAR_FACE_WIDTH, AVATAR_FACE_HEIGHT);
+      currentFaceKey = initialFaceKey;
+      avatar = this.add.container(centerX(), centerY(), [avatarBody, avatarFace]);
+      avatar.setSize(AVATAR_BODY_WIDTH, AVATAR_BODY_HEIGHT);
+      avatarBaseScaleX = 1;
+      avatarBaseScaleY = 1;
       nameplateBg = this.add.graphics();
       nameplateTextureKey = `nameplate-${crypto.randomUUID()}`;
       const nameplateTexture = createTextTexture(
@@ -701,6 +839,7 @@ export function createAngerGame(
         nameplateBg,
         nameplateText,
       ]);
+      nameplate.setPosition(centerX(), centerY() - 30);
       speechBubbleBg = this.add.graphics();
       speechBubble = this.add.container(centerX() + 44, centerY() - 126, [
         speechBubbleBg,
@@ -768,7 +907,7 @@ export function createAngerGame(
           );
 
           if (nameplate) {
-            nameplate.setPosition(avatar.x, avatar.y - 126 + offsetY * 0.16);
+            nameplate.setPosition(avatar.x, avatar.y - 10 + offsetY * 0.12);
             nameplate.setRotation(Phaser.Math.DegToRad(rotate * 0.22));
             nameplate.setScale(1 + shakeEnergy * 0.015, 1 + shakeEnergy * 0.01);
           }
@@ -776,7 +915,7 @@ export function createAngerGame(
           if (speechBubble) {
             speechBubble.setPosition(
               avatar.x + 44 + offsetX * 0.14,
-              avatar.y - 126 + offsetY * 0.08
+              avatar.y - 194 + offsetY * 0.08
             );
           }
 
@@ -854,8 +993,11 @@ export function createAngerGame(
       game.destroy(true);
       sceneRef = null;
       avatar = null;
+      avatarFace = null;
       pendingSpeechBubble?.remove(false);
       pendingSpeechBubble = null;
+      pendingFaceReset?.remove(false);
+      pendingFaceReset = null;
       shadow = null;
       flash = null;
       comboPopup?.destroy();
@@ -885,6 +1027,7 @@ export function createAngerGame(
       emberAura = null;
       stars = [];
       finishTriggered = false;
+      currentFaceKey = null;
     },
     resize,
   };
