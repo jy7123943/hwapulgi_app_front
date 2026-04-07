@@ -122,6 +122,8 @@ export function createAngerGame(
   let speechBubbleTextureKey: string | null = null;
   let heatAura: Phaser.GameObjects.Ellipse | null = null;
   let emberAura: Phaser.GameObjects.Ellipse | null = null;
+  let frontHeatAuraLeft: Phaser.GameObjects.Ellipse | null = null;
+  let frontHeatAuraRight: Phaser.GameObjects.Ellipse | null = null;
   let comboPopup: Phaser.GameObjects.Image | null = null;
   let comboPopupTextureKey: string | null = null;
   let avatarBaseScaleX = 1;
@@ -840,22 +842,44 @@ export function createAngerGame(
       shadow.setDepth(0);
       heatAura = this.add.ellipse(
         centerX(),
-        centerY() - 16,
-        220,
-        250,
+        centerY() + 26,
+        560,
+        760,
         0xff4d4f,
         0
       );
-      heatAura.setDepth(1);
+      heatAura.setDepth(5.4);
+      heatAura.setBlendMode(Phaser.BlendModes.ADD);
       emberAura = this.add.ellipse(
         centerX(),
-        centerY() - 40,
-        150,
-        170,
+        centerY() + 6,
+        400,
+        560,
         0xffa24a,
         0
       );
-      emberAura.setDepth(1);
+      emberAura.setDepth(5.5);
+      emberAura.setBlendMode(Phaser.BlendModes.ADD);
+      frontHeatAuraLeft = this.add.ellipse(
+        centerX() - 96,
+        centerY() + 28,
+        86,
+        240,
+        0xff7b5e,
+        0
+      );
+      frontHeatAuraLeft.setDepth(6.2);
+      frontHeatAuraLeft.setBlendMode(Phaser.BlendModes.ADD);
+      frontHeatAuraRight = this.add.ellipse(
+        centerX() + 96,
+        centerY() + 28,
+        86,
+        240,
+        0xff7b5e,
+        0
+      );
+      frontHeatAuraRight.setDepth(6.2);
+      frontHeatAuraRight.setBlendMode(Phaser.BlendModes.ADD);
       flash = this.add.ellipse(centerX(), centerY(), 210, 210, 0xff4d4f, 0);
       flash.setDepth(2);
       glove = this.add.image(currentWidth() / 2, currentHeight() - 56, "glove");
@@ -1020,23 +1044,54 @@ export function createAngerGame(
 
         }
 
-        if (heatAura && emberAura) {
-          const pulse = 1 + Math.sin(shakeElapsed * 6.5) * 0.04;
-          const heatScale = 0.92 + auraEnergy * 0.18;
-          const emberScale = 0.88 + auraEnergy * 0.14;
+        if (
+          heatAura &&
+          emberAura &&
+          frontHeatAuraLeft &&
+          frontHeatAuraRight
+        ) {
+          const pulse = 1 + Math.sin(shakeElapsed * 6.5) * 0.09;
+          const heatScale = 1.02 + auraEnergy * 0.38;
+          const emberScale = 1.04 + auraEnergy * 0.3;
 
-          heatAura.setPosition(centerX(), centerY() - 16 - auraEnergy * 8);
-          heatAura.setAlpha(Math.min(0.34, auraEnergy * 0.2));
+          heatAura.setPosition(centerX(), centerY() + 34 - auraEnergy * 18);
+          heatAura.setAlpha(Math.min(0.36, 0.08 + auraEnergy * 0.18));
           heatAura.setScale(
-            heatScale * pulse,
-            (heatScale + auraEnergy * 0.06) * pulse
+            (heatScale + 0.18) * pulse,
+            (heatScale + auraEnergy * 0.42 + 0.34) * pulse
           );
 
-          emberAura.setPosition(centerX(), centerY() - 42 - auraEnergy * 12);
-          emberAura.setAlpha(Math.min(0.28, auraEnergy * 0.17));
+          emberAura.setPosition(centerX(), centerY() + 14 - auraEnergy * 20);
+          emberAura.setAlpha(Math.min(0.3, 0.06 + auraEnergy * 0.16));
           emberAura.setScale(
-            emberScale * (1 + Math.cos(shakeElapsed * 8.4) * 0.05),
-            emberScale * (1.08 + auraEnergy * 0.08)
+            (emberScale + 0.18) * (1 + Math.cos(shakeElapsed * 8.4) * 0.08),
+            (emberScale + 0.18) * (1.26 + auraEnergy * 0.22)
+          );
+
+          const frontPulse = 1 + Math.sin(shakeElapsed * 7.2) * 0.1;
+          const frontY = centerY() + 30 - auraEnergy * 12;
+          const frontScaleX = 0.92 + auraEnergy * 0.16;
+          const frontScaleY = 1 + auraEnergy * 0.28;
+          const frontAlpha = Math.min(0.24, 0.03 + auraEnergy * 0.13);
+
+          frontHeatAuraLeft.setPosition(
+            centerX() - (96 + auraEnergy * 8),
+            frontY
+          );
+          frontHeatAuraLeft.setAlpha(frontAlpha);
+          frontHeatAuraLeft.setScale(
+            frontScaleX * frontPulse,
+            frontScaleY * frontPulse
+          );
+
+          frontHeatAuraRight.setPosition(
+            centerX() + (96 + auraEnergy * 8),
+            frontY
+          );
+          frontHeatAuraRight.setAlpha(frontAlpha);
+          frontHeatAuraRight.setScale(
+            frontScaleX * frontPulse,
+            frontScaleY * frontPulse
           );
         }
 
@@ -1126,6 +1181,8 @@ export function createAngerGame(
       speechBubbleTextureKey = null;
       heatAura = null;
       emberAura = null;
+      frontHeatAuraLeft = null;
+      frontHeatAuraRight = null;
       stars = [];
       finishTriggered = false;
       currentFaceKey = null;
