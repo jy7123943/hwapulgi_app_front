@@ -25,7 +25,7 @@ const AVATAR_BODY_WIDTH = 154;
 const AVATAR_BODY_HEIGHT = 230;
 const AVATAR_FACE_WIDTH = 172;
 const AVATAR_FACE_HEIGHT = 124;
-const AVATAR_HAIR_GIRL_WIDTH = 338;
+const AVATAR_HAIR_GIRL_WIDTH = 352;
 const AVATAR_HAIR_GIRL_HEIGHT = 226;
 const AVATAR_HAIR_BOY_WIDTH = 308;
 const AVATAR_HAIR_BOY_HEIGHT = 207;
@@ -581,7 +581,7 @@ export function createAngerGame(
     }
 
     const cx = avatar.x;
-    const cy = avatar.y - 92;
+    const cy = avatar.y - 188;
     const radiusX = 34;
     const radiusY = 14;
 
