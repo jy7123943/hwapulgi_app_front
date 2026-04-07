@@ -457,7 +457,7 @@ export function createAngerGame(
     const scene = sceneRef;
     const label = Phaser.Utils.Array.GetRandom(labels);
     const startX = centerX() + Phaser.Math.Between(-26, 26);
-    const startY = centerY() - Phaser.Math.Between(172, 196);
+    const startY = centerY() - Phaser.Math.Between(226, 252);
     const endX = startX + Phaser.Math.Between(-10, 10);
     const endY = startY - Phaser.Math.Between(10, 18);
     const fadeX = endX + Phaser.Math.Between(-6, 6);
@@ -499,6 +499,7 @@ export function createAngerGame(
       .setAlpha(0)
       .setScale(startScale)
       .setAngle(startAngle);
+    comboPopup.setDepth(11);
 
     starEnergy = Phaser.Math.FloatBetween(0.92, 1.18);
 
@@ -673,7 +674,7 @@ export function createAngerGame(
       0,
       1
     );
-    comboStreak = elapsedSinceLastHit <= 160 ? comboStreak + 1 : 1;
+    comboStreak = elapsedSinceLastHit <= 190 ? comboStreak + 1 : 1;
 
     comboMomentum =
       elapsedSinceLastHit > 680
@@ -734,7 +735,7 @@ export function createAngerGame(
 
     triggerHitFace();
 
-    if (cadenceStrength > 0.9 && impactStrength > 1.02 && COMBO_FEEDBACK[comboStreak]) {
+    if (cadenceStrength > 0.78 && impactStrength > 0.92 && COMBO_FEEDBACK[comboStreak]) {
       const comboFeedback = COMBO_FEEDBACK[comboStreak];
       showComboPopup(
         comboFeedback.labels,
