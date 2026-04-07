@@ -154,24 +154,6 @@ export function GameRoute() {
 
       <div
         css={{
-          borderRadius: 22,
-          padding: "14px 16px",
-          background: "rgba(255,255,255,0.94)",
-          boxShadow: "none",
-        }}
-      >
-        <div
-          css={{
-            color: colors.grey600,
-            fontSize: 15,
-          }}
-        >
-          {taunt}
-        </div>
-      </div>
-
-      <div
-        css={{
           position: "relative",
           flex: 1,
           minHeight: 420,
@@ -446,6 +428,28 @@ export function GameRoute() {
           onToggleHaptics={() => setHapticsMuted((prev) => !prev)}
           onToggleMute={() => setMuted((prev) => !prev)}
         />
+      </div>
+
+      <div
+        css={{
+          minHeight: 28,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "0 10px",
+          textAlign: "center",
+        }}
+      >
+        <Text
+          as="p"
+          typography="t7"
+          fontWeight="medium"
+          css={{
+            color: "rgba(255,255,255,0.82)",
+          }}
+        >
+          {taunt}
+        </Text>
       </div>
     </div>
   );
