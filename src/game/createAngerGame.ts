@@ -584,6 +584,10 @@ export function createAngerGame(
     return currentHeight() / 2 - 10;
   }
 
+  function groundY() {
+    return centerY() + AVATAR_BODY_OFFSET_Y + AVATAR_BODY_HEIGHT / 2 - 5;
+  }
+
   function updateStarsPosition() {
     if (!avatar || stars.length === 0) {
       return;
@@ -607,7 +611,7 @@ export function createAngerGame(
     avatar?.setPosition(centerX(), centerY());
     avatarHitZone?.setPosition(centerX(), centerY() - 6);
     glove?.setPosition(currentWidth() / 2, currentHeight() - 56);
-    shadow?.setPosition(centerX(), currentHeight() - 82);
+    shadow?.setPosition(centerX(), groundY());
     flash?.setPosition(centerX(), centerY());
     nameplate?.setPosition(centerX(), centerY() - 126);
     speechBubble?.setPosition(centerX() + 44, centerY() - 194);
@@ -834,7 +838,7 @@ export function createAngerGame(
       this.add.rectangle(width / 2, height / 2, width, height, 0x392b61, 1);
       shadow = this.add.ellipse(
         centerX(),
-        height - 82,
+        groundY(),
         196,
         34,
         0x000000,
@@ -1097,7 +1101,7 @@ export function createAngerGame(
         }
 
         if (shadow) {
-          shadow.setPosition(centerX(), currentHeight() - 82);
+          shadow.setPosition(centerX(), groundY());
           shadow.setScale(1 + shakeEnergy * 0.04, 1);
         }
 
