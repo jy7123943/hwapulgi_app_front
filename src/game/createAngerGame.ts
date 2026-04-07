@@ -103,6 +103,7 @@ export function createAngerGame(
   let hits = 0;
   let sceneRef: Phaser.Scene | null = null;
   let avatar: Phaser.GameObjects.Container | null = null;
+  let avatarHitZone: Phaser.GameObjects.Zone | null = null;
   let avatarFace: Phaser.GameObjects.Image | null = null;
   let shadow: Phaser.GameObjects.Ellipse | null = null;
   let flash: Phaser.GameObjects.Ellipse | null = null;
@@ -596,6 +597,7 @@ export function createAngerGame(
 
   function layout() {
     avatar?.setPosition(centerX(), centerY());
+    avatarHitZone?.setPosition(centerX(), centerY() - 6);
     shadow?.setPosition(centerX(), currentHeight() - 82);
     flash?.setPosition(centerX(), centerY());
     nameplate?.setPosition(centerX(), centerY() - 126);
@@ -825,6 +827,12 @@ export function createAngerGame(
         avatarHair,
       ]);
       avatar.setSize(AVATAR_BODY_WIDTH, AVATAR_BODY_HEIGHT);
+      avatarHitZone = this.add
+        .zone(centerX(), centerY() - 6, 256, 320)
+        .setInteractive({ useHandCursor: true });
+      avatarHitZone.on("pointerdown", () => {
+        triggerHit();
+      });
       avatarBaseScaleX = 1;
       avatarBaseScaleY = 1;
       nameplateBg = this.add.graphics();
@@ -886,10 +894,6 @@ export function createAngerGame(
       });
       updateStarsPosition();
 
-      this.input.on("pointerdown", () => {
-        triggerHit();
-      });
-
       this.events.on("update", (_time: number, delta: number) => {
         if (avatar) {
           shakeElapsed += delta / 1000;
@@ -928,6 +932,7 @@ export function createAngerGame(
           }
 
           avatar.setPosition(centerX() + offsetX, centerY() + offsetY);
+          avatarHitZone?.setPosition(avatar.x, avatar.y - 6);
           avatar.setAngle(rotate);
           avatar.setScale(
             avatarBaseScaleX * squashX * megaSquashX,
@@ -1021,6 +1026,7 @@ export function createAngerGame(
       game.destroy(true);
       sceneRef = null;
       avatar = null;
+      avatarHitZone = null;
       avatarFace = null;
       pendingSpeechBubble?.remove(false);
       pendingSpeechBubble = null;
