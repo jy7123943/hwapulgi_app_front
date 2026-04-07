@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { createAngerGame, type AngerGameController } from '../game/createAngerGame';
 
 interface GameArenaProps {
+  gender: "girl" | "boy";
   initialAnger: number;
   muted: boolean;
   nickname: string;
@@ -11,6 +12,7 @@ interface GameArenaProps {
 }
 
 export function GameArena({
+  gender,
   initialAnger,
   muted,
   nickname,
@@ -40,7 +42,7 @@ export function GameArena({
       return;
     }
 
-    const controller = createAngerGame(hostRef.current, initialAnger, nickname, {
+    const controller = createAngerGame(hostRef.current, initialAnger, nickname, gender, {
       onHit: (remaining, hits, impactStrength) => {
         onHitRef.current(remaining, hits, impactStrength);
       },
@@ -58,7 +60,7 @@ export function GameArena({
       resizeObserver.disconnect();
       controller.destroy();
     };
-  }, [initialAnger, nickname, sessionKey]);
+  }, [gender, initialAnger, nickname, sessionKey]);
 
   return (
     <div

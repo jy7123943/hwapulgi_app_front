@@ -32,6 +32,7 @@ export const defaultDraft: SessionInput = {
   target: "",
   customTarget: "",
   nickname: "",
+  gender: "boy",
   angerBefore: 100,
   memo: "",
 };

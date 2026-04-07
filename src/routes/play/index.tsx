@@ -60,7 +60,7 @@ export function GameRoute() {
     };
   }, []);
 
-  if (!draft.nickname.trim()) {
+  if (!draft.nickname.trim() || !draft.gender) {
     return <Navigate replace to="/start/name" />;
   }
 
@@ -210,6 +210,7 @@ export function GameRoute() {
             }
           >
             <GameArena
+              gender={draft.gender}
               initialAnger={draft.angerBefore}
               muted={muted}
               nickname={draft.nickname}

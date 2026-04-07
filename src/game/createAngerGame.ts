@@ -1,8 +1,12 @@
 import Phaser from "phaser";
 import { playHitSound } from "../lib/sounds";
+import type { AvatarGender } from "../types";
 
 const avatarBodyAssetUrl = `${import.meta.env.BASE_URL}avatar/body/body.png`;
-const avatarHairAssetUrl = `${import.meta.env.BASE_URL}avatar/hair/girl_hair.png`;
+const avatarHairAssetUrls = {
+  boy: `${import.meta.env.BASE_URL}avatar/hair/boy_hair.png`,
+  girl: `${import.meta.env.BASE_URL}avatar/hair/girl_hair.png`,
+} as const;
 const avatarFaceAssetUrls = {
   angry: `${import.meta.env.BASE_URL}avatar/face/face_angry.png`,
   crying: `${import.meta.env.BASE_URL}avatar/face/face_crying.png`,
@@ -90,6 +94,7 @@ export function createAngerGame(
   element: HTMLDivElement,
   initialAnger: number,
   nickname: string,
+  gender: AvatarGender,
   callbacks: Callbacks
 ): AngerGameController {
   let anger = initialAnger;
@@ -744,7 +749,8 @@ export function createAngerGame(
 
     preload() {
       this.load.image("avatar-body", avatarBodyAssetUrl);
-      this.load.image("avatar-hair", avatarHairAssetUrl);
+      this.load.image("avatar-hair-boy", avatarHairAssetUrls.boy);
+      this.load.image("avatar-hair-girl", avatarHairAssetUrls.girl);
       this.load.image("face-angry", avatarFaceAssetUrls.angry);
       this.load.image("face-crying", avatarFaceAssetUrls.crying);
       this.load.image("face-furious", avatarFaceAssetUrls.furious);
@@ -803,7 +809,7 @@ export function createAngerGame(
       const avatarHair = this.add.image(
         AVATAR_HAIR_OFFSET_X,
         AVATAR_HAIR_OFFSET_Y,
-        "avatar-hair"
+        gender === "boy" ? "avatar-hair-boy" : "avatar-hair-girl"
       );
       avatarHair.setOrigin(0.5, 0.5);
       avatarHair.setDisplaySize(AVATAR_HAIR_WIDTH, AVATAR_HAIR_HEIGHT);

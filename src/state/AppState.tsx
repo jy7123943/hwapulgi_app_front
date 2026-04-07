@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { defaultDraft } from '../constants';
 import { getHomeSnapshot, getWeeklyArchives, getWeeklySummary, loadSessions, saveSession, updateSession } from '../lib/storage';
-import type { HomeSnapshot, SessionInput, SessionResult, TargetOption, WeeklyArchive } from '../types';
+import type { AvatarGender, HomeSnapshot, SessionInput, SessionResult, TargetOption, WeeklyArchive } from '../types';
 
 interface AppStateValue {
   draft: SessionInput;
@@ -24,6 +24,7 @@ interface AppStateValue {
   setTarget: (target: TargetOption) => void;
   setCustomTarget: (value: string) => void;
   setNickname: (value: string) => void;
+  setGender: (value: AvatarGender) => void;
   setAngerBefore: (value: number) => void;
   setMemo: (value: string) => void;
   resetDraft: () => void;
@@ -95,6 +96,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         })),
       setCustomTarget: (value) => setDraft((prev) => ({ ...prev, customTarget: value })),
       setNickname: (value) => setDraft((prev) => ({ ...prev, nickname: value })),
+      setGender: (value) => setDraft((prev) => ({ ...prev, gender: value })),
       setAngerBefore: (value) => setDraft((prev) => ({ ...prev, angerBefore: value })),
       setMemo: (value) => setDraft((prev) => ({ ...prev, memo: value })),
       resetDraft: () => setDraft(defaultDraft),
@@ -103,6 +105,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
           target: session.target,
           customTarget: session.customTarget ?? '',
           nickname: session.nickname,
+          gender: session.gender ?? 'girl',
           angerBefore: session.angerBefore,
           memo: session.memo,
         }),
@@ -135,6 +138,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
           customTarget: draft.customTarget?.trim() ?? '',
           memo: draft.memo.trim(),
           nickname: draft.nickname.trim(),
+          gender: draft.gender || 'girl',
           id: crypto.randomUUID(),
           createdAt: new Date().toISOString(),
           hits,

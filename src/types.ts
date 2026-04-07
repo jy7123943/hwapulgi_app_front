@@ -9,10 +9,13 @@ export type TargetOption =
   | '나 자신'
   | '기타';
 
+export type AvatarGender = 'girl' | 'boy';
+
 export interface SessionInput {
   target: TargetOption | '';
   customTarget?: string;
   nickname: string;
+  gender?: AvatarGender | '';
   angerBefore: number;
   memo: string;
 }
