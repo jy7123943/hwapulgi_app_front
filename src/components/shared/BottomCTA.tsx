@@ -10,8 +10,9 @@ export function BottomCTA({ css, ...props }: BottomCTAProps) {
   return (
     <FixedBottomCTA
       css={{
+        "--bottom-cta-background": "#3a235d !important",
         "--bottom-cta-gradient":
-          "linear-gradient(to top, rgba(58, 35, 93, 0.94) 24%, rgba(58,35,93,0)) !important",
+          "linear-gradient(to top, #3a235d 24%, rgba(58,35,93,0)) !important",
         "& button": {
           "--button-background-color": "#bff4d5 !important",
           background: "#bff4d5 !important",
