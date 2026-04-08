@@ -2,8 +2,7 @@ import type { TargetOption } from "./types";
 import type { SessionInput } from "./types";
 
 export const TARGET_OPTIONS: TargetOption[] = [
-  "회사 상사",
-  "회사 동료",
+  "회사",
   "고객",
   "배우자",
   "가족",

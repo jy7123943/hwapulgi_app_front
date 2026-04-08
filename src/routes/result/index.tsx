@@ -1,7 +1,6 @@
 import { colors } from "@toss/tds-colors";
 import { Slider, Text } from "@toss/tds-mobile";
 import { Navigate, useNavigate } from "react-router-dom";
-import { MascotHero } from "../../components/shared/MascotHero";
 import {
   AppShell,
   BodyStack,
@@ -12,6 +11,7 @@ import {
 import { useAppState } from "../../state/AppState";
 import { BottomCTA } from "../../components/shared/BottomCTA";
 import { ResultStatCard } from "./components/ResultStatCard";
+import { ScreenHeading } from "../../components/shared/ScreenHeading";
 
 export function ResultRoute() {
   const navigate = useNavigate();
@@ -40,10 +40,9 @@ export function ResultRoute() {
     <AppShell>
       <ScreenPanel>
         <BodyStack>
-          <MascotHero
-            type="happy"
+          <ScreenHeading
             subtitle={angerSummaryText}
-            title={"참느라\n고생했어요."}
+            title={"오늘 화,\n잘 풀어냈어요."}
           />
 
           <StatsGrid>
@@ -55,13 +54,13 @@ export function ResultRoute() {
             <ResultStatCard
               label="분노 게이지"
               value={lastResult.angerAfter}
-              valueColor={colors.yellow700}
+              valueColor="#4cc49b"
             />
           </StatsGrid>
 
           <div
             css={{
-              background: "#fff6e6",
+              background: "#f3fff8",
               boxShadow: "none",
               borderRadius: 28,
               padding: 20,
@@ -87,7 +86,7 @@ export function ResultRoute() {
               as="div"
               typography="t2"
               fontWeight="bold"
-              css={{ marginBottom: 16, color: colors.yellow700 }}
+              css={{ marginBottom: 16, color: "#4cc49b" }}
             >
               {lastResult.angerAfter} / 100
             </Text>
@@ -117,7 +116,7 @@ export function ResultRoute() {
                 as="div"
                 typography="t6"
                 css={{
-                  color: colors.grey600,
+                  color: colors.grey700,
                   wordBreak: "break-word",
                 }}
               >

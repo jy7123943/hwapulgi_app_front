@@ -1,4 +1,3 @@
-import { colors } from '@toss/tds-colors';
 import { Text } from '@toss/tds-mobile';
 import { SectionCard } from '../../../components/shared/Surface';
 import type { WeeklySummary } from '../../../types';
@@ -14,7 +13,7 @@ export function TopTargetsCard({ weeklySummary }: TopTargetsCardProps) {
         background: '#ffffff',
       }}
     >
-      <Text as="h3" typography="t6" fontWeight="bold" css={{ color: colors.grey900 }}>
+      <Text as="h3" typography="t4" fontWeight="bold" css={{ color: '#35214f' }}>
         이번 주 나를 가장 화나게 한 대상
       </Text>
 
@@ -30,24 +29,24 @@ export function TopTargetsCard({ weeklySummary }: TopTargetsCardProps) {
                 gap: 12,
                 padding: '12px 14px',
                 borderRadius: 18,
-                background: colors.grey50,
+                background: '#f5f5fb',
               }}
             >
               <div css={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                 <Text
                   as="span"
-                  typography="t6"
+                  typography="t5"
                   fontWeight="bold"
-                  css={{ color: '#d15d8f', flexShrink: 0 }}
+                  css={{ color: index === 0 ? '#e56ca0' : '#49b28d', flexShrink: 0 }}
                 >
                   {index + 1}위
                 </Text>
                 <Text
                   as="span"
-                  typography="t6"
+                  typography="t5"
                   fontWeight="bold"
                   css={{
-                    color: colors.grey900,
+                    color: '#35214f',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
@@ -59,16 +58,16 @@ export function TopTargetsCard({ weeklySummary }: TopTargetsCardProps) {
 
               <Text
                 as="span"
-                typography="t7"
+                typography="t6"
                 fontWeight="medium"
-                css={{ color: colors.grey600, flexShrink: 0 }}
+                css={{ color: '#6a5b7f', flexShrink: 0 }}
               >
                 {target.count}회
               </Text>
             </div>
           ))
         ) : (
-          <Text as="p" typography="t7" css={{ color: colors.grey600 }}>
+          <Text as="p" typography="t7" css={{ color: '#6a5b7f' }}>
             아직 이번 주 기록이 없어요.
           </Text>
         )}

@@ -1,4 +1,3 @@
-import { colors } from "@toss/tds-colors";
 import { Text } from "@toss/tds-mobile";
 import { SectionCard } from "../../../components/shared/Surface";
 import { formatSessionLabel } from "../../../lib/storage";
@@ -22,9 +21,9 @@ export function RecentList({ sessions }: RecentListProps) {
     <SectionCard css={{ background: "#ffffff" }}>
       <Text
         as="div"
-        typography="t6"
+        typography="t4"
         fontWeight="bold"
-        css={{ marginBottom: 12 }}
+        css={{ marginBottom: 12, color: "#35214f" }}
       >
         오늘 있었던 액션
       </Text>
@@ -46,21 +45,21 @@ export function RecentList({ sessions }: RecentListProps) {
                 alignItems: "center",
                 padding: 16,
                 borderRadius: 18,
-                background: colors.grey50,
+                background: "#f3fff8",
               }}
             >
               <div>
-                <strong css={{ display: "block", marginBottom: 4 }}>
+                <strong css={{ display: "block", marginBottom: 4, color: "#35214f" }}>
                   {formatSessionLabel(session)}
                 </strong>
-                <p css={{ margin: 0, color: colors.grey600 }}>
+                <p css={{ margin: 0, color: "#6a5b7f" }}>
                   {session.hits} hits · 분노 {session.angerBefore} →{" "}
                   {session.angerAfter}
                 </p>
                 <Text
                   as="div"
                   typography="t7"
-                  css={{ color: colors.grey500, marginTop: 6 }}
+                  css={{ color: "#8f82a4", marginTop: 6 }}
                 >
                   {formatSessionDateTime(session.createdAt)}
                 </Text>
@@ -68,7 +67,7 @@ export function RecentList({ sessions }: RecentListProps) {
             </article>
           ))
         ) : (
-          <Text as="p" typography="t7" css={{ color: colors.grey600 }}>
+          <Text as="p" typography="t7" css={{ color: "#6a5b7f" }}>
             오늘은 아직 기록된 액션이 없어요.
           </Text>
         )}

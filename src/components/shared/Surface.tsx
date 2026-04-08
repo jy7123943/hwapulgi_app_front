@@ -1,38 +1,37 @@
 import styled from "@emotion/styled";
 
 const surfaceBase = {
-  background: "#ffffff",
-  border: "none",
-  boxShadow: "none",
+  background: "#fffef9",
+  border: "4px solid #4e356d",
+  boxShadow: "0 8px 0 rgba(52, 33, 83, 0.24)",
 };
 
 export const AppShell = styled.div({
   minHeight: "100vh",
-  padding: "20px 16px 40px",
-  background:
-    "radial-gradient(circle at top left, rgba(197, 107, 255, 0.26), transparent 28%), radial-gradient(circle at top right, rgba(255, 122, 116, 0.24), transparent 24%), linear-gradient(180deg, #f2ece7 0%, #f8f4ef 100%)",
+  padding: "18px 16px 40px",
+  background: "#3b245f",
 });
 
 export const ScreenPanel = styled.main({
   width: "100%",
-  maxWidth: 560,
+  maxWidth: 500,
   margin: "0 auto",
   display: "flex",
   flexDirection: "column",
-  gap: 14,
+  gap: 18,
 });
 
 export const BodyStack = styled.section({
   display: "flex",
   flexDirection: "column",
-  gap: 16,
+  gap: 20,
 });
 
 export const SectionCard = styled.section({
   ...surfaceBase,
-  borderRadius: 28,
+  borderRadius: 30,
   padding: 20,
-  background: "#ffffff",
+  background: "#fffef9",
 });
 
 export const StatsGrid = styled.div({
@@ -46,7 +45,7 @@ export const StatsGrid = styled.div({
 
 export const StatCard = styled.article({
   ...surfaceBase,
-  borderRadius: 22,
-  padding: 18,
-  background: "#ffffff",
+  borderRadius: 24,
+  padding: 16,
+  background: "#fffef9",
 });

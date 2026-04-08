@@ -10,7 +10,7 @@ import { TextFieldBox } from "../../../components/shared/TextFieldBox";
 import { safeHaptic } from "../../../lib/haptics";
 import { useAppState } from "../../../state/AppState";
 import { BottomCTA } from "../../../components/shared/BottomCTA";
-import { MascotHero } from "../../../components/shared/MascotHero";
+import { ScreenHeading } from "../../../components/shared/ScreenHeading";
 import { sanitizeTextInput } from "../../../lib/sanitize";
 
 export function AngerRoute() {
@@ -21,7 +21,7 @@ export function AngerRoute() {
     <AppShell>
       <ScreenPanel>
         <BodyStack>
-          <MascotHero
+          <ScreenHeading
             subtitle="지금 기분을 숫자로 표현해볼까요?"
             title={"지금 나의 분노\n게이지는?"}
           />

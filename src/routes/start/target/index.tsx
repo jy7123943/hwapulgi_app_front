@@ -1,5 +1,5 @@
 import { colors } from "@toss/tds-colors";
-import { Button, Text } from "@toss/tds-mobile";
+import { Button, Text, TextField } from "@toss/tds-mobile";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,7 +11,17 @@ import { TARGET_OPTIONS } from "../../../constants";
 import { safeHaptic } from "../../../lib/haptics";
 import { sanitizeTextInput } from "../../../lib/sanitize";
 import { useAppState } from "../../../state/AppState";
-import { MascotHero } from "../../../components/shared/MascotHero";
+import { ScreenHeading } from "../../../components/shared/ScreenHeading";
+
+const TARGET_EMOJIS: Record<(typeof TARGET_OPTIONS)[number], string> = {
+  회사: "🏢",
+  고객: "🗣️",
+  배우자: "💍",
+  가족: "🏠",
+  친구: "😎",
+  연인: "💌",
+  기타: "✏️",
+};
 
 export function TargetRoute() {
   const navigate = useNavigate();
@@ -59,8 +69,8 @@ export function TargetRoute() {
     <AppShell>
       <ScreenPanel>
         <BodyStack>
-          <MascotHero
-            subtitle={"선택하면 바로\n혼내주러 가요."}
+          <ScreenHeading
+            subtitle={"선택하면 바로 혼내주러 가요."}
             title={"오늘은 누구 때문에\n화가 났나요?"}
           />
 
@@ -80,24 +90,38 @@ export function TargetRoute() {
                 onClick={() => void selectTarget(target)}
                 type="button"
                 css={{
-                  borderRadius: 18,
-                  minHeight: 70,
-                  padding: "10px 8px",
-                  background:
-                    draft.target === target ? colors.grey500 : "#ffffff",
-                  color: draft.target === target ? "#ffffff" : colors.grey900,
-                  border: "none",
+                  borderRadius: 24,
+                  minHeight: 88,
+                  padding: "14px 10px",
+                  background: draft.target === target ? "#bff4d5" : "#fffef9",
+                  color: draft.target === target ? "#4a316a" : colors.grey900,
+                  border: "4px solid #4e356d",
                   transition:
                     "transform 160ms ease, background-color 160ms ease, border-color 160ms ease",
-                  boxShadow: "none",
+                  boxShadow:
+                    draft.target === target
+                      ? "0 6px 0 rgba(78, 53, 109, 0.24)"
+                      : "0 6px 0 rgba(58, 35, 93, 0.16)",
                   ":active": {
-                    transform: "scale(0.98)",
+                    transform: "translateY(2px)",
                   },
                 }}
               >
-                <Text as="span" typography="t5" fontWeight="semibold">
-                  {target}
-                </Text>
+                <span
+                  css={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 8,
+                  }}
+                >
+                  <span css={{ fontSize: 24, lineHeight: 1 }}>
+                    {TARGET_EMOJIS[target]}
+                  </span>
+                  <Text as="span" typography="t5" fontWeight="bold">
+                    {target}
+                  </Text>
+                </span>
               </button>
             ))}
           </div>
@@ -105,58 +129,62 @@ export function TargetRoute() {
           {draft.target === "기타" ? (
             <div
               css={{
-                background: "rgba(255, 252, 248, 0.96)",
-                border: "none",
-                boxShadow: "none",
+                background: "#fffef9",
+                border: "4px solid #4e356d",
+                boxShadow: "0 6px 0 rgba(52, 33, 83, 0.18)",
                 borderRadius: 28,
-                padding: 20,
               }}
             >
-              <label
+              <div
                 css={{
-                  display: "block",
-                  marginBottom: 8,
-                  color: colors.grey600,
-                  fontSize: 13,
-                }}
-                htmlFor="custom-target"
-              >
-                직접 입력
-              </label>
-              <input
-                ref={customTargetInputRef}
-                id="custom-target"
-                autoFocus
-                maxLength={15}
-                onChange={(event) =>
-                  handleCustomTargetChange(event.target.value)
-                }
-                placeholder="예: 출근길 지하철"
-                value={draft.customTarget}
-                css={{
-                  width: "100%",
-                  borderRadius: 16,
-                  border: "none",
-                  background: "#fff",
-                  padding: "14px 16px",
-                  color: colors.grey900,
-                  appearance: "none",
-                }}
-              />
-              <Button
-                color="dark"
-                disabled={!canMoveNext}
-                display="block"
-                onClick={() => navigate("/start/name")}
-                size="large"
-                css={{
-                  marginTop: 12,
-                  boxShadow: "none",
-                  border: "none",
+                  "& > div": {
+                    "--text-field-label-color": `${colors.grey900} !important`,
+                    "--text-field-hint-color": `${colors.grey500} !important`,
+                  },
                 }}
               >
-                다음
-              </Button>
+                <TextField
+                  ref={customTargetInputRef}
+                  id="custom-target"
+                  label="직접 입력"
+                  labelOption="sustain"
+                  autoFocus
+                  maxLength={15}
+                  onChange={(event) =>
+                    handleCustomTargetChange(event.target.value)
+                  }
+                  placeholder="예: 거래처, 동네 빌런"
+                  value={draft.customTarget}
+                  variant="box"
+                  css={{
+                    "& input::placeholder, & textarea::placeholder": {
+                      color: colors.grey400,
+                      fontSize: 14,
+                    },
+                  }}
+                />
+              </div>
+              <div
+                css={{
+                  padding: 20,
+                  paddingTop: 0,
+                }}
+              >
+                <Button
+                  color="dark"
+                  disabled={!canMoveNext}
+                  display="block"
+                  onClick={() => navigate("/start/name")}
+                  size="large"
+                  css={{
+                    marginTop: 12,
+                    boxShadow: "none",
+                    border: "none",
+                  }}
+                >
+                  다음
+                </Button>
+              </div>
             </div>
           ) : null}
 
@@ -192,10 +220,10 @@ export function TargetRoute() {
                     css={{
                       borderRadius: 999,
                       padding: "10px 14px",
-                      background: "#ffffff",
-                      color: colors.grey900,
-                      border: "none",
-                      boxShadow: "none",
+                      background: "#f2ffef",
+                      color: "#4a316a",
+                      border: "3px solid #4e356d",
+                      boxShadow: "0 4px 0 rgba(58, 35, 93, 0.14)",
                     }}
                   >
                     <Text as="span" typography="t7" fontWeight="semibold">

@@ -7,11 +7,11 @@ import {
   ScreenPanel,
   SectionCard,
 } from "../../components/shared/Surface";
-import { MascotHero } from "../../components/shared/MascotHero";
 import { CurrentWeekReportCard } from "../home/components/CurrentWeekReportCard";
 import { HomeStats } from "../home/components/HomeStats";
 import { TopTargetsCard } from "../home/components/TopTargetsCard";
 import { useAppState } from "../../state/AppState";
+import { ScreenHeading } from "../../components/shared/ScreenHeading";
 
 export function ReportsRoute() {
   const { weeklyArchives, weeklySummary } = useAppState();
@@ -24,13 +24,9 @@ export function ReportsRoute() {
     <AppShell css={{ paddingBottom: 108 }}>
       <ScreenPanel>
         <BodyStack>
-          <MascotHero
-            compact
-            type="happy"
-            subtitle={
-              "이번 주 흐름과 지난 리포트를\n차근차근 돌아볼 수 있어요."
-            }
-            title={`${reportYear}년 ${weeklySummary.label}`}
+          <ScreenHeading
+            subtitle={"이번 주 흐름과 지난 기록을 차근차근 돌아볼 수 있어요."}
+            title={`${reportYear}년\n${weeklySummary.label}`}
           />
 
           <SectionCard

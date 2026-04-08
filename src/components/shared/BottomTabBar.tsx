@@ -27,9 +27,11 @@ export function BottomTabBar() {
           minWidth: 152,
           maxWidth: 220,
           margin: "0 auto",
-          background: "#241916",
+          background: "#2f1c49",
           borderRadius: 999,
           padding: 8,
+          border: "4px solid #4e356d",
+          boxShadow: "0 8px 0 rgba(23, 12, 41, 0.28)",
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: 8,
@@ -48,7 +50,7 @@ export function BottomTabBar() {
               css={{
                 border: "none",
                 borderRadius: 999,
-                background: isActive ? "#f3f0df" : "transparent",
+                background: isActive ? "#bff4d5" : "transparent",
                 width: 56,
                 height: 44,
                 display: "grid",
@@ -63,7 +65,7 @@ export function BottomTabBar() {
             >
               <Asset.Icon
                 aria-hidden={true}
-                color={isActive ? "#17110f" : "#ffffff"}
+                color={isActive ? "#2b1b46" : "#f7ebff"}
                 frameShape={Asset.frameShape.CleanWFull}
                 name={tab.iconName}
                 css={{

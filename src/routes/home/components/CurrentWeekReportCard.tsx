@@ -12,18 +12,18 @@ interface CurrentWeekReportCardProps {
 
 function getBarColor(angerLevel: number) {
   if (angerLevel <= 20) {
-    return colors.blue100;
+    return "#7ed7b4";
   }
 
   if (angerLevel <= 60) {
-    return colors.yellow200;
+    return "#5bcaa4";
   }
 
   if (angerLevel <= 80) {
-    return "#ffd6c9";
+    return "#ffd5ea";
   }
 
-  return "#f7b3d0";
+  return "#ff9fd0";
 }
 
 export function CurrentWeekReportCard({
@@ -51,9 +51,9 @@ export function CurrentWeekReportCard({
       <div>
         <Text
           as="h3"
-          typography="t6"
+          typography="t4"
           fontWeight="bold"
-          css={{ color: colors.grey900 }}
+          css={{ color: "#35214f" }}
         >
           이번 주 감정 흐름
         </Text>
@@ -62,7 +62,7 @@ export function CurrentWeekReportCard({
         <Text
           as="p"
           typography="t7"
-          css={{ color: colors.grey700 }}
+          css={{ color: "#6a5b7f" }}
         >
           이번 주 {weeklySummary.totalSessions}일 기록했고, 가장 많이 화난 대상은{" "}
           {weeklySummary.topTargets[0]?.label ?? "-"}이에요.
@@ -72,7 +72,7 @@ export function CurrentWeekReportCard({
         <Text
           as="p"
           typography="t7"
-          css={{ color: colors.grey700 }}
+          css={{ color: "#6a5b7f" }}
         >
           가장 힘들었던 요일은 {weeklySummary.hardestWeekday}였어요.
         </Text>
@@ -105,14 +105,16 @@ export function CurrentWeekReportCard({
             <div
               css={{
                 width: "100%",
-                maxWidth: 32,
-                height: 116,
+                maxWidth: 34,
+                height: 124,
                 borderRadius: 999,
-                background: colors.grey100,
+                background: "#efe8f8",
                 display: "flex",
                 alignItems: "flex-end",
                 justifyContent: "stretch",
                 overflow: "hidden",
+                border: "3px solid #4e356d",
+                boxShadow: "0 4px 0 rgba(78, 53, 109, 0.12)",
               }}
             >
               <div
@@ -126,6 +128,7 @@ export function CurrentWeekReportCard({
                       ? getBarColor(day.angerLevel)
                       : colors.grey200,
                   transition: "height 180ms ease",
+                  borderTop: day.sessions.length > 0 ? "3px solid #4e356d" : "none",
                 }}
               />
             </div>
@@ -139,25 +142,25 @@ export function CurrentWeekReportCard({
             >
               <Text
                 as="div"
-                typography="t7"
+                typography="t6"
                 css={{
                   color:
                     day.dateKey === selectedDateKey
                       ? colors.grey900
-                      : colors.grey400,
+                      : "#9d91b1",
                 }}
               >
                 {day.dayLabel}
               </Text>
               <Text
                 as="div"
-                typography="t6"
+                typography="t5"
                 fontWeight="bold"
                 css={{
                   color:
                     day.dateKey === selectedDateKey
                       ? colors.grey900
-                      : colors.grey500,
+                      : "#7c6e93",
                   marginTop: 2,
                 }}
               >
@@ -177,9 +180,9 @@ export function CurrentWeekReportCard({
         }}
       >
         {[
-          ["스트레스", colors.yellow200],
-          ["화남", "#ffd6c9"],
-          ["폭발", "#f7b3d0"],
+          ["스트레스", "#9de9c6"],
+          ["화남", "#ffd5ea"],
+          ["폭발", "#ff9fd0"],
         ].map(([label, color]) => (
           <div
             key={label}
@@ -189,7 +192,7 @@ export function CurrentWeekReportCard({
               gap: 6,
               padding: "6px 10px",
               borderRadius: 999,
-              background: colors.grey50,
+              background: "#f3fff8",
             }}
           >
             <span
@@ -200,7 +203,7 @@ export function CurrentWeekReportCard({
                 background: color,
               }}
             />
-            <Text as="span" typography="t7" css={{ color: colors.grey700 }}>
+            <Text as="span" typography="t7" css={{ color: "#65567e" }}>
               {label}
             </Text>
           </div>
@@ -212,16 +215,16 @@ export function CurrentWeekReportCard({
           marginTop: 14,
           borderRadius: 22,
           padding: 16,
-          background: colors.grey50,
+          background: "#f3fff8",
           display: "flex",
           flexDirection: "column",
         }}
       >
         <Text
           as="div"
-          typography="t7"
+          typography="t6"
           fontWeight="bold"
-          css={{ color: colors.grey900 }}
+          css={{ color: "#35214f" }}
         >
           {selectedDay
             ? `${new Date(selectedDay.dateKey).getMonth() + 1}월 ${new Date(selectedDay.dateKey).getDate()}일`
@@ -237,17 +240,17 @@ export function CurrentWeekReportCard({
               marginTop: 10,
             }}
           >
-            <Text as="div" typography="t7" css={{ color: colors.grey700 }}>
+            <Text as="div" typography="t7" css={{ color: "#4f4766" }}>
               분노 유발자: {formatSessionLabel(selectedSession)}
             </Text>
-            <Text as="div" typography="t7" css={{ color: colors.grey700 }}>
+            <Text as="div" typography="t7" css={{ color: "#4f4766" }}>
               분노 게이지: {selectedSession.angerBefore} →{" "}
               {selectedSession.angerAfter}
             </Text>
-            <Text as="div" typography="t7" css={{ color: colors.grey700 }}>
+            <Text as="div" typography="t7" css={{ color: "#4f4766" }}>
               타격 수: {selectedSession.hits}
             </Text>
-            <Text as="div" typography="t7" css={{ color: colors.grey700 }}>
+            <Text as="div" typography="t7" css={{ color: "#4f4766" }}>
               메모: {selectedSession.memo || "남긴 메모가 없어요."}
             </Text>
           </div>
@@ -255,7 +258,7 @@ export function CurrentWeekReportCard({
           <Text
             as="p"
             typography="t7"
-            css={{ color: colors.grey500, marginTop: 10 }}
+            css={{ color: "#8f82a4", marginTop: 10 }}
           >
             이 날은 기록이 없어요.
           </Text>

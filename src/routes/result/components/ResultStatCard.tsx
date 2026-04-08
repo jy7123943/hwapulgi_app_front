@@ -14,10 +14,11 @@ export function ResultStatCard({
   valueColor,
 }: ResultStatCardProps) {
   return (
-    <StatCard>
+    <StatCard css={{ background: "#fffef9" }}>
       <Text
         as="span"
-        typography="t7"
+        typography="t6"
+        fontWeight="medium"
         css={{ display: "block", marginBottom: 10, color: colors.grey600 }}
       >
         {label}

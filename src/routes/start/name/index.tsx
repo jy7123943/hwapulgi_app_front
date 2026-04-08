@@ -11,12 +11,62 @@ import { safeHaptic } from "../../../lib/haptics";
 import { sanitizeTextInput } from "../../../lib/sanitize";
 import { useAppState } from "../../../state/AppState";
 import { BottomCTA } from "../../../components/shared/BottomCTA";
-import { MascotHero } from "../../../components/shared/MascotHero";
+import { ScreenHeading } from "../../../components/shared/ScreenHeading";
 
 const GENDER_OPTIONS = [
   { label: "남자", value: "boy" as const },
   { label: "여자", value: "girl" as const },
 ];
+
+function AvatarOptionPreview({ gender }: { gender: "boy" | "girl" }) {
+  const hairSrc =
+    gender === "boy"
+      ? "/avatar/hair/boy_hair.png"
+      : "/avatar/hair/girl_hair.png";
+  const faceWidth = 70;
+  const hairWidth = gender === "boy" ? 112 : 130;
+  const hairTop = gender === "boy" ? -10 : -14;
+
+  return (
+    <div
+      css={{
+        position: "relative",
+        width: 96,
+        height: 70,
+        margin: "0 auto",
+      }}
+    >
+      <img
+        alt=""
+        src="/avatar/face/face_smile.png"
+        css={{
+          position: "absolute",
+          left: "50%",
+          top: 8,
+          transform: "translateX(-50%)",
+          width: faceWidth,
+          height: "auto",
+          objectFit: "contain",
+          zIndex: 2,
+        }}
+      />
+      <img
+        alt=""
+        src={hairSrc}
+        css={{
+          position: "absolute",
+          left: "50%",
+          top: hairTop,
+          transform: "translateX(-50%)",
+          width: hairWidth,
+          height: "auto",
+          objectFit: "contain",
+          zIndex: 3,
+        }}
+      />
+    </div>
+  );
+}
 
 export function NameRoute() {
   const navigate = useNavigate();
@@ -27,8 +77,8 @@ export function NameRoute() {
     <AppShell>
       <ScreenPanel>
         <BodyStack>
-          <MascotHero
-            subtitle={"아바타를 생성할 때\n쓰이는 정보에요."}
+          <ScreenHeading
+            subtitle={"아바타를 생성할 때 쓰이는 정보에요."}
             title={"그 사람의\n특징을 알려주세요."}
           />
 
@@ -74,7 +124,7 @@ export function NameRoute() {
                 >
                   <Text
                     as="div"
-                    typography="t7"
+                    typography="t6"
                     fontWeight="regular"
                     css={{ color: colors.grey900 }}
                   >
@@ -95,15 +145,15 @@ export function NameRoute() {
                         css={{
                           borderRadius: 999,
                           padding: "10px 14px",
-                          background: colors.grey100,
-                          color: colors.grey900,
-                          border: "none",
-                          boxShadow: "none",
+                          background: "#f2ffef",
+                          color: "#4a316a",
+                          border: "3px solid #4e356d",
+                          boxShadow: "0 4px 0 rgba(58, 35, 93, 0.14)",
                         }}
                       >
-                        <Text as="span" typography="t7" fontWeight="semibold">
-                          {nickname}
-                        </Text>
+                      <Text as="span" typography="t7" fontWeight="semibold">
+                        {nickname}
+                      </Text>
                       </button>
                     ))}
                   </div>
@@ -123,15 +173,16 @@ export function NameRoute() {
             >
               <Text
                 as="div"
-                typography="t7"
-                fontWeight="regular"
+                typography="t6"
+                fontWeight="medium"
                 css={{ color: colors.grey900 }}
               >
                 성별
               </Text>
               <div
                 css={{
-                  display: "flex",
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
                   gap: 8,
                 }}
               >
@@ -145,18 +196,25 @@ export function NameRoute() {
                       onClick={() => setGender(option.value)}
                       css={{
                         flex: 1,
-                        borderRadius: 999,
-                        padding: "12px 14px",
-                        background: isSelected ? colors.grey900 : colors.grey50,
-                        color: isSelected ? colors.white : colors.grey900,
-                        border: "none",
-                        boxShadow: "none",
+                        borderRadius: 28,
+                        padding: "14px 10px 12px",
+                        background: isSelected ? "#bff4d5" : "#fffef9",
+                        color: "#4a316a",
+                        border: "4px solid #4e356d",
+                        boxShadow: isSelected
+                          ? "0 4px 0 rgba(78, 53, 109, 0.24)"
+                          : "0 4px 0 rgba(58, 35, 93, 0.14)",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 0,
                       }}
                     >
+                      <AvatarOptionPreview gender={option.value} />
                       <Text
                         as="span"
-                        typography="t7"
-                        fontWeight="semibold"
+                        typography="t6"
+                        fontWeight="bold"
                         css={{ color: "inherit" }}
                       >
                         {option.label}

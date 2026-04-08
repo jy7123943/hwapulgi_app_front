@@ -1,20 +1,19 @@
 export type TargetOption =
-  | '회사 상사'
-  | '회사 동료'
-  | '고객'
-  | '배우자'
-  | '가족'
-  | '친구'
-  | '연인'
-  | '기타';
+  | "회사"
+  | "고객"
+  | "배우자"
+  | "가족"
+  | "친구"
+  | "연인"
+  | "기타";
 
-export type AvatarGender = 'girl' | 'boy';
+export type AvatarGender = "girl" | "boy";
 
 export interface SessionInput {
-  target: TargetOption | '';
+  target: TargetOption | "";
   customTarget?: string;
   nickname: string;
-  gender?: AvatarGender | '';
+  gender?: AvatarGender | "";
   angerBefore: number;
   memo: string;
 }
