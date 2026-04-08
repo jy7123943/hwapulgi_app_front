@@ -10,20 +10,30 @@ interface CurrentWeekReportCardProps {
   onOpen?: () => void;
 }
 
+const GRAPH_SEGMENTS = [
+  { label: "스트레스", max: 40, color: "#b9f0d8" },
+  { label: "화남", max: 70, color: "#9ec5ff" },
+  { label: "폭발", max: 100, color: "#ff8fbd" },
+] as const;
+
 function getBarColor(angerLevel: number) {
-  if (angerLevel <= 20) {
-    return "#7ed7b4";
+  if (angerLevel <= 40) {
+    return GRAPH_SEGMENTS[0].color;
   }
 
-  if (angerLevel <= 60) {
-    return "#5bcaa4";
+  if (angerLevel <= 70) {
+    return GRAPH_SEGMENTS[1].color;
   }
 
-  if (angerLevel <= 80) {
-    return "#ffd5ea";
+  return GRAPH_SEGMENTS[2].color;
+}
+
+function getDayDisplayHeight(angerLevel: number, hasSessions: boolean) {
+  if (!hasSessions) {
+    return 10;
   }
 
-  return "#ff9fd0";
+  return Math.max(18, angerLevel);
 }
 
 export function CurrentWeekReportCard({
@@ -83,92 +93,107 @@ export function CurrentWeekReportCard({
           display: "grid",
           gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
           gap: 10,
-          marginTop: 18,
           alignItems: "end",
+          marginTop: 18,
+          position: "relative",
         }}
       >
-        {weeklySummary.calendarDays.map((day) => (
-          <button
-            key={day.dateKey}
-            type="button"
-            onClick={() => setSelectedDateKey(day.dateKey)}
-            css={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              background: "transparent",
-              border: "none",
-              padding: 0,
-              margin: 0,
-            }}
-          >
-            <div
+        <div
+          css={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 56,
+            height: 2,
+            background: "#e9e0f3",
+          }}
+        />
+        {weeklySummary.calendarDays.map((day) => {
+          const totalHeight = getDayDisplayHeight(
+            day.angerLevel,
+            day.sessions.length > 0,
+          );
+
+          return (
+            <button
+              key={day.dateKey}
+              type="button"
+              onClick={() => setSelectedDateKey(day.dateKey)}
               css={{
-                width: "100%",
-                maxWidth: 34,
-                height: 124,
-                borderRadius: 999,
-                background: "#efe8f8",
                 display: "flex",
-                alignItems: "flex-end",
-                justifyContent: "stretch",
-                overflow: "hidden",
-                border: "3px solid #4e356d",
-                boxShadow: "0 4px 0 rgba(78, 53, 109, 0.12)",
+                flexDirection: "column",
+                alignItems: "center",
+                background: "transparent",
+                border: "none",
+                padding: 0,
+                margin: 0,
               }}
             >
               <div
                 css={{
                   width: "100%",
-                  minHeight: day.sessions.length > 0 ? 12 : 8,
-                  height: `${Math.max(day.angerLevel, day.sessions.length > 0 ? 14 : 8)}%`,
-                  borderRadius: 999,
-                  background:
-                    day.sessions.length > 0
-                      ? getBarColor(day.angerLevel)
-                      : colors.grey200,
-                  transition: "height 180ms ease",
-                  borderTop: day.sessions.length > 0 ? "3px solid #4e356d" : "none",
-                }}
-              />
-            </div>
-            <div
-              css={{
-                marginTop: 8,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Text
-                as="div"
-                typography="t6"
-                css={{
-                  color:
-                    day.dateKey === selectedDateKey
-                      ? colors.grey900
-                      : "#9d91b1",
+                  maxWidth: 38,
+                  height: 124,
+                  display: "flex",
+                  alignItems: "flex-end",
+                  justifyContent: "center",
+                  position: "relative",
                 }}
               >
-                {day.dayLabel}
-              </Text>
-              <Text
-                as="div"
-                typography="t5"
-                fontWeight="bold"
+                <div
+                  css={{
+                    width: 30,
+                    height: totalHeight,
+                    minHeight: day.sessions.length > 0 ? 22 : 12,
+                    borderRadius: "16px 16px 14px 14px",
+                    border: "3px solid #4e356d",
+                    background:
+                      day.sessions.length > 0
+                        ? getBarColor(day.angerLevel)
+                        : "#ede6f6",
+                    overflow: "hidden",
+                    boxShadow: "0 4px 0 rgba(78, 53, 109, 0.1)",
+                  }}
+                />
+              </div>
+              <div
                 css={{
-                  color:
-                    day.dateKey === selectedDateKey
-                      ? colors.grey900
-                      : "#7c6e93",
-                  marginTop: 2,
+                  marginTop: 8,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
                 }}
               >
-                {day.dayNumber}
-              </Text>
-            </div>
-          </button>
-        ))}
+                <Text
+                  as="div"
+                  typography="t6"
+                  css={{
+                    color:
+                      day.dateKey === selectedDateKey
+                        ? colors.grey900
+                        : "#9d91b1",
+                  }}
+                >
+                  {day.dayLabel}
+                </Text>
+                <Text
+                  as="div"
+                  typography="t5"
+                  fontWeight="bold"
+                  css={{
+                    color:
+                      day.dateKey === selectedDateKey
+                        ? colors.grey900
+                        : "#7c6e93",
+                    marginTop: 2,
+                  }}
+                >
+                  {day.dayNumber}
+                </Text>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       <div
@@ -179,11 +204,7 @@ export function CurrentWeekReportCard({
           marginTop: 14,
         }}
       >
-        {[
-          ["스트레스", "#9de9c6"],
-          ["화남", "#ffd5ea"],
-          ["폭발", "#ff9fd0"],
-        ].map(([label, color]) => (
+        {GRAPH_SEGMENTS.map(({ label, color }) => (
           <div
             key={label}
             css={{
