@@ -22,8 +22,8 @@ const avatarFaceAssetUrls = {
   sobbing: `${import.meta.env.BASE_URL}avatar/face/face_sobbing.png`,
   verySad: `${import.meta.env.BASE_URL}avatar/face/face_very_sad.png`,
 } as const;
-const AVATAR_BODY_WIDTH = 154;
-const AVATAR_BODY_HEIGHT = 230;
+const AVATAR_BODY_WIDTH = 142;
+const AVATAR_BODY_HEIGHT = 212;
 const AVATAR_FACE_WIDTH = 172;
 const AVATAR_FACE_HEIGHT = 124;
 const AVATAR_HAIR_GIRL_WIDTH = 352;
@@ -31,11 +31,12 @@ const AVATAR_HAIR_GIRL_HEIGHT = 226;
 const AVATAR_HAIR_BOY_WIDTH = 308;
 const AVATAR_HAIR_BOY_HEIGHT = 207;
 const AVATAR_BODY_OFFSET_X = 3;
-const AVATAR_BODY_OFFSET_Y = 44;
-const AVATAR_FACE_OFFSET_Y = -116;
+const AVATAR_BODY_OFFSET_Y = 46;
+const AVATAR_FACE_OFFSET_Y = -108;
 const AVATAR_HAIR_OFFSET_X = 0;
-const AVATAR_HAIR_OFFSET_Y = -129;
+const AVATAR_HAIR_OFFSET_Y = -121;
 const GLOVE_WIDTH = 110;
+const GAME_ACTOR_SCALE = 0.88;
 const FINAL_REACTION_LINE = "제가 졌어요...";
 const HIT_REACTION_LINES = {
   defiant: [
@@ -149,10 +150,10 @@ const COMBO_FEEDBACK: Record<
   number,
   { labels: string[]; color: string; fontSize: number; fontWeight: number }
 > = {
-  5: { labels: ["퍽!"], color: "#ffe06b", fontSize: 14, fontWeight: 800 },
-  10: { labels: ["연타!"], color: "#ff9e6d", fontSize: 17, fontWeight: 900 },
-  15: { labels: ["폭주!"], color: "#ff7b7b", fontSize: 21, fontWeight: 900 },
-  20: { labels: ["난타!"], color: "#d09cff", fontSize: 24, fontWeight: 900 },
+  5: { labels: ["퍽!"], color: "#ffe06b", fontSize: 13, fontWeight: 800 },
+  10: { labels: ["연타!"], color: "#ff9e6d", fontSize: 15, fontWeight: 900 },
+  15: { labels: ["폭주!"], color: "#ff7b7b", fontSize: 18, fontWeight: 900 },
+  20: { labels: ["난타!"], color: "#d09cff", fontSize: 21, fontWeight: 900 },
 };
 
 interface Callbacks {
@@ -529,11 +530,11 @@ export function createAngerGame(
     const scene = sceneRef;
     const label = Phaser.Utils.Array.GetRandom(labels);
     const startX = centerX() + Phaser.Math.Between(-26, 26);
-    const startY = centerY() - Phaser.Math.Between(226, 252);
+    const startY = centerY() - Phaser.Math.Between(184, 206);
     const endX = startX + Phaser.Math.Between(-10, 10);
-    const endY = startY - Phaser.Math.Between(10, 18);
+    const endY = startY - Phaser.Math.Between(8, 14);
     const fadeX = endX + Phaser.Math.Between(-6, 6);
-    const fadeY = endY - Phaser.Math.Between(10, 16);
+    const fadeY = endY - Phaser.Math.Between(8, 12);
     const startAngle = Phaser.Math.FloatBetween(-12, 12);
     const endAngle = Phaser.Math.FloatBetween(-5, 5);
     const startScale = Phaser.Math.FloatBetween(0.72, 0.82);
@@ -659,8 +660,12 @@ export function createAngerGame(
     return currentHeight() / 2 - 10;
   }
 
+  function scaled(value: number) {
+    return value * GAME_ACTOR_SCALE;
+  }
+
   function groundY() {
-    return centerY() + AVATAR_BODY_OFFSET_Y + AVATAR_BODY_HEIGHT / 2 - 5;
+    return centerY() + scaled(AVATAR_BODY_OFFSET_Y) + scaled(AVATAR_BODY_HEIGHT) / 2 - 5;
   }
 
   function updateStarsPosition() {
@@ -669,9 +674,9 @@ export function createAngerGame(
     }
 
     const cx = avatar.x;
-    const cy = avatar.y - 188;
-    const radiusX = 34;
-    const radiusY = 14;
+    const cy = avatar.y - scaled(188);
+    const radiusX = scaled(34);
+    const radiusY = scaled(14);
 
     stars.forEach((star, index) => {
       const angle = starOrbitAngle + index * ((Math.PI * 2) / stars.length);
@@ -684,14 +689,14 @@ export function createAngerGame(
 
   function layout() {
     avatar?.setPosition(centerX(), centerY());
-    avatarHitZone?.setPosition(centerX(), centerY() - 6);
+    avatarHitZone?.setPosition(centerX(), centerY() - scaled(6));
     glove?.setPosition(currentWidth() / 2, currentHeight() - 56);
     shadow?.setPosition(centerX(), groundY());
     flash?.setPosition(centerX(), centerY());
-    nameplate?.setPosition(centerX(), centerY() - 126);
-    speechBubble?.setPosition(centerX() + 44, centerY() - 194);
-    heatAura?.setPosition(centerX(), centerY() - 16);
-    emberAura?.setPosition(centerX(), centerY() - 40);
+    nameplate?.setPosition(centerX(), centerY() - scaled(126));
+    speechBubble?.setPosition(centerX() + scaled(44), centerY() - scaled(194));
+    heatAura?.setPosition(centerX(), centerY() - scaled(16));
+    emberAura?.setPosition(centerX(), centerY() - scaled(40));
     updateStarsPosition();
   }
 
@@ -965,31 +970,31 @@ export function createAngerGame(
       flash.setDepth(2);
       glove = this.add.image(currentWidth() / 2, currentHeight() - 56, "glove");
       glove.setOrigin(0.5, 0.5);
-      const gloveScale = GLOVE_WIDTH / glove.width;
+      const gloveScale = (GLOVE_WIDTH / glove.width) * GAME_ACTOR_SCALE;
       glove.setScale(gloveScale, gloveScale);
       gloveBaseScaleX = gloveScale;
       gloveBaseScaleY = gloveScale;
       glove.setDepth(8);
       const avatarBody = this.add.image(
-        AVATAR_BODY_OFFSET_X,
-        AVATAR_BODY_OFFSET_Y,
+        scaled(AVATAR_BODY_OFFSET_X),
+        scaled(AVATAR_BODY_OFFSET_Y),
         "avatar-body",
       );
       avatarBody.setOrigin(0.5, 0.5);
-      avatarBody.setDisplaySize(AVATAR_BODY_WIDTH, AVATAR_BODY_HEIGHT);
+      avatarBody.setDisplaySize(scaled(AVATAR_BODY_WIDTH), scaled(AVATAR_BODY_HEIGHT));
       const initialFaceKey = Phaser.Math.RND.pick(["face-smug", "face-smile"]);
-      avatarFace = this.add.image(0, AVATAR_FACE_OFFSET_Y, initialFaceKey);
+      avatarFace = this.add.image(0, scaled(AVATAR_FACE_OFFSET_Y), initialFaceKey);
       avatarFace.setOrigin(0.5, 0.5);
-      avatarFace.setDisplaySize(AVATAR_FACE_WIDTH, AVATAR_FACE_HEIGHT);
+      avatarFace.setDisplaySize(scaled(AVATAR_FACE_WIDTH), scaled(AVATAR_FACE_HEIGHT));
       const avatarHair = this.add.image(
-        AVATAR_HAIR_OFFSET_X,
-        AVATAR_HAIR_OFFSET_Y,
+        scaled(AVATAR_HAIR_OFFSET_X),
+        scaled(AVATAR_HAIR_OFFSET_Y),
         gender === "boy" ? "avatar-hair-boy" : "avatar-hair-girl",
       );
       avatarHair.setOrigin(0.5, 0.5);
       avatarHair.setDisplaySize(
-        gender === "boy" ? AVATAR_HAIR_BOY_WIDTH : AVATAR_HAIR_GIRL_WIDTH,
-        gender === "boy" ? AVATAR_HAIR_BOY_HEIGHT : AVATAR_HAIR_GIRL_HEIGHT,
+        scaled(gender === "boy" ? AVATAR_HAIR_BOY_WIDTH : AVATAR_HAIR_GIRL_WIDTH),
+        scaled(gender === "boy" ? AVATAR_HAIR_BOY_HEIGHT : AVATAR_HAIR_GIRL_HEIGHT),
       );
       currentFaceKey = initialFaceKey;
       avatar = this.add.container(centerX(), centerY(), [
@@ -997,10 +1002,10 @@ export function createAngerGame(
         avatarFace,
         avatarHair,
       ]);
-      avatar.setSize(AVATAR_BODY_WIDTH, AVATAR_BODY_HEIGHT);
+      avatar.setSize(scaled(AVATAR_BODY_WIDTH), scaled(AVATAR_BODY_HEIGHT));
       avatar.setDepth(5);
       avatarHitZone = this.add
-        .zone(centerX(), centerY() - 6, 256, 320)
+        .zone(centerX(), centerY() - scaled(6), scaled(256), scaled(320))
         .setInteractive({ useHandCursor: true });
       avatarHitZone.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
         triggerHit(pointer.worldX, pointer.worldY);
@@ -1043,14 +1048,14 @@ export function createAngerGame(
         nameplateHeight,
         17,
       );
-      nameplate = this.add.container(centerX(), centerY() - 146, [
+      nameplate = this.add.container(centerX(), centerY() - scaled(146), [
         nameplateBg,
         nameplateText,
       ]);
-      nameplate.setPosition(centerX(), centerY() - 30);
+      nameplate.setPosition(centerX(), centerY() - scaled(30));
       nameplate.setDepth(7);
       speechBubbleBg = this.add.graphics();
-      speechBubble = this.add.container(centerX() + 44, centerY() - 126, [
+      speechBubble = this.add.container(centerX() + scaled(44), centerY() - scaled(126), [
         speechBubbleBg,
       ]);
       updateSpeechBubbleLabel(HIT_REACTION_LINES.defiant[0]);

@@ -198,7 +198,7 @@ export function GameRoute() {
                   >
                     <img
                       alt=""
-                      src={`${import.meta.env.BASE_URL}angryface.png`}
+                      src={`${import.meta.env.BASE_URL}icon_glove.png`}
                       css={{
                         width: 72,
                         height: 72,
@@ -270,7 +270,7 @@ export function GameRoute() {
               >
                 <img
                   alt=""
-                  src={`${import.meta.env.BASE_URL}angryface.png`}
+                  src={`${import.meta.env.BASE_URL}icon_glove.png`}
                   css={{
                     width: 72,
                     height: 72,
