@@ -72,6 +72,7 @@ export function NameRoute() {
   const navigate = useNavigate();
   const { draft, recentNicknames, setGender, setNickname } = useAppState();
   const isValid = draft.nickname.trim().length > 0 && !!draft.gender;
+  const shouldShowNameHint = draft.nickname.trim().length === 0;
 
   return (
     <AppShell>
@@ -102,7 +103,6 @@ export function NameRoute() {
                 onChange={(event) =>
                   setNickname(sanitizeTextInput(event.target.value))
                 }
-                placeholder="예: 김부장, 팔팔이"
                 value={draft.nickname}
                 variant="box"
                 css={{
@@ -230,6 +230,21 @@ export function NameRoute() {
 
       <BottomCTA
         disabled={!isValid}
+        topAccessory={
+          shouldShowNameHint ? (
+            <Text
+              as="div"
+              typography="t7"
+              fontWeight="medium"
+              css={{
+                color: colors.red500,
+                textAlign: "center",
+              }}
+            >
+              이름을 입력해야 다음으로 넘어갈 수 있어요.
+            </Text>
+          ) : null
+        }
         onClick={async () => {
           await safeHaptic("tickWeak");
           navigate("/start/anger");
