@@ -14,7 +14,7 @@ export function HomeStats({ weeklySummary }: HomeStatsProps) {
           background: "#ffffff",
           display: "flex",
           flexDirection: "column",
-          gap: 2,
+          gap: 6,
         }}
       >
         <Text
@@ -32,7 +32,7 @@ export function HomeStats({ weeklySummary }: HomeStatsProps) {
           background: "#ffffff",
           display: "flex",
           flexDirection: "column",
-          gap: 2,
+          gap: 6,
         }}
       >
         <Text

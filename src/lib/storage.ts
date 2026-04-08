@@ -243,6 +243,33 @@ export function getWeeklyArchives(sessions: SessionResult[]): WeeklyArchive[] {
     });
 }
 
+export function getWeeklySummaries(sessions: SessionResult[]): WeeklySummary[] {
+  const grouped = sessions.reduce<Record<string, SessionResult[]>>((accumulator, session) => {
+    const createdAt = new Date(session.createdAt);
+    const weekStart = startOfWeek(createdAt);
+    const key = getDateKey(weekStart);
+    accumulator[key] = [...(accumulator[key] ?? []), session];
+    return accumulator;
+  }, {});
+
+  const currentWeekKey = getDateKey(startOfWeek(new Date()));
+
+  const summaries = Object.entries(grouped)
+    .sort((left, right) => +new Date(right[0]) - +new Date(left[0]))
+    .map(([key, weeklySessions]) => {
+      const referenceDate = new Date(key);
+      return buildWeeklySummary(weeklySessions, getWeekLabel(referenceDate), referenceDate);
+    });
+
+  const hasCurrentWeek = Object.prototype.hasOwnProperty.call(grouped, currentWeekKey);
+
+  if (!hasCurrentWeek) {
+    summaries.unshift(getWeeklySummary(sessions));
+  }
+
+  return summaries;
+}
+
 export function getHomeSnapshot(sessions: SessionResult[], weeklySummary: WeeklySummary): HomeSnapshot {
   const todayKey = getDateKey(new Date());
   const todaySessions = sessions.filter((session) => getDateKey(new Date(session.createdAt)) === todayKey);

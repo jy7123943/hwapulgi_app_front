@@ -17,7 +17,6 @@ function getDateKey(date: Date) {
 export function HomeRoute() {
   const navigate = useNavigate();
   const {
-    homeSnapshot,
     sessions,
     resetDraft,
   } =
@@ -35,7 +34,6 @@ export function HomeRoute() {
               resetDraft();
               navigate("/start/target");
             }}
-            snapshot={homeSnapshot}
           />
           <TodaySummaryCard sessions={todaySessions} />
           <RecentList sessions={todaySessions} />

@@ -24,7 +24,7 @@ export const ScreenPanel = styled.main({
 export const BodyStack = styled.section({
   display: "flex",
   flexDirection: "column",
-  gap: 20,
+  gap: 10,
 });
 
 export const SectionCard = styled.section({

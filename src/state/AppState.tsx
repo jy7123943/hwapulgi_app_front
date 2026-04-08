@@ -6,9 +6,25 @@ import {
   useState,
   type PropsWithChildren,
 } from 'react';
-import { defaultDraft } from '../constants';
-import { getHomeSnapshot, getWeeklyArchives, getWeeklySummary, loadSessions, saveSession, updateSession } from '../lib/storage';
-import type { AvatarGender, HomeSnapshot, SessionInput, SessionResult, TargetOption, WeeklyArchive } from '../types';
+import { INTRO_SEEN_STORAGE_KEY, defaultDraft } from '../constants';
+import {
+  getHomeSnapshot,
+  getWeeklyArchives,
+  getWeeklySummaries,
+  getWeeklySummary,
+  loadSessions,
+  saveSession,
+  updateSession,
+} from '../lib/storage';
+import type {
+  AvatarGender,
+  HomeSnapshot,
+  SessionInput,
+  SessionResult,
+  TargetOption,
+  WeeklyArchive,
+  WeeklySummary,
+} from '../types';
 
 interface AppStateValue {
   draft: SessionInput;
@@ -18,9 +34,11 @@ interface AppStateValue {
   recentCustomTargets: string[];
   recentNicknames: string[];
   weeklyArchives: WeeklyArchive[];
+  weeklySummaries: WeeklySummary[];
   weeklySummary: ReturnType<typeof getWeeklySummary>;
   lastResult: SessionResult | null;
   hasHistory: boolean;
+  introSeen: boolean;
   setTarget: (target: TargetOption) => void;
   setCustomTarget: (value: string) => void;
   setNickname: (value: string) => void;
@@ -35,6 +53,7 @@ interface AppStateValue {
     skillShots: number;
     angerAfter: number;
   }) => SessionResult;
+  markIntroSeen: () => void;
 }
 
 const AppStateContext = createContext<AppStateValue | null>(null);
@@ -44,13 +63,16 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   const [sessions, setSessions] = useState<SessionResult[]>(() => loadSessions());
   const [isHydrated, setIsHydrated] = useState(false);
   const [lastResult, setLastResult] = useState<SessionResult | null>(null);
+  const [introSeen, setIntroSeen] = useState(false);
 
   useEffect(() => {
     setSessions(loadSessions());
+    setIntroSeen(window.localStorage.getItem(INTRO_SEEN_STORAGE_KEY) === 'true');
     setIsHydrated(true);
   }, []);
 
   const weeklySummary = useMemo(() => getWeeklySummary(sessions), [sessions]);
+  const weeklySummaries = useMemo(() => getWeeklySummaries(sessions), [sessions]);
   const weeklyArchives = useMemo(() => getWeeklyArchives(sessions), [sessions]);
   const homeSnapshot = useMemo(() => getHomeSnapshot(sessions, weeklySummary), [sessions, weeklySummary]);
   const recentCustomTargets = useMemo(
@@ -85,9 +107,11 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       recentCustomTargets,
       recentNicknames,
       weeklyArchives,
+      weeklySummaries,
       weeklySummary,
       lastResult,
       hasHistory: sessions.length > 0,
+      introSeen,
       setTarget: (target) =>
         setDraft((prev) => ({
           ...prev,
@@ -158,8 +182,24 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         setLastResult(result);
         return result;
       },
+      markIntroSeen: () => {
+        window.localStorage.setItem(INTRO_SEEN_STORAGE_KEY, 'true');
+        setIntroSeen(true);
+      },
     }),
-    [draft, homeSnapshot, isHydrated, lastResult, recentCustomTargets, recentNicknames, sessions, weeklyArchives, weeklySummary],
+    [
+      draft,
+      homeSnapshot,
+      introSeen,
+      isHydrated,
+      lastResult,
+      recentCustomTargets,
+      recentNicknames,
+      sessions,
+      weeklyArchives,
+      weeklySummaries,
+      weeklySummary,
+    ],
   );
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;

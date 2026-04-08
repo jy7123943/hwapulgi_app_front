@@ -14,10 +14,10 @@ export function TopTargetsCard({ weeklySummary }: TopTargetsCardProps) {
       }}
     >
       <Text as="h3" typography="t4" fontWeight="bold" css={{ color: '#35214f' }}>
-        이번 주 나를 가장 화나게 한 대상
+        가장 화나게 한 대상
       </Text>
 
-      <div css={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 14 }}>
+      <div css={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 12 }}>
         {weeklySummary.topTargets.length > 0 ? (
           weeklySummary.topTargets.map((target, index) => (
             <div

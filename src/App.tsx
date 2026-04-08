@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
-import { RequireHistory, RootGate } from './components/RouteGuards';
+import { RequireHistory, RequireIntroSeen, RootGate } from './components/RouteGuards';
 import { HomeRoute } from './routes/home';
+import { IntroRoute } from './routes/intro';
 import { GameRoute } from './routes/play';
 import { ReportsRoute } from './routes/reports';
 import { ResultRoute } from './routes/result';
@@ -12,9 +13,12 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<RootGate />} />
-      <Route path="/start/target" element={<TargetRoute />} />
-      <Route path="/start/name" element={<NameRoute />} />
-      <Route path="/start/anger" element={<AngerRoute />} />
+      <Route path="/intro" element={<IntroRoute />} />
+      <Route element={<RequireIntroSeen />}>
+        <Route path="/start/target" element={<TargetRoute />} />
+        <Route path="/start/name" element={<NameRoute />} />
+        <Route path="/start/anger" element={<AngerRoute />} />
+      </Route>
       <Route path="/play" element={<GameRoute />} />
       <Route path="/result" element={<ResultRoute />} />
       <Route element={<RequireHistory />}>

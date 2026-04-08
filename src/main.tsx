@@ -43,6 +43,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           button: {
             border: 0,
             cursor: 'pointer',
+            outline: 'transparent',
+          },
+          'button:focus, button:focus-visible': {
+            outline: 'transparent',
+            boxShadow: 'none',
           },
         }}
       />

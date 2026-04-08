@@ -58,27 +58,23 @@ export function CurrentWeekReportCard({
 
   return (
     <SectionCard css={{ background: "#ffffff" }}>
-      <div>
+      <div css={{ display: "flex", flexDirection: "column", gap: 6 }}>
         <Text
           as="h3"
           typography="t4"
           fontWeight="bold"
           css={{ color: "#35214f" }}
         >
-          이번 주 감정 흐름
+          감정 흐름
         </Text>
-      </div>
-      <div css={{ marginTop: 8 }}>
         <Text
           as="p"
           typography="t7"
           css={{ color: "#6a5b7f" }}
         >
-          이번 주 {weeklySummary.totalSessions}일 기록했고, 가장 많이 화난 대상은{" "}
+          이 주차엔 {weeklySummary.totalSessions}일 기록했고, 가장 많이 화난 대상은{" "}
           {weeklySummary.topTargets[0]?.label ?? "-"}이에요.
         </Text>
-      </div>
-      <div css={{ marginTop: 4 }}>
         <Text
           as="p"
           typography="t7"
@@ -94,7 +90,7 @@ export function CurrentWeekReportCard({
           gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
           gap: 10,
           alignItems: "end",
-          marginTop: 18,
+          marginTop: 12,
           position: "relative",
         }}
       >
@@ -201,7 +197,7 @@ export function CurrentWeekReportCard({
           display: "flex",
           flexWrap: "wrap",
           gap: 8,
-          marginTop: 14,
+          marginTop: 12,
         }}
       >
         {GRAPH_SEGMENTS.map(({ label, color }) => (
@@ -233,12 +229,13 @@ export function CurrentWeekReportCard({
 
       <div
         css={{
-          marginTop: 14,
+          marginTop: 12,
           borderRadius: 22,
           padding: 16,
           background: "#f3fff8",
           display: "flex",
           flexDirection: "column",
+          gap: 6,
         }}
       >
         <Text
@@ -258,7 +255,7 @@ export function CurrentWeekReportCard({
               display: "flex",
               flexDirection: "column",
               gap: 6,
-              marginTop: 10,
+              marginTop: 2,
             }}
           >
             <Text as="div" typography="t7" css={{ color: "#4f4766" }}>
@@ -279,7 +276,7 @@ export function CurrentWeekReportCard({
           <Text
             as="p"
             typography="t7"
-            css={{ color: "#8f82a4", marginTop: 10 }}
+            css={{ color: "#8f82a4", marginTop: 2 }}
           >
             이 날은 기록이 없어요.
           </Text>
@@ -292,7 +289,7 @@ export function CurrentWeekReportCard({
           display="block"
           onClick={onOpen}
           size="large"
-          css={{ marginTop: 16 }}
+          css={{ marginTop: 12 }}
         >
           이번 주 정리 보기
         </Button>
