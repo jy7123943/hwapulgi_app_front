@@ -395,7 +395,7 @@ export function GameRoute() {
             >
               <img
                 alt=""
-                src={`${import.meta.env.BASE_URL}happyface.png`}
+                src={`${import.meta.env.BASE_URL}icon_mint_smile.png`}
                 css={{
                   width: 92,
                   height: 92,
