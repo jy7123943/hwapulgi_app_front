@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text } from "@toss/tds-mobile";
+import { Asset, Text } from "@toss/tds-mobile";
 import { colors } from "@toss/tds-colors";
 import { BottomTabBar } from "../../components/shared/BottomTabBar";
 import {
@@ -40,7 +40,7 @@ export function ReportsRoute() {
               flexDirection: "column",
               alignItems: "center",
               textAlign: "center",
-              gap: 8,
+              gap: 2,
               padding: "12px 12px 4px",
             }}
           >
@@ -66,10 +66,10 @@ export function ReportsRoute() {
                 fontWeight: 900,
                 display: "grid",
                 placeItems: "center",
-                opacity: canGoPrev ? 1 : 0.45,
+                opacity: canGoPrev ? 1 : 0.6,
               }}
             >
-              ‹
+              <Asset.Icon name="icon-arrow-left-mono" color={"#35214f"} />
             </button>
             <button
               type="button"
@@ -89,10 +89,10 @@ export function ReportsRoute() {
                 fontWeight: 900,
                 display: "grid",
                 placeItems: "center",
-                opacity: canGoNext ? 1 : 0.45,
+                opacity: canGoNext ? 1 : 0.6,
               }}
             >
-              ›
+              <Asset.Icon name="icon-arrow-right-mono" color={"#35214f"} />
             </button>
 
             <Text
@@ -126,6 +126,7 @@ export function ReportsRoute() {
               css={{
                 color: "#effff7",
                 opacity: 0.96,
+                marginTop: 8,
               }}
             >
               {"이번 주 흐름과 지난 기록을\n차근차근 돌아볼 수 있어요."}

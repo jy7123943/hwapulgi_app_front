@@ -13,7 +13,7 @@ function formatSessionDateTime(createdAt: string) {
   const period = hours >= 12 ? "pm" : "am";
   const displayHour = hours % 12 === 0 ? 12 : hours % 12;
 
-  return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()} ${String(displayHour).padStart(2, "0")}${period}`;
+  return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}, ${String(displayHour)}${period}`;
 }
 
 export function RecentList({ sessions }: RecentListProps) {
@@ -49,12 +49,25 @@ export function RecentList({ sessions }: RecentListProps) {
               }}
             >
               <div>
-                <strong css={{ display: "block", marginBottom: 4, color: "#35214f" }}>
-                  {formatSessionLabel(session)}
-                </strong>
+                <Text>
+                  <strong
+                    css={{
+                      display: "block",
+                      marginBottom: 4,
+                      color: "#35214f",
+                    }}
+                  >
+                    {formatSessionLabel(session)}
+                  </strong>
+                </Text>
                 <p css={{ margin: 0, color: "#6a5b7f" }}>
-                  {session.hits} hits · 분노 {session.angerBefore} →{" "}
-                  {session.angerAfter}
+                  <Text>
+                    {session.hits} hits · 분노 게이지 {session.angerBefore} →{" "}
+                    {session.angerAfter}
+                  </Text>
+                </p>
+                <p css={{ margin: 0, color: "#6a5b7f" }}>
+                  <Text>{session.memo}</Text>
                 </p>
                 <Text
                   as="div"
