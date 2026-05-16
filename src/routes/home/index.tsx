@@ -6,6 +6,7 @@ import {
 } from "../../components/shared/Surface";
 import { BottomTabBar } from "../../components/shared/BottomTabBar";
 import { useAppState } from "../../state/AppState";
+import { BannerAd } from "../../components/shared/BannerAd";
 import { HomeHeroBanner } from "./components/HomeHeroBanner";
 import { RecentList } from "./components/RecentList";
 import { TodaySummaryCard } from "./components/TodaySummaryCard";
@@ -37,6 +38,7 @@ export function HomeRoute() {
           />
           <TodaySummaryCard sessions={todaySessions} />
           <RecentList sessions={todaySessions} />
+          <BannerAd />
         </BodyStack>
       </ScreenPanel>
       <BottomTabBar />
