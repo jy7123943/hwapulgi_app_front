@@ -5,6 +5,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { LOADING_MESSAGES, START_GUIDE_STORAGE_KEY } from "../../constants";
 import { useAppState } from "../../state/AppState";
 import { safeHaptic } from "../../lib/haptics";
+import { submitScore } from "../../lib/leaderboard";
 import { GameActions } from "./components/GameActions";
 import { GameMetrics } from "./components/GameMetrics";
 import { useGameSession } from "./useGameSession";
@@ -73,11 +74,12 @@ export function GameRoute() {
     }
 
     hasFinishedRef.current = true;
-    completeSession({
+    const result = completeSession({
       hits,
       skillShots: 0,
       angerAfter: Math.min(currentAnger, draft.angerBefore),
     });
+    void submitScore(result.points);
     void safeHaptic("success");
     navigate("/result");
   }
