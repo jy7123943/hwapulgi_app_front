@@ -5,7 +5,7 @@ export default defineConfig({
   brand: {
     displayName: '화풀기',
     primaryColor: '#c74a32',
-    icon: '',
+    icon: 'https://static.toss.im/appsintoss/43219/1f71abb5-65e9-470d-b59d-8e8d1956171b.png',
   },
   web: {
     host: 'localhost',
