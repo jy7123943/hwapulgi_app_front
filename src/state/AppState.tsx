@@ -8,12 +8,6 @@ import {
 } from 'react';
 import { INTRO_SEEN_STORAGE_KEY, defaultDraft } from '../constants';
 import {
-  getHomeSnapshot,
-  getWeeklyArchives,
-  getWeeklySummaries,
-  getWeeklySummary,
-} from '../lib/storage';
-import {
   useCreateSession,
   useRecentNicknames,
   useRecentTargets,
@@ -22,24 +16,16 @@ import {
 } from '../lib/queries/sessions';
 import type {
   AvatarGender,
-  HomeSnapshot,
   SessionInput,
   SessionResult,
   TargetOption,
-  WeeklyArchive,
-  WeeklySummary,
 } from '../types';
 
 interface AppStateValue {
   draft: SessionInput;
-  homeSnapshot: HomeSnapshot;
-  sessions: SessionResult[];
   isHydrated: boolean;
   recentCustomTargets: string[];
   recentNicknames: string[];
-  weeklyArchives: WeeklyArchive[];
-  weeklySummaries: WeeklySummary[];
-  weeklySummary: ReturnType<typeof getWeeklySummary>;
   lastResult: SessionResult | null;
   hasHistory: boolean;
   introSeen: boolean;
@@ -77,25 +63,12 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     setIntroSeen(window.localStorage.getItem(INTRO_SEEN_STORAGE_KEY) === 'true');
   }, []);
 
-  const weeklySummary = useMemo(() => getWeeklySummary(sessions), [sessions]);
-  const weeklySummaries = useMemo(() => getWeeklySummaries(sessions), [sessions]);
-  const weeklyArchives = useMemo(() => getWeeklyArchives(sessions), [sessions]);
-  const homeSnapshot = useMemo(
-    () => getHomeSnapshot(sessions, weeklySummary),
-    [sessions, weeklySummary],
-  );
-
   const value = useMemo<AppStateValue>(
     () => ({
       draft,
-      homeSnapshot,
-      sessions,
       isHydrated: sessionsFetched,
       recentCustomTargets,
       recentNicknames,
-      weeklyArchives,
-      weeklySummaries,
-      weeklySummary,
       lastResult,
       hasHistory: sessions.length > 0,
       introSeen,
@@ -168,16 +141,12 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     }),
     [
       draft,
-      homeSnapshot,
       introSeen,
       lastResult,
       recentCustomTargets,
       recentNicknames,
-      sessions,
+      sessions.length,
       sessionsFetched,
-      weeklyArchives,
-      weeklySummaries,
-      weeklySummary,
       createSessionMutation,
       updateAngerMutation,
     ],

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { colors } from "@toss/tds-colors";
 import { Button, Text } from "@toss/tds-mobile";
 import { SectionCard } from "../../../components/shared/Surface";
-import { formatSessionLabel } from "../../../lib/storage";
+import { formatSessionLabel } from "../../../lib/format";
 import type { WeeklySummary } from "../../../types";
 
 interface CurrentWeekReportCardProps {

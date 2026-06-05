@@ -1,6 +1,6 @@
 import { Text } from "@toss/tds-mobile";
 import { SectionCard } from "../../../components/shared/Surface";
-import { formatSessionLabel } from "../../../lib/storage";
+import { formatSessionLabel } from "../../../lib/format";
 import type { SessionResult } from "../../../types";
 
 interface RecentListProps {

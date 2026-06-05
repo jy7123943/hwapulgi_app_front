@@ -11,7 +11,6 @@ export const TARGET_OPTIONS: TargetOption[] = [
   "기타",
 ];
 
-export const STORAGE_KEY = "hwapulgi/sessions";
 export const START_GUIDE_STORAGE_KEY = "hwapulgi/start-guide-seen";
 export const INTRO_SEEN_STORAGE_KEY = "hwapulgi/intro-seen";
 
