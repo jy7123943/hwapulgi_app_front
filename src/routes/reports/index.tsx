@@ -11,23 +11,30 @@ import {
 import { CurrentWeekReportCard } from "../home/components/CurrentWeekReportCard";
 import { HomeStats } from "../home/components/HomeStats";
 import { TopTargetsCard } from "../home/components/TopTargetsCard";
-import { useWeeklyReport } from "../../lib/queries/report";
+import { useArchives, useWeeklyReport } from "../../lib/queries/report";
 
 export function ReportsRoute() {
-  const { data: weekly } = useWeeklyReport();
-  const weeklySummaries = useMemo(() => (weekly ? [weekly] : []), [weekly]);
+  const { data: archives = [] } = useArchives();
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [weeklySummaries.length]);
+  // 0 = 이번 주, 1+ = archives[i-1]
+  const totalWeeks = 1 + archives.length;
+  const selectedWeekKey =
+    selectedIndex === 0 ? undefined : archives[selectedIndex - 1]?.id;
+  const { data: selectedSummary } = useWeeklyReport(selectedWeekKey);
 
-  const selectedSummary = weeklySummaries[selectedIndex] ?? weeklySummaries[0];
+  // 새 데이터 들어올 때 인덱스 범위 보정
+  useEffect(() => {
+    if (selectedIndex >= totalWeeks) {
+      setSelectedIndex(0);
+    }
+  }, [totalWeeks, selectedIndex]);
+
   const reportYear =
     selectedSummary?.calendarDays[0] != null
       ? new Date(selectedSummary.calendarDays[0].dateKey).getFullYear()
       : new Date().getFullYear();
-  const canGoPrev = selectedIndex < weeklySummaries.length - 1;
+  const canGoPrev = selectedIndex < totalWeeks - 1;
   const canGoNext = selectedIndex > 0;
 
   return (
@@ -48,9 +55,7 @@ export function ReportsRoute() {
             <button
               type="button"
               onClick={() =>
-                setSelectedIndex((prev) =>
-                  Math.min(prev + 1, weeklySummaries.length - 1),
-                )
+                setSelectedIndex((prev) => Math.min(prev + 1, totalWeeks - 1))
               }
               disabled={!canGoPrev}
               css={{

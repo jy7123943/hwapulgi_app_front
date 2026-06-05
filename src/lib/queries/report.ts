@@ -2,10 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { getArchives, getWeeklyReport } from '../api/report';
 import { queryKeys } from './keys';
 
-export function useWeeklyReport() {
+export function useWeeklyReport(weekKey?: string) {
   return useQuery({
-    queryKey: queryKeys.report.weekly(),
-    queryFn: getWeeklyReport,
+    queryKey: weekKey
+      ? [...queryKeys.report.weekly(), weekKey]
+      : queryKeys.report.weekly(),
+    queryFn: () => getWeeklyReport(weekKey),
   });
 }
 
