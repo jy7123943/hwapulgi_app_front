@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const TABS = [
   { label: "홈", path: "/home", iconName: "icon-home-mono" },
   { label: "리포트", path: "/reports", iconName: "icon-documents-lines-mono" },
+  { label: "랭킹", path: "/ranking", iconName: "icon-crown-mono" },
 ];
 
 export function BottomTabBar() {
@@ -24,8 +25,8 @@ export function BottomTabBar() {
       <div
         css={{
           width: "fit-content",
-          minWidth: 152,
-          maxWidth: 220,
+          minWidth: 220,
+          maxWidth: 320,
           margin: "0 auto",
           background: "#2f1c49",
           borderRadius: 999,
@@ -33,7 +34,7 @@ export function BottomTabBar() {
           border: "4px solid #4e356d",
           boxShadow: "0 8px 0 rgba(23, 12, 41, 0.28)",
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns: "1fr 1fr 1fr",
           gap: 8,
           pointerEvents: "auto",
         }}
