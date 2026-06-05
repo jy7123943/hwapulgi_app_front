@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Asset, Text } from "@toss/tds-mobile";
 import { colors } from "@toss/tds-colors";
 import { BottomTabBar } from "../../components/shared/BottomTabBar";
@@ -11,10 +11,11 @@ import {
 import { CurrentWeekReportCard } from "../home/components/CurrentWeekReportCard";
 import { HomeStats } from "../home/components/HomeStats";
 import { TopTargetsCard } from "../home/components/TopTargetsCard";
-import { useAppState } from "../../state/AppState";
+import { useWeeklyReport } from "../../lib/queries/report";
 
 export function ReportsRoute() {
-  const { weeklySummaries } = useAppState();
+  const { data: weekly } = useWeeklyReport();
+  const weeklySummaries = useMemo(() => (weekly ? [weekly] : []), [weekly]);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   useEffect(() => {
