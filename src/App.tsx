@@ -3,6 +3,7 @@ import { RequireHistory, RequireIntroSeen, RootGate } from './components/RouteGu
 import { HomeRoute } from './routes/home';
 import { IntroRoute } from './routes/intro';
 import { GameRoute } from './routes/play';
+import { RankingRoute } from './routes/ranking';
 import { ReportsRoute } from './routes/reports';
 import { ResultRoute } from './routes/result';
 import { AngerRoute } from './routes/start/anger';
@@ -24,6 +25,7 @@ function App() {
       <Route element={<RequireHistory />}>
         <Route path="/home" element={<HomeRoute />} />
         <Route path="/reports" element={<ReportsRoute />} />
+        <Route path="/ranking" element={<RankingRoute />} />
       </Route>
     </Routes>
   );
