@@ -12,6 +12,7 @@ import { CurrentWeekReportCard } from "../home/components/CurrentWeekReportCard"
 import { HomeStats } from "../home/components/HomeStats";
 import { TopTargetsCard } from "../home/components/TopTargetsCard";
 import { useArchives, useWeeklyReport } from "../../lib/queries/report";
+import { AchievementsList } from "./components/AchievementsList";
 
 export function ReportsRoute() {
   const { data: archives = [] } = useArchives();
@@ -167,6 +168,7 @@ export function ReportsRoute() {
               <TopTargetsCard weeklySummary={selectedSummary} />
             </>
           ) : null}
+          <AchievementsList />
         </BodyStack>
       </ScreenPanel>
       <BottomTabBar />

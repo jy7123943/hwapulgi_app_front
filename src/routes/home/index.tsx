@@ -10,6 +10,7 @@ import { useSessions } from "../../lib/queries/sessions";
 import { BannerAd } from "../../components/shared/BannerAd";
 import { HomeHeroBanner } from "./components/HomeHeroBanner";
 import { RecentList } from "./components/RecentList";
+import { StreakCard } from "./components/StreakCard";
 import { TodaySummaryCard } from "./components/TodaySummaryCard";
 
 function getDateKey(date: Date) {
@@ -35,6 +36,7 @@ export function HomeRoute() {
             }}
           />
           <TodaySummaryCard sessions={todaySessions} />
+          <StreakCard />
           <RecentList sessions={todaySessions} />
           <BannerAd />
         </BodyStack>
