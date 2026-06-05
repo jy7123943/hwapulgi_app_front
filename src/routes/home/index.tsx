@@ -6,6 +6,7 @@ import {
 } from "../../components/shared/Surface";
 import { BottomTabBar } from "../../components/shared/BottomTabBar";
 import { useAppState } from "../../state/AppState";
+import { useSessions } from "../../lib/queries/sessions";
 import { BannerAd } from "../../components/shared/BannerAd";
 import { HomeHeroBanner } from "./components/HomeHeroBanner";
 import { RecentList } from "./components/RecentList";
@@ -17,11 +18,8 @@ function getDateKey(date: Date) {
 
 export function HomeRoute() {
   const navigate = useNavigate();
-  const {
-    sessions,
-    resetDraft,
-  } =
-    useAppState();
+  const { resetDraft } = useAppState();
+  const { data: sessions = [] } = useSessions();
   const todayKey = getDateKey(new Date());
   const todaySessions = sessions.filter(
     (session) => getDateKey(new Date(session.createdAt)) === todayKey,
