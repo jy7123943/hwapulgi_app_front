@@ -1,4 +1,4 @@
-import type { SessionResult } from '../../types';
+import type { SessionInput, SessionResult } from '../../types';
 import { apiFetch } from './client';
 
 interface BackendSessionResponse {
@@ -48,4 +48,55 @@ export async function listSessions(): Promise<SessionResult[]> {
     '/api/v1/sessions?size=100',
   );
   return page.content.map(toSessionResult);
+}
+
+export interface CreateSessionInput {
+  draft: SessionInput;
+  hits: number;
+  skillShots: number;
+  angerAfter: number;
+  releasedPercent: number;
+  points: number;
+}
+
+export async function createSession(input: CreateSessionInput): Promise<SessionResult> {
+  const body = {
+    target: input.draft.target || '기타',
+    customTarget: input.draft.customTarget?.trim() || null,
+    targetNickname: input.draft.nickname.trim(),
+    angerBefore: input.draft.angerBefore,
+    angerAfter: input.angerAfter,
+    hits: input.hits,
+    skillShots: input.skillShots,
+    releasedPercent: input.releasedPercent,
+    points: input.points,
+    memo: input.draft.memo?.trim() || null,
+  };
+  const res = await apiFetch<BackendSessionResponse>('/api/v1/sessions', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+  return toSessionResult(res);
+}
+
+export async function updateAngerAfter(
+  sessionId: string,
+  angerAfter: number,
+): Promise<SessionResult> {
+  const res = await apiFetch<BackendSessionResponse>(
+    `/api/v1/sessions/${sessionId}/anger-after`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ angerAfter }),
+    },
+  );
+  return toSessionResult(res);
+}
+
+export async function getRecentTargets(): Promise<string[]> {
+  return apiFetch<string[]>('/api/v1/sessions/recent-targets');
+}
+
+export async function getRecentNicknames(): Promise<string[]> {
+  return apiFetch<string[]>('/api/v1/sessions/recent-nicknames');
 }
