@@ -68,20 +68,25 @@ export function GameRoute() {
     return <Navigate replace to="/start/name" />;
   }
 
-  function finishGame() {
+  async function finishGame() {
     if (hasFinishedRef.current) {
       return;
     }
 
     hasFinishedRef.current = true;
-    const result = completeSession({
-      hits,
-      skillShots: 0,
-      angerAfter: Math.min(currentAnger, draft.angerBefore),
-    });
-    void submitScore(result.points);
-    void safeHaptic("success");
-    navigate("/result");
+    try {
+      const result = await completeSession({
+        hits,
+        skillShots: 0,
+        angerAfter: Math.min(currentAnger, draft.angerBefore),
+      });
+      void submitScore(result.points);
+      void safeHaptic("success");
+      navigate("/result");
+    } catch (err) {
+      console.error("[게임 결과 저장 실패]", err);
+      hasFinishedRef.current = false;
+    }
   }
 
   function finishGameWithOverlay() {

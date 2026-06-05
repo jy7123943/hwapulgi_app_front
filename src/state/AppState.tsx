@@ -12,10 +12,14 @@ import {
   getWeeklyArchives,
   getWeeklySummaries,
   getWeeklySummary,
-  loadSessions,
-  saveSession,
-  updateSession,
 } from '../lib/storage';
+import {
+  useCreateSession,
+  useRecentNicknames,
+  useRecentTargets,
+  useSessions,
+  useUpdateAngerAfter,
+} from '../lib/queries/sessions';
 import type {
   AvatarGender,
   HomeSnapshot,
@@ -52,7 +56,7 @@ interface AppStateValue {
     hits: number;
     skillShots: number;
     angerAfter: number;
-  }) => SessionResult;
+  }) => Promise<SessionResult>;
   markIntroSeen: () => void;
 }
 
@@ -60,42 +64,25 @@ const AppStateContext = createContext<AppStateValue | null>(null);
 
 export function AppStateProvider({ children }: PropsWithChildren) {
   const [draft, setDraft] = useState<SessionInput>(defaultDraft);
-  const [sessions, setSessions] = useState<SessionResult[]>(() => loadSessions());
-  const [isHydrated, setIsHydrated] = useState(false);
   const [lastResult, setLastResult] = useState<SessionResult | null>(null);
   const [introSeen, setIntroSeen] = useState(false);
 
+  const { data: sessions = [], isFetched: sessionsFetched } = useSessions();
+  const { data: recentCustomTargets = [] } = useRecentTargets();
+  const { data: recentNicknames = [] } = useRecentNicknames();
+  const createSessionMutation = useCreateSession();
+  const updateAngerMutation = useUpdateAngerAfter();
+
   useEffect(() => {
-    setSessions(loadSessions());
     setIntroSeen(window.localStorage.getItem(INTRO_SEEN_STORAGE_KEY) === 'true');
-    setIsHydrated(true);
   }, []);
 
   const weeklySummary = useMemo(() => getWeeklySummary(sessions), [sessions]);
   const weeklySummaries = useMemo(() => getWeeklySummaries(sessions), [sessions]);
   const weeklyArchives = useMemo(() => getWeeklyArchives(sessions), [sessions]);
-  const homeSnapshot = useMemo(() => getHomeSnapshot(sessions, weeklySummary), [sessions, weeklySummary]);
-  const recentCustomTargets = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          sessions
-            .map((session) => session.customTarget?.trim() ?? '')
-            .filter((target) => target.length > 0),
-        ),
-      ).slice(0, 6),
-    [sessions],
-  );
-  const recentNicknames = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          sessions
-            .map((session) => session.nickname.trim())
-            .filter((nickname) => nickname.length > 0),
-        ),
-      ).slice(0, 5),
-    [sessions],
+  const homeSnapshot = useMemo(
+    () => getHomeSnapshot(sessions, weeklySummary),
+    [sessions, weeklySummary],
   );
 
   const value = useMemo<AppStateValue>(
@@ -103,7 +90,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       draft,
       homeSnapshot,
       sessions,
-      isHydrated,
+      isHydrated: sessionsFetched,
       recentCustomTargets,
       recentNicknames,
       weeklyArchives,
@@ -135,52 +122,44 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         }),
       updateLastResultAngerAfter: (angerAfter) => {
         const nextAngerAfter = Math.trunc(angerAfter);
+        const prev = lastResult;
+        if (!prev) return;
 
-        setLastResult((prev) => {
-          if (!prev) {
-            return prev;
-          }
-
-          const updatedResult: SessionResult = {
-            ...prev,
-            angerAfter: nextAngerAfter,
-            releasedPercent: Math.max(
-              0,
-              Math.round(((prev.angerBefore - nextAngerAfter) / Math.max(prev.angerBefore, 1)) * 100),
-            ),
-          };
-
-          updateSession(updatedResult);
-          setSessions(loadSessions());
-          return updatedResult;
-        });
+        const releasedPercent = Math.max(
+          0,
+          Math.round(((prev.angerBefore - nextAngerAfter) / Math.max(prev.angerBefore, 1)) * 100),
+        );
+        setLastResult({ ...prev, angerAfter: nextAngerAfter, releasedPercent });
+        updateAngerMutation.mutate({ sessionId: prev.id, angerAfter: nextAngerAfter });
       },
-      completeSession: ({ hits, skillShots, angerAfter }) => {
+      completeSession: async ({ hits, skillShots, angerAfter }) => {
         const nextAngerAfter = Math.trunc(angerAfter);
-        const result: SessionResult = {
-          ...draft,
-          customTarget: draft.customTarget?.trim() ?? '',
-          memo: draft.memo.trim(),
-          nickname: draft.nickname.trim(),
-          gender: draft.gender || 'boy',
-          id: crypto.randomUUID(),
-          createdAt: new Date().toISOString(),
+        const releasedPercent = Math.max(
+          0,
+          Math.round(
+            ((draft.angerBefore - nextAngerAfter) / Math.max(draft.angerBefore, 1)) * 100,
+          ),
+        );
+        const points =
+          10 +
+          hits +
+          skillShots * 4 +
+          Math.round((draft.angerBefore - Math.min(nextAngerAfter, draft.angerBefore)) / 2);
+
+        const saved = await createSessionMutation.mutateAsync({
+          draft,
           hits,
           skillShots,
           angerAfter: nextAngerAfter,
-          releasedPercent: Math.max(
-            0,
-            Math.round(((draft.angerBefore - nextAngerAfter) / Math.max(draft.angerBefore, 1)) * 100),
-          ),
-          points:
-            10 + hits + skillShots * 4 + Math.round((draft.angerBefore - Math.min(nextAngerAfter, draft.angerBefore)) / 2),
+          releasedPercent,
+          points,
+        });
+        const enriched: SessionResult = {
+          ...saved,
+          gender: draft.gender || 'boy',
         };
-
-        saveSession(result);
-        const updatedSessions = loadSessions();
-        setSessions(updatedSessions);
-        setLastResult(result);
-        return result;
+        setLastResult(enriched);
+        return enriched;
       },
       markIntroSeen: () => {
         window.localStorage.setItem(INTRO_SEEN_STORAGE_KEY, 'true');
@@ -191,14 +170,16 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       draft,
       homeSnapshot,
       introSeen,
-      isHydrated,
       lastResult,
       recentCustomTargets,
       recentNicknames,
       sessions,
+      sessionsFetched,
       weeklyArchives,
       weeklySummaries,
       weeklySummary,
+      createSessionMutation,
+      updateAngerMutation,
     ],
   );
 
