@@ -17,8 +17,16 @@ import { isRewardedAdReady, preloadRewardedAd, showRewardedAd } from "../../lib/
 
 export function ResultRoute() {
   const navigate = useNavigate();
-  const { lastResult, resetDraft, updateLastResultAngerAfter } = useAppState();
+  const {
+    lastResult,
+    resetDraft,
+    updateLastResultAngerAfter,
+    updateLastResultMemo,
+  } = useAppState();
   const [adRewarded, setAdRewarded] = useState(false);
+  const [isEditingMemo, setIsEditingMemo] = useState(false);
+  const [memoDraft, setMemoDraft] = useState("");
+  const [memoSaving, setMemoSaving] = useState(false);
 
   useEffect(() => {
     preloadRewardedAd();
@@ -26,6 +34,21 @@ export function ResultRoute() {
 
   if (!lastResult) {
     return <Navigate replace to="/" />;
+  }
+
+  function startEditMemo() {
+    setMemoDraft(lastResult?.memo ?? "");
+    setIsEditingMemo(true);
+  }
+
+  async function saveMemo() {
+    setMemoSaving(true);
+    try {
+      await updateLastResultMemo(memoDraft);
+      setIsEditingMemo(false);
+    } finally {
+      setMemoSaving(false);
+    }
   }
 
   async function handleWatchAd() {
@@ -115,7 +138,14 @@ export function ResultRoute() {
           </div>
 
           <SectionCard>
-            <div css={{ marginBottom: 12 }}>
+            <div
+              css={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 12,
+              }}
+            >
               <Text
                 as="div"
                 typography="t6"
@@ -124,19 +154,96 @@ export function ResultRoute() {
               >
                 이번 기록 메모
               </Text>
+              {!isEditingMemo && (
+                <button
+                  type="button"
+                  onClick={startEditMemo}
+                  css={{
+                    border: "2px solid #4e356d",
+                    borderRadius: 999,
+                    background: "#fff4df",
+                    color: "#35214f",
+                    padding: "4px 12px",
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  {lastResult.memo ? "수정" : "추가"}
+                </button>
+              )}
             </div>
-            <div>
+            {isEditingMemo ? (
+              <div css={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <textarea
+                  value={memoDraft}
+                  onChange={(e) => setMemoDraft(e.target.value)}
+                  maxLength={1000}
+                  rows={4}
+                  placeholder="오늘 어떤 화였는지 짧게 남겨보세요."
+                  css={{
+                    width: "100%",
+                    border: "2px solid #4e356d",
+                    borderRadius: 12,
+                    padding: "10px 12px",
+                    fontSize: 15,
+                    lineHeight: 1.5,
+                    background: "#fffef9",
+                    color: colors.grey900,
+                    resize: "vertical",
+                    fontFamily: "inherit",
+                  }}
+                />
+                <div css={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingMemo(false)}
+                    disabled={memoSaving}
+                    css={{
+                      border: "2px solid #4e356d",
+                      borderRadius: 999,
+                      background: "transparent",
+                      color: colors.grey700,
+                      padding: "8px 16px",
+                      fontWeight: 700,
+                      cursor: memoSaving ? "not-allowed" : "pointer",
+                      opacity: memoSaving ? 0.6 : 1,
+                    }}
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="button"
+                    onClick={saveMemo}
+                    disabled={memoSaving}
+                    css={{
+                      border: "2px solid #4e356d",
+                      borderRadius: 999,
+                      background: "#bff4d5",
+                      color: "#35214f",
+                      padding: "8px 16px",
+                      fontWeight: 700,
+                      cursor: memoSaving ? "not-allowed" : "pointer",
+                      opacity: memoSaving ? 0.6 : 1,
+                    }}
+                  >
+                    {memoSaving ? "저장 중..." : "저장"}
+                  </button>
+                </div>
+              </div>
+            ) : (
               <Text
                 as="div"
                 typography="t6"
                 css={{
                   color: colors.grey700,
                   wordBreak: "break-word",
+                  whiteSpace: "pre-wrap",
                 }}
               >
                 {lastResult.memo || "이번 기록에는 별도 메모를 남기지 않았어요."}
               </Text>
-            </div>
+            )}
           </SectionCard>
 
           {isRewardedAdReady() && !adRewarded && (
