@@ -13,6 +13,7 @@ import {
   useRecentTargets,
   useSessions,
   useUpdateAngerAfter,
+  useUpdateMemo,
 } from '../lib/queries/sessions';
 import type {
   AvatarGender,
@@ -38,6 +39,7 @@ interface AppStateValue {
   resetDraft: () => void;
   reuseSessionDraft: (session: SessionResult) => void;
   updateLastResultAngerAfter: (angerAfter: number) => void;
+  updateLastResultMemo: (memo: string) => Promise<void>;
   completeSession: (payload: {
     hits: number;
     skillShots: number;
@@ -58,6 +60,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   const { data: recentNicknames = [] } = useRecentNicknames();
   const createSessionMutation = useCreateSession();
   const updateAngerMutation = useUpdateAngerAfter();
+  const updateMemoMutation = useUpdateMemo();
 
   useEffect(() => {
     setIntroSeen(window.localStorage.getItem(INTRO_SEEN_STORAGE_KEY) === 'true');
@@ -105,6 +108,12 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         setLastResult({ ...prev, angerAfter: nextAngerAfter, releasedPercent });
         updateAngerMutation.mutate({ sessionId: prev.id, angerAfter: nextAngerAfter });
       },
+      updateLastResultMemo: async (memo) => {
+        const prev = lastResult;
+        if (!prev) return;
+        setLastResult({ ...prev, memo });
+        await updateMemoMutation.mutateAsync({ sessionId: prev.id, memo });
+      },
       completeSession: async ({ hits, skillShots, angerAfter }) => {
         const nextAngerAfter = Math.trunc(angerAfter);
         const releasedPercent = Math.max(
@@ -149,6 +158,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       sessionsFetched,
       createSessionMutation,
       updateAngerMutation,
+      updateMemoMutation,
     ],
   );
 

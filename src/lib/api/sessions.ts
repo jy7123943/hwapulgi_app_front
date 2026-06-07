@@ -93,6 +93,20 @@ export async function updateAngerAfter(
   return toSessionResult(res);
 }
 
+export async function updateMemo(
+  sessionId: string,
+  memo: string,
+): Promise<SessionResult> {
+  const res = await apiFetch<BackendSessionResponse>(
+    `/api/v1/sessions/${sessionId}/memo`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ memo }),
+    },
+  );
+  return toSessionResult(res);
+}
+
 export async function getRecentTargets(): Promise<string[]> {
   return apiFetch<string[]>('/api/v1/sessions/recent-targets');
 }

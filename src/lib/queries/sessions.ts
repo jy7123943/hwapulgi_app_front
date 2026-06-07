@@ -6,6 +6,7 @@ import {
   getRecentTargets,
   listSessions,
   updateAngerAfter,
+  updateMemo,
 } from '../api/sessions';
 import { queryKeys } from './keys';
 
@@ -50,6 +51,15 @@ export function useUpdateAngerAfter() {
   return useMutation({
     mutationFn: ({ sessionId, angerAfter }: { sessionId: string; angerAfter: number }) =>
       updateAngerAfter(sessionId, angerAfter),
+    onSuccess: () => invalidateAllSessionDerived(qc),
+  });
+}
+
+export function useUpdateMemo() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ sessionId, memo }: { sessionId: string; memo: string }) =>
+      updateMemo(sessionId, memo),
     onSuccess: () => invalidateAllSessionDerived(qc),
   });
 }
