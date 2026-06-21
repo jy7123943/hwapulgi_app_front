@@ -1,13 +1,10 @@
 import { loadFullScreenAd, showFullScreenAd, TossAds } from '@apps-in-toss/web-framework';
 
-// TODO: 콘솔에서 광고 그룹 생성 후 실제 ID 입력
+// 콘솔에서 발급받은 실제 광고 그룹 ID
 const REWARDED_AD_GROUP_ID = 'ait-ad-test-rewarded-id';
-const INTERSTITIAL_AD_GROUP_ID = 'ait-ad-test-interstitial-id';
 
 let isRewardedAdLoaded = false;
-let isInterstitialAdLoaded = false;
 let rewardedCleanup: (() => void) | null = null;
-let interstitialCleanup: (() => void) | null = null;
 
 // ── 리워드 광고 ──
 
@@ -69,53 +66,6 @@ export function isRewardedAdReady(): boolean {
   return isRewardedAdLoaded;
 }
 
-// ── 전면형 광고 ──
-
-export function preloadInterstitialAd() {
-  if (isInterstitialAdLoaded) return;
-  if (!loadFullScreenAd.isSupported()) return;
-
-  interstitialCleanup = loadFullScreenAd({
-    options: { adGroupId: INTERSTITIAL_AD_GROUP_ID },
-    onEvent: (event) => {
-      if (event.type === 'loaded') {
-        isInterstitialAdLoaded = true;
-      }
-    },
-    onError: (error) => {
-      console.error('[전면 광고] 로드 실패:', error);
-      isInterstitialAdLoaded = false;
-    },
-  });
-}
-
-export function showInterstitialAd(): Promise<void> {
-  if (!isInterstitialAdLoaded || !showFullScreenAd.isSupported()) {
-    return Promise.resolve();
-  }
-
-  return new Promise((resolve) => {
-    showFullScreenAd({
-      options: { adGroupId: INTERSTITIAL_AD_GROUP_ID },
-      onEvent: (event) => {
-        if (event.type === 'dismissed' || event.type === 'failedToShow') {
-          isInterstitialAdLoaded = false;
-          preloadInterstitialAd();
-          resolve();
-        }
-      },
-      onError: (error) => {
-        console.error('[전면 광고] 표시 실패:', error);
-        resolve();
-      },
-    });
-  });
-}
-
-export function isInterstitialAdReady(): boolean {
-  return isInterstitialAdLoaded;
-}
-
 // ── 배너 광고 SDK 초기화 ──
 
 let bannerInitialized = false;
@@ -154,10 +104,6 @@ export function cleanupAllAds() {
   rewardedCleanup?.();
   rewardedCleanup = null;
   isRewardedAdLoaded = false;
-
-  interstitialCleanup?.();
-  interstitialCleanup = null;
-  isInterstitialAdLoaded = false;
 
   if (TossAds.destroyAll.isSupported()) {
     TossAds.destroyAll();
