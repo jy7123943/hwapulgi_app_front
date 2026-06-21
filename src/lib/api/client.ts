@@ -1,4 +1,4 @@
-import { clearAuth, getStoredAuth, guestLogin, refreshAuth, storeAuth } from './auth';
+import { clearAuth, getStoredAuth, login, refreshAuth, storeAuth } from './auth';
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'https://168.107.62.13.nip.io';
@@ -56,7 +56,7 @@ async function ensureValidToken(): Promise<void> {
   refreshInFlight = (async () => {
     const auth = getStoredAuth();
     if (!auth) {
-      const fresh = await guestLogin();
+      const fresh = await login();
       storeAuth(fresh);
       return;
     }
@@ -65,7 +65,7 @@ async function ensureValidToken(): Promise<void> {
       storeAuth(refreshed);
     } catch {
       clearAuth();
-      const fresh = await guestLogin();
+      const fresh = await login();
       storeAuth(fresh);
     }
   })();

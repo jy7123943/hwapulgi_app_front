@@ -1,3 +1,5 @@
+import { appLogin } from '@apps-in-toss/web-framework';
+
 const AUTH_STORAGE_KEY = 'hwapulgi/auth';
 const DEVICE_ID_KEY = 'hwapulgi/deviceId';
 const API_BASE_URL =
@@ -74,6 +76,32 @@ export async function guestLogin(): Promise<AuthToken> {
   return toAuthToken(raw);
 }
 
+/**
+ * 토스 인증으로 로그인한다. 토스 SDK의 appLogin()으로 받은 인가코드/referrer를
+ * 백엔드에 넘겨 자체 JWT를 발급받는다. (토스 인앱 웹뷰에서만 동작)
+ */
+export async function tossLogin(): Promise<AuthToken> {
+  const { authorizationCode, referrer } = await appLogin();
+  const raw = await postJson<RawTokenResponse>('/api/auth/toss/login', {
+    authorizationCode,
+    referrer,
+  });
+  return toAuthToken(raw);
+}
+
+/**
+ * 토스 로그인을 우선 시도하고, 토스 환경이 아니거나(브라우저 개발 등) 실패하면
+ * 게스트 로그인으로 폴백한다. 로그인 화면 없이 백그라운드에서 인증을 보장한다.
+ */
+export async function login(): Promise<AuthToken> {
+  try {
+    return await tossLogin();
+  } catch (err) {
+    console.warn('[auth] 토스 로그인 실패/미지원 — 게스트로 폴백합니다.', err);
+    return await guestLogin();
+  }
+}
+
 export async function refreshAuth(refreshToken: string): Promise<AuthToken> {
   const raw = await postJson<RawTokenResponse>('/api/auth/toss/refresh', { refreshToken });
   return toAuthToken(raw);
@@ -84,7 +112,7 @@ export async function ensureAuth(): Promise<AuthToken> {
   if (existing && Date.now() < existing.expiresAt - 60_000) {
     return existing;
   }
-  const fresh = await guestLogin();
+  const fresh = await login();
   storeAuth(fresh);
   return fresh;
 }
