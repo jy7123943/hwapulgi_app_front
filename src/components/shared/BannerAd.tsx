@@ -2,8 +2,8 @@ import { TossAds } from '@apps-in-toss/web-framework';
 import { useEffect, useRef } from 'react';
 import { isBannerInitialized, initBannerAds } from '../../lib/ad';
 
-// TODO: 콘솔에서 배너 광고 그룹 생성 후 실제 ID 입력
-const BANNER_AD_GROUP_ID = 'ait-ad-test-banner-id';
+// 콘솔에서 발급받은 실제 배너 광고 그룹 ID
+const BANNER_AD_GROUP_ID = 'ait.v2.live.d72d70f45a574984';
 
 interface BannerAdProps {
   adGroupId?: string;

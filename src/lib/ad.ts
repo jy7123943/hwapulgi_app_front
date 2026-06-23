@@ -1,8 +1,9 @@
 import { loadFullScreenAd, showFullScreenAd, TossAds } from '@apps-in-toss/web-framework';
 
-// TODO: 콘솔에서 광고 그룹 생성 후 실제 ID 입력
+// 콘솔에서 발급받은 실제 광고 그룹 ID
+// TODO: 리워드 광고 그룹 발급 후 실제 ID 입력
 const REWARDED_AD_GROUP_ID = 'ait-ad-test-rewarded-id';
-const INTERSTITIAL_AD_GROUP_ID = 'ait-ad-test-interstitial-id';
+const INTERSTITIAL_AD_GROUP_ID = 'ait.v2.live.690a2a3bf49549d5'; // 전면 광고
 
 let isRewardedAdLoaded = false;
 let isInterstitialAdLoaded = false;
