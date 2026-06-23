@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { colors } from "@toss/tds-colors";
 import { Slider, Text, TextField } from "@toss/tds-mobile";
 import { useNavigate } from "react-router-dom";
+import { preloadInterstitialAd } from "../../../lib/ad";
 import {
   AppShell,
   BodyStack,
@@ -16,6 +18,11 @@ import { sanitizeTextInput } from "../../../lib/sanitize";
 export function AngerRoute() {
   const navigate = useNavigate();
   const { draft, setAngerBefore, setMemo } = useAppState();
+
+  // 게임 시작 직전 화면에서 전면 광고를 미리 로드해 둔다.
+  useEffect(() => {
+    preloadInterstitialAd();
+  }, []);
 
   return (
     <AppShell>

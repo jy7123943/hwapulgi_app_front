@@ -4,6 +4,7 @@ import { Asset, Text } from "@toss/tds-mobile";
 import { Navigate, useNavigate } from "react-router-dom";
 import { LOADING_MESSAGES, START_GUIDE_STORAGE_KEY } from "../../constants";
 import { useAppState } from "../../state/AppState";
+import { showInterstitialAd } from "../../lib/ad";
 import { safeHaptic } from "../../lib/haptics";
 import { submitScore } from "../../lib/leaderboard";
 import { GameActions } from "./components/GameActions";
@@ -51,6 +52,11 @@ export function GameRoute() {
     }, 1000);
 
     return () => window.clearTimeout(timeout);
+  }, []);
+
+  // 게임 시작 시 전면 광고 노출 (로드돼 있지 않으면 자동으로 건너뜀)
+  useEffect(() => {
+    showInterstitialAd();
   }, []);
 
   useEffect(() => {
