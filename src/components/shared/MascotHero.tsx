@@ -111,7 +111,7 @@ export function MascotHero({
       <Sky backgroundGradient={theme.skyBackground} />
       <Blob blobImage={theme.blobImage} compact={compact} />
       <HeroImage
-        alt="화풀기 메인 캐릭터"
+        alt="펀치팡 메인 캐릭터"
         compact={compact}
         src={theme.imageSrc}
       />
