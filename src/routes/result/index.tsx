@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { colors } from "@toss/tds-colors";
 import { Slider, Text } from "@toss/tds-mobile";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -13,7 +13,6 @@ import { useAppState } from "../../state/AppState";
 import { BottomCTA } from "../../components/shared/BottomCTA";
 import { ResultStatCard } from "./components/ResultStatCard";
 import { ScreenHeading } from "../../components/shared/ScreenHeading";
-import { isRewardedAdReady, preloadRewardedAd, showRewardedAd } from "../../lib/ad";
 
 export function ResultRoute() {
   const navigate = useNavigate();
@@ -23,14 +22,9 @@ export function ResultRoute() {
     updateLastResultAngerAfter,
     updateLastResultMemo,
   } = useAppState();
-  const [adRewarded, setAdRewarded] = useState(false);
   const [isEditingMemo, setIsEditingMemo] = useState(false);
   const [memoDraft, setMemoDraft] = useState("");
   const [memoSaving, setMemoSaving] = useState(false);
-
-  useEffect(() => {
-    preloadRewardedAd();
-  }, []);
 
   if (!lastResult) {
     return <Navigate replace to="/" />;
@@ -48,13 +42,6 @@ export function ResultRoute() {
       setIsEditingMemo(false);
     } finally {
       setMemoSaving(false);
-    }
-  }
-
-  async function handleWatchAd() {
-    const { rewarded } = await showRewardedAd();
-    if (rewarded) {
-      setAdRewarded(true);
     }
   }
 
@@ -245,41 +232,6 @@ export function ResultRoute() {
               </Text>
             )}
           </SectionCard>
-
-          {isRewardedAdReady() && !adRewarded && (
-            <button
-              type="button"
-              onClick={handleWatchAd}
-              css={{
-                width: "100%",
-                padding: "16px 20px",
-                borderRadius: 16,
-                border: "none",
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                color: "#fff",
-                cursor: "pointer",
-              }}
-            >
-              <Text typography="t6" fontWeight="bold" css={{ color: "#fff" }}>
-                광고 보고 보너스 받기
-              </Text>
-            </button>
-          )}
-          {adRewarded && (
-            <div
-              css={{
-                width: "100%",
-                padding: "16px 20px",
-                borderRadius: 16,
-                background: "#f3fff8",
-                textAlign: "center",
-              }}
-            >
-              <Text typography="t6" fontWeight="bold" css={{ color: "#4cc49b" }}>
-                보너스 획득 완료!
-              </Text>
-            </div>
-          )}
         </BodyStack>
       </ScreenPanel>
 
