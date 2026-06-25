@@ -108,15 +108,20 @@ export function IntroRoute() {
             textAlign: "center",
           }}
         >
-          <img
-            alt="Punch Pang"
-            src="/punch_pang.png"
+          <Text
+            as="h1"
+            fontWeight="bold"
             css={{
-              width: "clamp(220px, 58vw, 332px)",
-              maxWidth: "92%",
-              objectFit: "contain",
+              fontSize: "clamp(48px, 15vw, 84px)",
+              lineHeight: 1.1,
+              color: "#fff4df",
+              letterSpacing: "-0.04em",
+              textShadow:
+                "-2px -2px 0 #4e356d, 2px -2px 0 #4e356d, -2px 2px 0 #4e356d, 2px 2px 0 #4e356d, 0 12px 20px rgba(31, 17, 54, 0.32)",
             }}
-          />
+          >
+            화풀기
+          </Text>
 
           <Text
             as="p"
