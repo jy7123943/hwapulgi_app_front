@@ -3,7 +3,7 @@ import { defineConfig } from '@apps-in-toss/web-framework/config';
 export default defineConfig({
   appName: 'hwapulgi-app',
   brand: {
-    displayName: '펀치팡',
+    displayName: '화풀기',
     primaryColor: '#c74a32',
     icon: 'https://static.toss.im/appsintoss/43219/1f71abb5-65e9-470d-b59d-8e8d1956171b.png',
   },
