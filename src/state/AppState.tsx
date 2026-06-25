@@ -122,11 +122,13 @@ export function AppStateProvider({ children }: PropsWithChildren) {
             ((draft.angerBefore - nextAngerAfter) / Math.max(draft.angerBefore, 1)) * 100,
           ),
         );
+        // 백엔드 PointsCalculator는 정수 나눗셈(내림)으로 검증한다.
+        // Math.round를 쓰면 분노 감소량이 홀수일 때 1점이 더 커져 POINTS_MISMATCH가 난다.
         const points =
           10 +
           hits +
           skillShots * 4 +
-          Math.round((draft.angerBefore - Math.min(nextAngerAfter, draft.angerBefore)) / 2);
+          Math.floor((draft.angerBefore - Math.min(nextAngerAfter, draft.angerBefore)) / 2);
 
         const saved = await createSessionMutation.mutateAsync({
           draft,
