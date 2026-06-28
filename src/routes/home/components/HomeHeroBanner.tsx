@@ -9,7 +9,7 @@ export function HomeHeroBanner({ onStart }: HomeHeroBannerProps) {
   return (
     <section css={{ padding: "6px 2px 4px" }}>
       <ScreenHeading
-        eyebrow="PUNCH PANG!"
+        eyebrow="화풀기"
         subtitle={"오늘은 어떻게 풀어낼까요?"}
         title={"오늘도 참느라\n고생했어요."}
       />
